@@ -108,12 +108,12 @@ private:
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, NULL);
 		glEnableVertexAttribArray(2);
 
-		
+
 
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	
+
 		glUseProgram(this->program);
 
 		glActiveTexture(GL_TEXTURE0);
@@ -142,11 +142,13 @@ public:
 	{
 		this->custom_translate = translate;
 	}
+
 	// scale object
 	void set_scale(glm::vec3 scale)
 	{
 		this->custom_scale = scale;
 	}
+
 	// rotate object
 	void set_rotation(glm::vec3 rotation_matrix, GLfloat rotation)
 	{
@@ -154,6 +156,7 @@ public:
 		this->rotate_angle = rotation;
 		this->rotation_applied = true;
 	}
+
 	// display function with mods
 	void display(glm::mat4x4 Matrix_proj, glm::mat4x4 Matrix_mv)
 	{
@@ -163,5 +166,14 @@ public:
 			Matrix_mv = glm::rotate(Matrix_mv, this->rotate_angle, this->custom_rotate);
 		glm::mat4x4 Matrix_proj_mv = Matrix_proj * Matrix_mv;
 		display_util(Matrix_proj_mv);
+	}
+
+	void clean(void)
+	{
+		glDeleteProgram( program );
+		glDeleteBuffers( 1, &vBuffer_coord );
+		glDeleteBuffers( 1, &vBuffer_uv );
+		glDeleteBuffers( 1, &vBuffer_normal );
+		glDeleteVertexArrays( 1, &vArray );
 	}
 };

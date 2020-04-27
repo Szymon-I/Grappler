@@ -125,8 +125,8 @@ void Initialize()
 
     global_light.init(glm::vec3(0.5, 0.5, 0.5), glm::vec3(1.0, 1.0, 1.0), glm::vec3(0.0, 2.0, 0.0));
 
-    wolf_program.init("objects/wolf.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/wolf.bmp", global_light);
-    ground_program.init("objects/ground.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/ground.bmp", global_light);
+    wolf_program.init("objects/wolf.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/ground.bmp", global_light);
+    ground_program.init("objects/ground2.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/ground.bmp", global_light);
     sky_program1.init("objects/sky.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/sky.bmp", global_light);
     sky_program2.init("objects/sky.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/sky.bmp", global_light);
 
@@ -135,6 +135,20 @@ void Initialize()
 
     for (int i = 0; i < MONKEY_N; i++)
         monkey_programs[i].init("objects/monkey.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/monkey.bmp", global_light);
+}
+
+void clean(void)
+{
+    wolf_program.clean();
+    ground_program.clean();
+    sky_program1.clean();
+    sky_program2.clean();
+
+    for (int i = 0; i < TREE_N; i++)
+        tree_programs[i].clean();
+
+    for (int i = 0; i < MONKEY_N; i++)
+        monkey_programs[i].clean();
 }
 
 // ---------------------------------------------------
@@ -174,6 +188,9 @@ int main(int argc, char *argv[])
     glutSpecialFunc(SpecialKeys);
 
     glutMainLoop();
+
+	// Cleaning();
+    clean();
 
     return 0;
 }
