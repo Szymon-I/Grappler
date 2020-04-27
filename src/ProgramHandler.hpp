@@ -54,8 +54,6 @@ private:
 		int tex_height;
 		unsigned char *tex_data;
 
-		//loadBMP_custom(texture.c_str(), tex_width, tex_height, &tex_data);
-
 		glGenTextures(1, &TextureID);
 		glBindTexture(GL_TEXTURE_2D, TextureID);
 
