@@ -1,0 +1,1 @@
+- Napisac sterownik do obslugi seriala, pomocna biblioteka: https://github.com/imabot2/serialib
