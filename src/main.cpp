@@ -1,16 +1,19 @@
 #include <stdio.h>
 #include <GL/glew.h>
 #include <GL/freeglut.h>
-#include "SOIL.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "libs/SOIL.h"
+#include "libs/serialib.h"
+#include "libs/obj_loader.hpp"
+#include "libs/shader_stuff.h"
+#include "libs/texture_loader.hpp"
+
 #include "Light.hpp"
-#include "obj_loader.hpp"
-#include "shader_stuff.h"
 #include "ProgramHandler.hpp"
-#include "texture_loader.hpp"
+
 
 
 #define MONKEY_N 4
