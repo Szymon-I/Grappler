@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <GL/glew.h>
 #include <GL/freeglut.h>
-
+#include "SOIL.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -11,6 +11,8 @@
 #include "shader_stuff.h"
 #include "ProgramHandler.hpp"
 #include "texture_loader.hpp"
+
+
 #define MONKEY_N 4
 #define TREE_N 3
 #define M_PI 3.14159265358979323846
@@ -120,16 +122,16 @@ void Initialize()
 
     global_light.init(glm::vec3(0.5, 0.5, 0.5), glm::vec3(1.0, 1.0, 1.0), glm::vec3(0.0, 2.0, 0.0));
 
-    wolf_program.init("wolf.obj", "vertex.glsl", "fragment.glsl", "wolf.bmp", global_light);
-    ground_program.init("ground.obj", "vertex.glsl", "fragment.glsl", "ground.bmp", global_light);
-    sky_program1.init("sky.obj", "vertex.glsl", "fragment.glsl", "sky.bmp", global_light);
-    sky_program2.init("sky.obj", "vertex.glsl", "fragment.glsl", "sky.bmp", global_light);
+    wolf_program.init("objects/wolf.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/wolf.bmp", global_light);
+    ground_program.init("objects/ground.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/ground.bmp", global_light);
+    sky_program1.init("objects/sky.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/sky.bmp", global_light);
+    sky_program2.init("objects/sky.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/sky.bmp", global_light);
 
     for (int i = 0; i < TREE_N; i++)
-        tree_programs[i].init("tree.obj", "vertex.glsl", "fragment.glsl", "tree.bmp", global_light);
+        tree_programs[i].init("objects/tree.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/tree.bmp", global_light);
 
     for (int i = 0; i < MONKEY_N; i++)
-        monkey_programs[i].init("monkey.obj", "vertex.glsl", "fragment.glsl", "monkey.bmp", global_light);
+        monkey_programs[i].init("objects/monkey.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/monkey.bmp", global_light);
 }
 
 // ---------------------------------------------------
