@@ -54,16 +54,22 @@ private:
 		int tex_height;
 		unsigned char *tex_data;
 
-		loadBMP_custom(texture.c_str(), tex_width, tex_height, &tex_data);
+		//loadBMP_custom(texture.c_str(), tex_width, tex_height, &tex_data);
+
 		glGenTextures(1, &TextureID);
 		glBindTexture(GL_TEXTURE_2D, TextureID);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tex_width, tex_height, 0, GL_BGR, GL_UNSIGNED_BYTE, tex_data);
+
+		tex_data = SOIL_load_image(texture.c_str(), &tex_width, &tex_height, 0, SOIL_LOAD_RGBA);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex_width, tex_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex_data);
+		SOIL_free_image_data(tex_data);
+
 		glGenerateMipmap(GL_TEXTURE_2D);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
 	}
 	// pass matrix to shader
 	void uniform_matrix_send(glm::mat4x4 Matrix_proj_mv)
@@ -104,7 +110,7 @@ private:
 		// Wspolrzedne textury UV
 		glGenBuffers(1, &vBuffer_uv);
 		glBindBuffer(GL_ARRAY_BUFFER, vBuffer_uv);
-		glBufferData(GL_ARRAY_BUFFER, OBJ_uvs.size() * sizeof(glm::vec3), &OBJ_uvs[0], GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, OBJ_uvs.size() * sizeof(glm::vec2), &OBJ_uvs[0], GL_STATIC_DRAW);
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, NULL);
 		glEnableVertexAttribArray(2);
 

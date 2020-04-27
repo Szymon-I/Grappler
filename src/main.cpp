@@ -125,16 +125,16 @@ void Initialize()
 
     global_light.init(glm::vec3(0.5, 0.5, 0.5), glm::vec3(1.0, 1.0, 1.0), glm::vec3(0.0, 2.0, 0.0));
 
-    wolf_program.init("objects/wolf.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/ground.bmp", global_light);
-    ground_program.init("objects/ground2.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/ground.bmp", global_light);
-    sky_program1.init("objects/sky.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/sky.bmp", global_light);
-    sky_program2.init("objects/sky.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/sky.bmp", global_light);
+    wolf_program.init("objects/wolf.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/wolf.png", global_light);
+    ground_program.init("objects/ground2.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/ground.png", global_light);
+    sky_program1.init("objects/sky.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/sky.png", global_light);
+    sky_program2.init("objects/sky.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/sky.png", global_light);
 
     for (int i = 0; i < TREE_N; i++)
-        tree_programs[i].init("objects/tree.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/tree.bmp", global_light);
+        tree_programs[i].init("objects/tree.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/tree.png", global_light);
 
     for (int i = 0; i < MONKEY_N; i++)
-        monkey_programs[i].init("objects/monkey.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/monkey.bmp", global_light);
+        monkey_programs[i].init("objects/monkey.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/monkey.png", global_light);
 }
 
 void clean(void)
