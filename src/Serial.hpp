@@ -6,7 +6,6 @@
 class Serial
 {
 private:
-
     // serial settings
     std::string serial_port;
     int speed;
@@ -18,16 +17,30 @@ private:
     char buff[100];
     int bytes_received;
 
+    bool data_rdy = false;
+    bool input_monitor;
+
+    void print_input()
+    {
+        for (int i = 0; i < bytes_received; i++)
+        {
+            printf("%c", buff[i]);
+        }
+        putchar('\n');
+    }
+
 public:
-    char init(std::string serial_port, int speed)
+    char init(std::string serial_port, int speed, bool input_monitor = false)
     {
         this->serial_port = serial_port;
         this->speed = speed;
+        this->input_monitor = input_monitor;
         // Connection to serial port
         char errorOpening = serial.openDevice(serial_port.c_str(), speed);
         // If connection fails, return the error code otherwise, display a success message
         if (errorOpening != 1)
-            return errorOpening;
+            printf("Could not connect to %s\n", serial_port.c_str());
+        return errorOpening;
         printf("Successful connection to %s\n", serial_port.c_str());
         return 0;
     }
@@ -45,13 +58,24 @@ public:
         if (bytes_received)
         {
             serial.readString(buff, '\n', bytes_received);
-            for (int i = 0; i < bytes_received; i++)
-            {
-                printf("%c", buff[i]);
+            // send data to grappler
+            this->data_rdy = true;
+
+            if(input_monitor){
+                print_input();
             }
-            putchar('\n');
-            serial.flushReceiver();
         }
-        
+    }
+    bool is_ready()
+    {
+        return this->data_rdy;
+    }
+
+    std::string pass_message()
+    {
+        std::string str_data((const char *)buff, bytes_received);
+        this->data_rdy = false;
+        serial.flushReceiver();
+        return str_data;
     }
 };
