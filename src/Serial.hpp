@@ -29,6 +29,7 @@ public:
         if (errorOpening != 1)
             return errorOpening;
         printf("Successful connection to %s\n", serial_port.c_str());
+        return 0;
     }
 
     // close connection at object destruction
