@@ -7,7 +7,7 @@ in vec2 inoutUV;
 out vec4 outColor;
 
 // Parametry oswietlenia
-#define LIGHT_STRENGTH    10
+#define LIGHT_STRENGTH    2
 #define LIGHT_REACH       10
 
 #define MAX_LIGHTS        20
@@ -45,7 +45,7 @@ void main()
 	// Zastosowanie oswietlenia do fragmentu
 	vec4 objectColor = texture( tex0, inoutUV );
 
-	vec4 result =  vec4(Light_Ambient, 1.0)* objectColor + vec4(pointLights, 1.0) * objectColor;
+	vec4 result =  vec4(Light_Ambient, 1.0) * objectColor + vec4(pointLights, 1.0) * objectColor;
 
 	outColor = result;
 }

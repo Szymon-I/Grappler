@@ -18,10 +18,10 @@ class Light{
             this->Light_Positions=positions;
         }
         glm::vec3 get_ambient(){
-            return this->Light_Diffuse;
+            return this->Light_Ambient;
         }
         glm::vec3 get_diffuse(){
-            return this->Light_Ambient;
+            return this->Light_Diffuse;
         }
         std::vector < glm::vec3 > get_positions(){
             return this->Light_Positions;
