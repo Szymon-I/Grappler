@@ -7,4 +7,4 @@ done
 
 g++ -o "./$1/run.out" $sources -lglut -lGL -lGLEW -lSOIL
 cd $1
-./run.out
+./run.out $2 $3

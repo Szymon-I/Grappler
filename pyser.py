@@ -1,6 +1,7 @@
 import serial
-device_port = '/dev/pts/4'
-speed = 115200
+import sys
+device_port = str(sys.argv[1])
+speed = int(sys.argv[2])
 ser = serial.Serial(device_port,speed)
 while True:
     s = input()

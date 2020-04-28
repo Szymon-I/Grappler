@@ -141,7 +141,6 @@ void Initialize()
     for (int i = 0; i < MONKEY_N; i++)
         monkey_programs[i].init("objects/monkey.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/monkey.png", global_light);
 
-    serial.init(SERIAL_PORT, SERIAL_SPEED);
 }
 
 void clean(void)
@@ -167,6 +166,8 @@ void getSerialHandler()
 // ---------------------------------------------------
 int main(int argc, char *argv[])
 {
+
+    printf("%s %d\n", argv[1], atoi(argv[2]));
     // GLUT
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -190,6 +191,9 @@ int main(int argc, char *argv[])
         printf("Brak OpenGL 3.2!\n");
         exit(1);
     }
+    
+    // init serial with main arguments
+    serial.init(argv[1], atoi(argv[2]));
 
     Initialize();
     glutIdleFunc(getSerialHandler);
