@@ -128,8 +128,8 @@ void Initialize()
     _scene_rotate_y = -0.65f;
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-    std::vector < glm::vec3 > Light_Positions = {glm::vec3(0.0, 1.0, 8.0), glm::vec3(0.0, 1.0, -8.0)};
-    global_light.init(glm::vec3(0.25, 0.25, 0.25), glm::vec3(1.0, 1.0, 1.0), Light_Positions);
+    std::vector < glm::vec3 > Light_Positions = {glm::vec3(0.0, 1.0, 8.0), glm::vec3(0.0, 1.0, -8.0), glm::vec3(8.0, 1.0, 0.0)};
+    global_light.init(glm::vec3(0.1, 0.1, 0.1), glm::vec3(1.0, 1.0, 1.0), Light_Positions);
 
     wolf_program.init("objects/wolf.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/wolf.png", global_light);
     ground_program.init("objects/ground2.obj", "shaders/vertex_ground.glsl", "shaders/fragment.glsl", "textures/ground.png", global_light);
@@ -192,7 +192,7 @@ int main(int argc, char *argv[])
         printf("Brak OpenGL 3.2!\n");
         exit(1);
     }
-    
+
     // init serial with main arguments
     serial.init(argv[1], atoi(argv[2]));
 

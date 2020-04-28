@@ -12,11 +12,10 @@ out vec4 outColor;
 
 #define MAX_LIGHTS        20
 
-uniform int Number_Of_Lights;
-uniform vec3 Light_Positions[MAX_LIGHTS];
 uniform vec3 Light_Ambient;
 uniform vec3 Light_Diffuse;
-//uniform vec3 Light_Position;
+uniform int Number_Of_Lights;
+uniform vec3 Light_Positions[MAX_LIGHTS];
 
 uniform sampler2D tex0;
 
