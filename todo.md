@@ -14,3 +14,7 @@ dodac w niej dodatkowe funkcjonalnosci
 - rozbic klasy napisane przez nas na pliki hpp/cpp dla ewentualnego zwiekszenia czytelnosci
 - zrobic obiekty w blenderze do koncowego projektu + tekstury (projekty blendera przechowywac w
 katalogu blender)
+- nasluchiwanie dodatkowych zdarzen moza przekazac jako funkcje do glutIdleFunc(),
+jest to funkcja wywolywana wraz z innymi funkcjami interrupt handler w glownej petli
+freeglut (glutMainLoop()), akutalnie petla glowna nie ma ograniczenia fps, jest wywolywana
+na zasadzie poolingu
