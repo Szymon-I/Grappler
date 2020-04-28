@@ -39,7 +39,7 @@ private:
 	bool texture_applied = false;
 
 	Light global_light;
-	
+
 	// add shader path
 	void assign_shaders(string vertex_shader, string fragment_shader)
 	{
@@ -107,11 +107,12 @@ private:
 	void uniform_matrix_send(glm::mat4x4 Matrix_proj_mv)
 	{
 		glUniformMatrix4fv(glGetUniformLocation(program, "Matrix_proj_mv"), 1, GL_FALSE, glm::value_ptr(Matrix_proj_mv));
-		glUniform3fv(glGetUniformLocation(program, "Light_Ambient"), 1, &global_light.get_ambient()[0]);
-		glUniform3fv(glGetUniformLocation(program, "Light_Diffuse"), 1, &global_light.get_diffuse()[0]);
 
-		glUniform1i(glGetUniformLocation(program, "Number_Of_Lights"), global_light.get_positions().size());
-		glUniform3fv(glGetUniformLocation(program, "Light_Positions"), global_light.get_positions().size(), &(global_light.get_positions()[0])[0]);
+		int size = global_light.get_position().size();
+		glUniform1i(glGetUniformLocation(program, "Number_Of_Lights"), size);
+		glUniform3fv(glGetUniformLocation(program, "Light_Ambient"), size, &(global_light.get_ambient()[0])[0]);
+		glUniform3fv(glGetUniformLocation(program, "Light_Diffuse"), size, &(global_light.get_diffuse()[0])[0]);
+		glUniform3fv(glGetUniformLocation(program, "Light_Position"), size, &(global_light.get_position()[0])[0]);
 	}
 
 	// reset all mods for object

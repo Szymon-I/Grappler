@@ -35,9 +35,10 @@ ProgramHandler sky_program1;
 ProgramHandler sky_program2;
 ProgramHandler monkey_programs[MONKEY_N];
 ProgramHandler tree_programs[TREE_N];
-Light global_light;
 
 Serial serial;
+
+Light global_light;
 
 void monkey_circle();
 void mod_mv();
@@ -128,8 +129,10 @@ void Initialize()
     _scene_rotate_y = -0.65f;
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-    std::vector < glm::vec3 > Light_Positions = {glm::vec3(0.0, 1.0, 8.0), glm::vec3(0.0, 1.0, -8.0), glm::vec3(8.0, 1.0, 0.0)};
-    global_light.init(glm::vec3(0.3, 0.3, 0.3), glm::vec3(1.0, 1.0, 1.0), Light_Positions);
+    std::vector < glm::vec3 > ambient = {glm::vec3(0.3, 0.3, 0.3), glm::vec3(0.3, 0.3, 0.3), glm::vec3(0.3, 0.3, 0.3)};
+    std::vector < glm::vec3 > diffuse = {glm::vec3(1.0, 1.0, 1.0), glm::vec3(1.0, 1.0, 1.0), glm::vec3(1.0, 1.0, 1.0)};
+    std::vector < glm::vec3 > position = {glm::vec3(0.0, 1.0, 8.0), glm::vec3(0.0, 1.0, -8.0), glm::vec3(8.0, 1.0, 0.0)};
+    global_light.init(ambient, diffuse, position);
 
     wolf_program.init("objects/wolf.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/wolf.png", global_light);
     ground_program.init("objects/ground2.obj", "shaders/vertex_ground.glsl", "shaders/fragment.glsl", "textures/ground.png", global_light);

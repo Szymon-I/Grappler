@@ -8,22 +8,25 @@
 #include <glm/gtc/type_ptr.hpp>
 class Light{
     private:
-        glm::vec3 Light_Ambient;
-        glm::vec3 Light_Diffuse;
-        std::vector < glm::vec3 > Light_Positions;
+        std::vector < glm::vec3 > Light_Ambient;
+        std::vector < glm::vec3 > Light_Diffuse;
+        std::vector < glm::vec3 > Light_Position;
     public:
-        void init(glm::vec3 ambient,glm::vec3 diffuse, std::vector < glm::vec3 > positions){
+        void init(std::vector < glm::vec3 > ambient, std::vector < glm::vec3 > diffuse, std::vector < glm::vec3 > position){
             this->Light_Ambient=ambient;
             this->Light_Diffuse=diffuse;
-            this->Light_Positions=positions;
+            this->Light_Position=position;
         }
-        glm::vec3 get_ambient(){
+
+        std::vector < glm::vec3 > get_ambient(){
             return this->Light_Ambient;
         }
-        glm::vec3 get_diffuse(){
+
+        std::vector < glm::vec3 > get_diffuse(){
             return this->Light_Diffuse;
         }
-        std::vector < glm::vec3 > get_positions(){
-            return this->Light_Positions;
+
+        std::vector < glm::vec3 > get_position(){
+            return this->Light_Position;
         }
 };
