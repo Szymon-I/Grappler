@@ -1,7 +1,9 @@
 import serial
-device_port = '/dev/pts/4'
-speed = 115200
-ser = serial.Serial(device_port,speed)
+import sys
+device_port = str(sys.argv[1])
+speed = int(sys.argv[2])
+
 while True:
-    s = input()
-    ser.write(s.encode())
+    with serial.Serial(device_port,speed) as ser:
+        s = input()
+        ser.write(s.encode())
