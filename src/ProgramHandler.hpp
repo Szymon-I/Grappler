@@ -39,6 +39,7 @@ private:
 	bool texture_applied = false;
 
 	Light global_light;
+	float light_movement = 0.1;
 
 	// add shader path
 	void assign_shaders(string vertex_shader, string fragment_shader)
@@ -128,6 +129,9 @@ private:
 	// display final matrix
 	void display_util(glm::mat4x4 &Matrix_proj_mv)
 	{
+		if (global_light.Light_Position[0].z > 10.0 || global_light.Light_Position[0].z < -10.0) light_movement = -light_movement;
+		global_light.Light_Position[0].z += light_movement;
+
 		glBindVertexArray(vArray);
 		glUseProgram(this->program);
 

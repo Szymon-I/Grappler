@@ -7,11 +7,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 class Light{
-    private:
+    public:
         std::vector < glm::vec3 > Light_Ambient;
         std::vector < glm::vec3 > Light_Diffuse;
         std::vector < glm::vec3 > Light_Position;
-    public:
+
         void init(std::vector < glm::vec3 > ambient, std::vector < glm::vec3 > diffuse, std::vector < glm::vec3 > position){
             this->Light_Ambient=ambient;
             this->Light_Diffuse=diffuse;
