@@ -128,7 +128,8 @@ void Initialize()
     _scene_rotate_y = -0.65f;
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-    global_light.init(glm::vec3(0.5, 0.5, 0.5), glm::vec3(1.0, 1.0, 1.0), glm::vec3(0.0, 2.0, 0.0));
+    std::vector < glm::vec3 > Light_Positions = {glm::vec3(0.0, 1.0, 8.0), glm::vec3(0.0, 1.0, -8.0)};
+    global_light.init(glm::vec3(0.25, 0.25, 0.25), glm::vec3(1.0, 1.0, 1.0), Light_Positions);
 
     wolf_program.init("objects/wolf.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/wolf.png", global_light);
     ground_program.init("objects/ground2.obj", "shaders/vertex_ground.glsl", "shaders/fragment.glsl", "textures/ground.png", global_light);
@@ -172,7 +173,7 @@ int main(int argc, char *argv[])
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitContextVersion(3, 2);
     glutInitContextProfile(GLUT_CORE_PROFILE);
-    glutInitWindowSize(1920, 1080);
+    glutInitWindowSize(900, 900);
     glutCreateWindow("Grappler");
 
     // GLEW
@@ -201,7 +202,7 @@ int main(int argc, char *argv[])
     glutKeyboardFunc(Keyboard);
     glutSpecialFunc(SpecialKeys);
 
-    
+
     glutMainLoop();
 
     // Cleaning();

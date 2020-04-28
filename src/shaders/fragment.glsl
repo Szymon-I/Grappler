@@ -6,33 +6,48 @@ in vec2 inoutUV;
 
 out vec4 outColor;
 
-
 // Parametry oswietlenia
+#define LIGHT_STRENGTH    3
+#define LIGHT_REACH       5
+
+#define MAX_LIGHTS        20
+
+uniform int Number_Of_Lights;
+uniform vec3 Light_Positions[MAX_LIGHTS];
 uniform vec3 Light_Ambient;
 uniform vec3 Light_Diffuse;
-uniform vec3 Light_Position;
+//uniform vec3 Light_Position;
 
 uniform sampler2D tex0;
 
 void main()
 {
-	// Obliczenie wektora (swiatlo - wierzcholek)
-	// czyli kierunku padania swiatla na wierzcholek
-	float dist = distance(vec3(ourPosition),Light_Position);
-	vec3 lightDirection = normalize(Light_Position - vec3(ourPosition));
+	// zmienna kumulujaca swiatlo punktowe
+	vec3 pointLights = vec3(0.0);
 
-	// obliczenie kata pomiedzy wektorem lightDir oraz wektorem normalnym
-	// wartosc kata okresla pod jakim katem padaja promienie
-	float lightCoeff = max(dot(ourNormal, lightDirection), 0.0);
+	for (int i=0; i<Number_Of_Lights; i++)
+	{
+		//zmniejszenie mocy wraz z odlegloscia
+	    float odl = distance(vec3(ourPosition),Light_Positions[i]);
+		float odlMod = LIGHT_STRENGTH - (odl/LIGHT_REACH);
 
-	// obliczenie skladowej diffuse
-	vec3 resultDiffuse = lightCoeff * Light_Diffuse;
+		// Obliczenie wektora (swiatlo - wierzcholek)
+		// czyli kierunku padania swiatla na wierzcholek
+		vec3 lightDirection = normalize(Light_Positions[i] - vec3(ourPosition));
 
+		// obliczenie kata pomiedzy wektorem lightDir oraz wektorem normalnym
+		// wartosc kata okresla pod jakim katem padaja promienie
+		float lightCoeff = max(dot(ourNormal, lightDirection), 0.0);
+
+		// obliczenie skladowej diffuse
+		pointLights += lightCoeff * Light_Diffuse * odlMod;
+
+	}
 	// Zastosowanie oswietlenia do fragmentu
-	vec3 result = (Light_Ambient + resultDiffuse) * 1/dist;
+	vec4 objectColor = texture( tex0, inoutUV );
 
-	vec4 tex = texture( tex0, inoutUV );
+	vec4 result = vec4(Light_Ambient, 1.0)*objectColor + vec4(pointLights, 1.0) * objectColor;
 
-	outColor = vec4(result, 1.0) * tex;
+	outColor = result;
 
 }

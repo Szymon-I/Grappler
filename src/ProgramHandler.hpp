@@ -75,7 +75,9 @@ private:
 		glUniformMatrix4fv(glGetUniformLocation(program, "Matrix_proj_mv"), 1, GL_FALSE, glm::value_ptr(Matrix_proj_mv));
 		glUniform3fv(glGetUniformLocation(program, "Light_Ambient"), 1, &global_light.get_ambient()[0]);
 		glUniform3fv(glGetUniformLocation(program, "Light_Diffuse"), 1, &global_light.get_diffuse()[0]);
-		glUniform3fv(glGetUniformLocation(program, "Light_Position"), 1, &global_light.get_position()[0]);
+
+		glUniform1i(glGetUniformLocation(program, "Number_Of_Lights"), global_light.get_positions().size());
+		glUniform3fv(glGetUniformLocation(program, "Light_Positions"), global_light.get_positions().size(), &(global_light.get_positions()[0])[0]);
 	}
 	// reset all mods for object
 	void reset_mod()

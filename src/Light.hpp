@@ -10,12 +10,12 @@ class Light{
     private:
         glm::vec3 Light_Ambient;
         glm::vec3 Light_Diffuse;
-        glm::vec3 Light_Position;
+        std::vector < glm::vec3 > Light_Positions;
     public:
-        void init(glm::vec3 ambient,glm::vec3 diffuse, glm::vec3 position){
+        void init(glm::vec3 ambient,glm::vec3 diffuse, std::vector < glm::vec3 > positions){
             this->Light_Ambient=ambient;
             this->Light_Diffuse=diffuse;
-            this->Light_Position=position;
+            this->Light_Positions=positions;
         }
         glm::vec3 get_ambient(){
             return this->Light_Diffuse;
@@ -23,7 +23,7 @@ class Light{
         glm::vec3 get_diffuse(){
             return this->Light_Ambient;
         }
-        glm::vec3 get_position(){
-            return this->Light_Position;
+        std::vector < glm::vec3 > get_positions(){
+            return this->Light_Positions;
         }
 };
