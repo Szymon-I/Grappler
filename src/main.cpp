@@ -15,6 +15,7 @@
 #include "ProgramHandler.hpp"
 #include "IOHandler.hpp"
 #include "Serial.hpp"
+#include "Grappler.hpp"
 
 #define SERIAL_PORT "/dev/pts/3"
 #define SERIAL_SPEED 115200
@@ -38,6 +39,7 @@ ProgramHandler tree_programs[TREE_N];
 Light global_light;
 
 Serial serial;
+Grappler grappler;
 
 void monkey_circle();
 void mod_mv();
@@ -51,9 +53,12 @@ void DisplayScene()
 
     mod_mv();
 
-    wolf_program.set_translate(glm::vec3(0.5f, 0.0f, 0.0f));
-    wolf_program.set_scale(glm::vec3(1.5f, 1.5f, 1.5f));
-    wolf_program.display(Matrix_proj, Matrix_mv);
+    // wolf_program.set_translate(glm::vec3(0.5f, 0.0f, 0.0f));
+    // wolf_program.set_scale(glm::vec3(1.5f, 1.5f, 1.5f));
+    // wolf_program.display(Matrix_proj, Matrix_mv);
+
+    //movement is handled inside getSerialHandler
+    grappler.display_grappler(Matrix_proj, Matrix_mv);
 
     ground_program.set_scale(glm::vec3(1.5f, 1.5f, 1.5f));
     ground_program.display(Matrix_proj, Matrix_mv);
@@ -131,7 +136,7 @@ void Initialize()
     std::vector < glm::vec3 > Light_Positions = {glm::vec3(0.0, 1.0, 8.0), glm::vec3(0.0, 1.0, -8.0), glm::vec3(8.0, 1.0, 0.0)};
     global_light.init(glm::vec3(0.1, 0.1, 0.1), glm::vec3(1.0, 1.0, 1.0), Light_Positions);
 
-    wolf_program.init("objects/wolf.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/wolf.png", global_light);
+    
     ground_program.init("objects/ground2.obj", "shaders/vertex_ground.glsl", "shaders/fragment.glsl", "textures/ground.png", global_light);
     sky_program1.init("objects/sky.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/sky.png", global_light);
     sky_program2.init("objects/sky.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/sky.png", global_light);
@@ -142,6 +147,10 @@ void Initialize()
     for (int i = 0; i < MONKEY_N; i++)
         monkey_programs[i].init("objects/monkey.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/monkey.png", global_light);
 
+
+    // grapler = wolf
+    wolf_program.init("objects/wolf.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/wolf.png", global_light);
+    grappler.init(wolf_program);
 }
 
 void clean(void)
@@ -162,13 +171,14 @@ void clean(void)
 void getSerialHandler()
 {
     serial.handler();
+    if(serial.is_ready()){
+        grappler.move_grappler(serial.pass_message());
+    }
 }
 
 // ---------------------------------------------------
 int main(int argc, char *argv[])
 {
-
-    printf("%s %d\n", argv[1], atoi(argv[2]));
     // GLUT
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
