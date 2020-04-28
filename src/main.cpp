@@ -14,8 +14,10 @@
 #include "Light.hpp"
 #include "ProgramHandler.hpp"
 #include "IOHandler.hpp"
+#include "Serial.hpp"
 
-
+#define SERIAL_PORT "/dev/pts/3"
+#define SERIAL_SPEED 115200
 
 #define MONKEY_N 4
 #define TREE_N 3
@@ -34,6 +36,8 @@ ProgramHandler sky_program2;
 ProgramHandler monkey_programs[MONKEY_N];
 ProgramHandler tree_programs[TREE_N];
 Light global_light;
+
+Serial serial;
 
 void monkey_circle();
 void mod_mv();
@@ -136,6 +140,8 @@ void Initialize()
 
     for (int i = 0; i < MONKEY_N; i++)
         monkey_programs[i].init("objects/monkey.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/monkey.png", global_light);
+
+    serial.init(SERIAL_PORT, SERIAL_SPEED);
 }
 
 void clean(void)
@@ -152,6 +158,12 @@ void clean(void)
         monkey_programs[i].clean();
 }
 
+// handle uart interrupt
+void getSerialHandler()
+{
+    serial.handler();
+}
+
 // ---------------------------------------------------
 int main(int argc, char *argv[])
 {
@@ -161,7 +173,7 @@ int main(int argc, char *argv[])
     glutInitContextVersion(3, 2);
     glutInitContextProfile(GLUT_CORE_PROFILE);
     glutInitWindowSize(1920, 1080);
-    glutCreateWindow("OpenGL");
+    glutCreateWindow("Grappler");
 
     // GLEW
     glewExperimental = GL_TRUE;
@@ -180,6 +192,7 @@ int main(int argc, char *argv[])
     }
 
     Initialize();
+    glutIdleFunc(getSerialHandler);
     glutDisplayFunc(DisplayScene);
     glutReshapeFunc(Reshape);
     glutMouseFunc(MouseButton);
@@ -188,9 +201,10 @@ int main(int argc, char *argv[])
     glutKeyboardFunc(Keyboard);
     glutSpecialFunc(SpecialKeys);
 
+    
     glutMainLoop();
 
-	// Cleaning();
+    // Cleaning();
     clean();
 
     return 0;
