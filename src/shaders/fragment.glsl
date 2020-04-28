@@ -7,15 +7,15 @@ in vec2 inoutUV;
 out vec4 outColor;
 
 // Parametry oswietlenia
-#define LIGHT_STRENGTH    3
-#define LIGHT_REACH       5
+#define LIGHT_STRENGTH    10
+#define LIGHT_REACH       10
 
 #define MAX_LIGHTS        20
 
-uniform vec3 Light_Ambient;
-uniform vec3 Light_Diffuse;
 uniform int Number_Of_Lights;
 uniform vec3 Light_Positions[MAX_LIGHTS];
+uniform vec3 Light_Ambient;
+uniform vec3 Light_Diffuse;
 
 uniform sampler2D tex0;
 
@@ -45,8 +45,7 @@ void main()
 	// Zastosowanie oswietlenia do fragmentu
 	vec4 objectColor = texture( tex0, inoutUV );
 
-	vec4 result = vec4(Light_Ambient, 1.0)*objectColor + vec4(pointLights, 1.0) * objectColor;
+	vec4 result =  vec4(Light_Ambient, 1.0)* objectColor + vec4(pointLights, 1.0) * objectColor;
 
 	outColor = result;
-
 }

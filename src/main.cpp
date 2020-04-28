@@ -174,7 +174,7 @@ int main(int argc, char *argv[])
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitContextVersion(3, 2);
     glutInitContextProfile(GLUT_CORE_PROFILE);
-    glutInitWindowSize(900, 900);
+    glutInitWindowSize(1920, 1080);
     glutCreateWindow("Grappler");
 
     // GLEW
