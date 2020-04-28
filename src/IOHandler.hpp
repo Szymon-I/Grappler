@@ -1,8 +1,11 @@
 
 // --------------------------------------------------------------
 // Variables for control the view
-#define VANISH_CHANGE 0.1
 #include <GL/freeglut.h>
+#include <stdio.h>
+
+#define VANISH_CHANGE 0.1
+
 GLfloat _scene_rotate_x = 0.0f;
 GLfloat _scene_rotate_y = 0.0f;
 GLfloat _scene_translate_x = 0.0f;
