@@ -39,6 +39,7 @@ private:
 	bool texture_applied = false;
 
 	Light global_light;
+	
 	// add shader path
 	void assign_shaders(string vertex_shader, string fragment_shader)
 	{
@@ -46,6 +47,8 @@ private:
 		glAttachShader(this->program, LoadShader(GL_FRAGMENT_SHADER, fragment_shader.c_str()));
 		LinkAndValidateProgram(this->program);
 	}
+
+	// load texture from png file into object
 	void load_texture(string texture)
 	{
 		int tex_width;
@@ -68,6 +71,8 @@ private:
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	}
+
+	// bind matrix to buffers
 	void bind_buffers()
 	{
 		glGenVertexArrays(1, &vArray);
@@ -97,6 +102,7 @@ private:
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
+
 	// pass matrix to shader
 	void uniform_matrix_send(glm::mat4x4 Matrix_proj_mv)
 	{
@@ -107,6 +113,7 @@ private:
 		glUniform1i(glGetUniformLocation(program, "Number_Of_Lights"), global_light.get_positions().size());
 		glUniform3fv(glGetUniformLocation(program, "Light_Positions"), global_light.get_positions().size(), &(global_light.get_positions()[0])[0]);
 	}
+
 	// reset all mods for object
 	void reset_mod()
 	{
@@ -116,6 +123,7 @@ private:
 		this->rotate_angle = 0.0f;
 		this->rotation_applied = false;
 	}
+
 	// display final matrix
 	void display_util(glm::mat4x4 &Matrix_proj_mv)
 	{
@@ -129,6 +137,16 @@ private:
 		uniform_matrix_send(Matrix_proj_mv);
 
 		glDrawArrays(GL_TRIANGLES, 0, OBJ_vertices.size());
+	}
+
+	// apply all modifications (scale/rotate/translate)
+	glm::mat4x4 apply_mods(glm::mat4x4 Matrix_proj, glm::mat4x4 Matrix_mv)
+	{
+		Matrix_mv = glm::translate(Matrix_mv, this->custom_translate);
+		Matrix_mv = glm::scale(Matrix_mv, this->custom_scale);
+		if (this->rotation_applied)
+			Matrix_mv = glm::rotate(Matrix_mv, this->rotate_angle, this->custom_rotate);
+		return Matrix_proj * Matrix_mv;
 	}
 
 public:
@@ -167,11 +185,7 @@ public:
 	// display function with mods
 	void display(glm::mat4x4 Matrix_proj, glm::mat4x4 Matrix_mv)
 	{
-		Matrix_mv = glm::translate(Matrix_mv, this->custom_translate);
-		Matrix_mv = glm::scale(Matrix_mv, this->custom_scale);
-		if (this->rotation_applied)
-			Matrix_mv = glm::rotate(Matrix_mv, this->rotate_angle, this->custom_rotate);
-		glm::mat4x4 Matrix_proj_mv = Matrix_proj * Matrix_mv;
+		glm::mat4x4 Matrix_proj_mv = apply_mods(Matrix_proj, Matrix_mv);
 		display_util(Matrix_proj_mv);
 	}
 
