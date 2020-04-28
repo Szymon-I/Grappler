@@ -7,11 +7,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-
 #include "libs/texture_loader.hpp"
 #include "libs/obj_loader.hpp"
 #include "libs/shader_stuff.h"
-
 
 #include "Light.hpp"
 
@@ -54,6 +52,7 @@ private:
 		int tex_height;
 		unsigned char *tex_data;
 
+		glEnable(GL_TEXTURE_2D);
 		glGenTextures(1, &TextureID);
 		glBindTexture(GL_TEXTURE_2D, TextureID);
 
@@ -69,27 +68,7 @@ private:
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	}
-	// pass matrix to shader
-	void uniform_matrix_send(glm::mat4x4 Matrix_proj_mv)
-	{
-		glUniformMatrix4fv(glGetUniformLocation(program, "Matrix_proj_mv"), 1, GL_FALSE, glm::value_ptr(Matrix_proj_mv));
-		glUniform3fv(glGetUniformLocation(program, "Light_Ambient"), 1, &global_light.get_ambient()[0]);
-		glUniform3fv(glGetUniformLocation(program, "Light_Diffuse"), 1, &global_light.get_diffuse()[0]);
-
-		glUniform1i(glGetUniformLocation(program, "Number_Of_Lights"), global_light.get_positions().size());
-		glUniform3fv(glGetUniformLocation(program, "Light_Positions"), global_light.get_positions().size(), &(global_light.get_positions()[0])[0]);
-	}
-	// reset all mods for object
-	void reset_mod()
-	{
-		this->custom_translate = glm::vec3(0.0f, 0.0f, 0.0f);
-		this->custom_scale = glm::vec3(1.0f, 1.0f, 1.0f);
-		this->custom_rotate = glm::vec3(0.0f, 0.0f, 0.0f);
-		this->rotate_angle = 0.0f;
-		this->rotation_applied = false;
-	}
-	// display final matrix
-	void display_util(glm::mat4x4 &Matrix_proj_mv)
+	void bind_buffers()
 	{
 		glGenVertexArrays(1, &vArray);
 		glBindVertexArray(vArray);
@@ -114,12 +93,33 @@ private:
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, NULL);
 		glEnableVertexAttribArray(2);
 
-
-
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+	// pass matrix to shader
+	void uniform_matrix_send(glm::mat4x4 Matrix_proj_mv)
+	{
+		glUniformMatrix4fv(glGetUniformLocation(program, "Matrix_proj_mv"), 1, GL_FALSE, glm::value_ptr(Matrix_proj_mv));
+		glUniform3fv(glGetUniformLocation(program, "Light_Ambient"), 1, &global_light.get_ambient()[0]);
+		glUniform3fv(glGetUniformLocation(program, "Light_Diffuse"), 1, &global_light.get_diffuse()[0]);
 
+		glUniform1i(glGetUniformLocation(program, "Number_Of_Lights"), global_light.get_positions().size());
+		glUniform3fv(glGetUniformLocation(program, "Light_Positions"), global_light.get_positions().size(), &(global_light.get_positions()[0])[0]);
+	}
+	// reset all mods for object
+	void reset_mod()
+	{
+		this->custom_translate = glm::vec3(0.0f, 0.0f, 0.0f);
+		this->custom_scale = glm::vec3(1.0f, 1.0f, 1.0f);
+		this->custom_rotate = glm::vec3(0.0f, 0.0f, 0.0f);
+		this->rotate_angle = 0.0f;
+		this->rotation_applied = false;
+	}
+	// display final matrix
+	void display_util(glm::mat4x4 &Matrix_proj_mv)
+	{
+		glBindVertexArray(vArray);
 		glUseProgram(this->program);
 
 		glActiveTexture(GL_TEXTURE0);
@@ -141,6 +141,7 @@ public:
 		load_texture(texture);
 		this->global_light = light;
 		reset_mod();
+		bind_buffers();
 	}
 
 	// translate object
@@ -176,10 +177,10 @@ public:
 
 	void clean(void)
 	{
-		glDeleteProgram( program );
-		glDeleteBuffers( 1, &vBuffer_coord );
-		glDeleteBuffers( 1, &vBuffer_uv );
-		glDeleteBuffers( 1, &vBuffer_normal );
-		glDeleteVertexArrays( 1, &vArray );
+		glDeleteProgram(program);
+		glDeleteBuffers(1, &vBuffer_coord);
+		glDeleteBuffers(1, &vBuffer_uv);
+		glDeleteBuffers(1, &vBuffer_normal);
+		glDeleteVertexArrays(1, &vArray);
 	}
 };
