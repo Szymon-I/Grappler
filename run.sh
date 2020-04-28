@@ -1,4 +1,10 @@
 #!/bin/bash
+sources=""
+for x in $(find ./$1/ -type f -name "*.cpp")
+do
+    sources=$sources" $x"
+done
+
+g++ -o "./$1/run.out" $sources -lglut -lGL -lGLEW -lSOIL
 cd $1
-g++ -o "run.out" "main.cpp" -lglut -lGL -lGLEW -lSOIL
 ./run.out
