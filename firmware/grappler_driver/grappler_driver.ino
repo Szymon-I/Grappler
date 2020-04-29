@@ -4,19 +4,20 @@
 #define JOY_X_PIN A2
 #define JOY_Y_PIN A3
 #define KEY_PIN 3
-#define LOOP_INTERVAL 100
-#define JOY_THRESHOLD 1
-#define ACC_THRESHOLD 3
+#define LOOP_INTERVAL 25
 #define LED_PIN 13
 #define SCREEN_SIZE_W 128
 #define SCREEN_SIZE_H 64
-#define UP_DATA_LIMIT 100
-#define LOW_DATA_LIMIT -100
+#define UP_DATA_LIMIT 1000
+#define LOW_DATA_LIMIT -1000
+#define JOY_THRESHOLD UP_DATA_LIMIT/67
+#define ACC_THRESHOLD UP_DATA_LIMIT/100
+//#define POT_THRESHOLD UP_DATA_LIMIT/50
 #define ACC_UP_LIMIT 16000
 #define ACC_DOWN_LIMIT -16000
 #define ANALOG_UP_LIMIT 1024
 #define ANALOG_DOWN_LIMIT 0
-#define OUTPUT_DATA_FORMAT "%+06d/%+06d/%+06d\r\n"
+#define OUTPUT_DATA_FORMAT "%+05d/%+05d/%+05d\r\n"
 #define SERIAL_SPEED 115200
 #define ACC_OFF_X 1146
 #define ACC_OFF_Y -714
@@ -24,6 +25,7 @@
 #define GYR_OFF_X 99
 #define GYR_OFF_Y -48
 #define GYR_OFF_Z 8
+#define OLED_DISPLAY_INTERVAL 300
 
 #include "I2Cdev.h"
 #include "MPU6050.h"
@@ -48,7 +50,7 @@ int joy_x, joy_y;
 char out_buff[50];
 
 // flags for program
-bool acc_mode = true;
+bool acc_mode = false;
 bool blinkState = false;
 
 // create mpu and oled objects
@@ -135,6 +137,12 @@ void bind_buff()
 // diplay actual data on oled screen
 void display_oled()
 {
+  static int prev_time=0;
+  int actual_time=millis();
+  if(actual_time-prev_time<OLED_DISPLAY_INTERVAL){
+    return;
+  }
+  prev_time = actual_time;
   display.clearDisplay();
   display.setCursor(0, 0); // (x,y)
   display.setTextSize(2);
