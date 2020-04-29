@@ -18,3 +18,10 @@ za kazdym obsluzeniem nowej pozycji
 - dodac flage w klasie Grappler, ktora bedzie informowala o tym, ze obiekt sie przemiescil wzgledem
 poprzedniej pozycji, bo w innym przypadku za kazdym razem, gdy odbierany jest pakiet (w firware
 okreslony jest czas LOOP_INTERVAL) generowana jest nowa scena poprzez wywolanie glutPostRedisplay
+- dodac plynny ruch w free camera, renderowanie klatek dodac w timerze, a poruszanie sie kamery
+wyokynwane by bylo przy kazdym renderze jezeli poprzednia/aktalna klatka zawierala flate poruszenia.
+mozna to zrobic na 2 sposoby, albo poruszac kamere o bardzo male wartosci, co sprawilo ze byloby plynniejsze,
+albo ruszac kamere o ustalona liczbe krokow poprzez wcisniecie jednego klawisza
+- dodac menu kontekstowe pod prawym przyciskiem myszy, ktore pozwoli na zmiane akutalnych ostawien wyswietlania
+sceny
+- zrefaktorowac caly kod :)
