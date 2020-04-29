@@ -12,7 +12,6 @@
 #include "libs/shader_stuff.h"
 
 #include "Light.hpp"
-#include "IOHandler.hpp"
 
 using namespace std;
 class ProgramHandler
@@ -130,7 +129,8 @@ private:
 	// display final matrix
 	void display_util(glm::mat4x4 &Matrix_proj_mv)
 	{
-		if (global_light.Light_Position[0].z > 10.0 || global_light.Light_Position[0].z < -10.0) light_movement = -light_movement;
+		if (global_light.Light_Position[0].z > 10.0 || global_light.Light_Position[0].z < -10.0)
+			light_movement = -light_movement;
 		global_light.Light_Position[0].z += light_movement;
 
 		glBindVertexArray(vArray);
