@@ -153,7 +153,7 @@ void Initialize()
 
     // grapler = wolf
     wolf_program.init("objects/wolf.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/wolf.png", global_light);
-    grappler.init(wolf_program);
+    grappler.init(wolf_program, 0.2);
 }
 
 void clean(void)
