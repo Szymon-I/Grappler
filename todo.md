@@ -12,3 +12,6 @@ dodac w niej dodatkowe funkcjonalnosci
 katalogu blender)
 - poprawic przerwanie w firmwarze, bo aktualnie skacze nawet na ustawieniu FALLING i badaniu czasu
 od poprzedniego przerwania
+- dodac kamere poruszajaca sie razem z grapplerem, spacja powoduje zmiane kamery miedzy:
+free camera, camera 3-os grapplera, poruszanie sie kamery 3 os mozna wywolac w klasie Grappler, 
+za kazdym obsluzeniem nowej pozycji
