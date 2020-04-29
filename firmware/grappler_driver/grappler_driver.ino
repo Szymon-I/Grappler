@@ -1,120 +1,235 @@
-// 0x3C - address of oled display
-// 0x68 - address of gy521 - accelerometer
 #define OLED_ADDRESS 0x3C
 #define MPU_ADDRESS 0x68
+#define POTENTIOMETER_PIN A1
+#define JOY_X_PIN A2
+#define JOY_Y_PIN A3
+#define KEY_PIN 3
+#define LOOP_INTERVAL 100
+#define JOY_THRESHOLD 1
+#define ACC_THRESHOLD 3
+#define LED_PIN 13
+#define SCREEN_SIZE_W 128
+#define SCREEN_SIZE_H 64
+#define UP_DATA_LIMIT 100
+#define LOW_DATA_LIMIT -100
+#define ACC_UP_LIMIT 16000
+#define ACC_DOWN_LIMIT -16000
+#define ANALOG_UP_LIMIT 1024
+#define ANALOG_DOWN_LIMIT 0
+#define OUTPUT_DATA_FORMAT "%+06d/%+06d/%+06d\r\n"
+#define SERIAL_SPEED 115200
+#define ACC_OFF_X 1146
+#define ACC_OFF_Y -714
+#define ACC_OFF_Z 1300
+#define GYR_OFF_X 99
+#define GYR_OFF_Y -48
+#define GYR_OFF_Z 8
 
-// I2Cdev and MPU6050 must be installed as libraries, or else the .cpp/.h files
-// for both classes must be in the include path of your project
 #include "I2Cdev.h"
 #include "MPU6050.h"
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
 
 // Arduino Wire library is required if I2Cdev I2CDEV_ARDUINO_WIRE implementation
 // is used in I2Cdev.h
 #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
-    #include "Wire.h"
+#include "Wire.h"
 #endif
 
-MPU6050 accelgyro(MPU_ADDRESS);
-int16_t ax, ay, az;
-int16_t gx, gy, gz;
+// global variables for storing sensor data
 
+int ax, ay, az;
+int gx, gy, gz;
 
-#define LED_PIN 13
+int pot_data;
+int joy_x, joy_y;
+
+// output buffer string for sending data
+char out_buff[50];
+
+// flags for program
+bool acc_mode = true;
 bool blinkState = false;
 
+// create mpu and oled objects
+MPU6050 accelgyro(MPU_ADDRESS);
+Adafruit_SSD1306 display(SCREEN_SIZE_W, SCREEN_SIZE_H);
 
-#include <Adafruit_GFX.h>  // Include core graphics library for the display
-#include <Adafruit_SSD1306.h>  // Include Adafruit_SSD1306 library to drive the display
-
-
-Adafruit_SSD1306 display(128, 64);  // Create display
-
-
-
-void setup() {
-
-
-  delay(100);  // This delay is needed to let the display to initialize
-
-  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);  // Initialize display with the I2C address of 0x3C
- 
-  display.clearDisplay();  // Clear the buffer
-
-  display.setTextColor(WHITE);  // Set color of the text
-
-  display.setRotation(0);  // Set orientation. Goes from 0, 1, 2 or 3
-
-  display.dim(0);  //Set brightness (0 is maximun and 1 is a little dim)
-
-
-  display.clearDisplay();
-  // Print text:
-  display.setCursor(0, 10);  // (x,y)
-  display.println("Acc data:");  // Text or value to print
-  display.display();  // Print everything we set previously
-  
-    // join I2C bus (I2Cdev library doesn't do this automatically)
-    #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
-        Wire.begin();
-    #elif I2CDEV_IMPLEMENTATION == I2CDEV_BUILTIN_FASTWIRE
-        Fastwire::setup(400, true);
-    #endif
-
-    Serial.begin(115200);
-
-    // initialize device
-    Serial.println("Initializing I2C devices...");
-    accelgyro.initialize();
-
-    // verify connection
-    Serial.println("Testing device connections...");
-    Serial.println(accelgyro.testConnection() ? "MPU6050 connection successful" : "MPU6050 connection failed");
-
-struct AccOff{
-  int x;
-  int y;
-  int z;
-};
-typedef struct AccOff AccOff;
-AccOff Aoff={1146,-714,1300};
-
-struct GyrOff{
-   int x;
-  int y;
-  int z;
-};
-//typedef struct GyrOff GyrOff;
-struct GyrOff Goff={99,-48,8};
-
-    accelgyro.setXAccelOffset(Aoff.x);
-    accelgyro.setYAccelOffset(Aoff.y);
-    accelgyro.setZAccelOffset(Aoff.z);
-    accelgyro.setXGyroOffset(Goff.x);
-    accelgyro.setYGyroOffset(Goff.y);
-    accelgyro.setZGyroOffset(Goff.z);
-        // configure Arduino LED pin for output
-    pinMode(LED_PIN, OUTPUT);
+// remove distorion incoming from data
+int remove_distortion(int x, int threshold)
+{
+  if (abs(x) <= threshold)
+  {
+    return 0;
+  }
+  else
+  {
+    return x;
+  }
 }
-void loop() {
-    // read raw accel/gyro measurements from device
-    accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
-    char out_buff[50];
-    sprintf(out_buff, "%+06d/%+06d/%+06d\r\n", ax, ay, az);
-    display.clearDisplay();
-    Serial.print(out_buff);
-    display.setCursor(0, 30);  // (x,y)
-    display.print(out_buff);  // Text or value to print
-    display.display();  // Print everything we set previously
-  
-//        Serial.print(ax); Serial.print("\t");
-//        Serial.print(ay); Serial.print("\t");
-//        Serial.print(az); Serial.print("\t");
-//        Serial.print(gx); Serial.print("\t");
-//        Serial.print(gy); Serial.print("\t");
-//        Serial.println(gz);
 
-    // blink LED to indicate activity
-    blinkState = !blinkState;
-    digitalWrite(LED_PIN, blinkState);
-    delay(1000);
+// normalize data from potentiometer
+void normalize_pot()
+{
+  pot_data = map(pot_data, ANALOG_DOWN_LIMIT, ANALOG_UP_LIMIT, LOW_DATA_LIMIT, UP_DATA_LIMIT);
+}
+
+// normalize data from joystick
+void normalize_joy()
+{
+  joy_x = map(joy_x, ANALOG_DOWN_LIMIT, ANALOG_UP_LIMIT, LOW_DATA_LIMIT, UP_DATA_LIMIT);
+  joy_y = map(joy_y, ANALOG_DOWN_LIMIT, ANALOG_UP_LIMIT, LOW_DATA_LIMIT, UP_DATA_LIMIT);
+  joy_x = remove_distortion(joy_x, JOY_THRESHOLD);
+  joy_y = remove_distortion(joy_y, JOY_THRESHOLD);
+}
+
+// normalize data from mpu (using accelerometer)
+void normalize_acc(int *ax, int *ay, int *az)
+{
+  (*ax) = map((*ax), ACC_DOWN_LIMIT, ACC_UP_LIMIT, LOW_DATA_LIMIT, UP_DATA_LIMIT);
+  (*ay) = map((*ay), ACC_DOWN_LIMIT, ACC_UP_LIMIT, LOW_DATA_LIMIT, UP_DATA_LIMIT);
+  (*az) = map((*az), ACC_DOWN_LIMIT, ACC_UP_LIMIT, LOW_DATA_LIMIT, UP_DATA_LIMIT);
+  (*ax) = remove_distortion(*ax, ACC_THRESHOLD);
+  (*ay) = remove_distortion(*ay, ACC_THRESHOLD);
+  (*az) = remove_distortion(*az, ACC_THRESHOLD);
+}
+
+// read analog data from potentiometer
+void get_potentiometer_data()
+{
+  pot_data = analogRead(POTENTIOMETER_PIN);
+  normalize_pot();
+}
+
+// read mpu data (using accelerometer) from i2c bus
+void get_acc_data()
+{
+  accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+  normalize_acc(&ax, &ay, &az);
+}
+
+// read analog data from joystick
+void get_joy_data()
+{
+  joy_x = analogRead(JOY_X_PIN);
+  joy_y = analogRead(JOY_Y_PIN);
+  normalize_joy();
+}
+
+// feed measured data info output string buffer
+void bind_buff()
+{
+  get_potentiometer_data();
+  if (acc_mode)
+  {
+    get_acc_data();
+    sprintf(out_buff, OUTPUT_DATA_FORMAT, ax, ay, pot_data);
+  }
+  else
+  {
+    get_joy_data();
+    sprintf(out_buff, OUTPUT_DATA_FORMAT, joy_x, joy_y, pot_data);
+  }
+}
+
+// diplay actual data on oled screen
+void display_oled()
+{
+  display.clearDisplay();
+  display.setCursor(0, 0); // (x,y)
+  display.setTextSize(2);
+  display.print("Mode: ");
+  if (acc_mode)
+  {
+    display.println("acc");
+  }
+  else
+  {
+    display.println("joy");
+  }
+  display.setCursor(0, 20); // (x,y)
+  display.setTextSize(0);
+  display.print((const char *)out_buff);
+  display.display();
+}
+
+// send actual data via serial
+void send_serial()
+{
+  Serial.print(out_buff);
+}
+
+// change mode acceleromter <-> joystick on key interrupt
+void change_mode()
+{
+  static int prev_time = 0;
+  int actual_time = millis();
+  if (actual_time - prev_time > 1000)
+  {
+    acc_mode = !acc_mode;
+    prev_time = actual_time;
+  }
+}
+
+// initialize oled screen
+void init_oled()
+{
+  delay(100);
+  display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDRESS);
+  display.clearDisplay();
+  display.setTextColor(WHITE);
+  display.setRotation(0);
+  display.dim(0);
+}
+
+// initialize mpu6050
+void init_mpu()
+{
+  // initialize device
+  Serial.println("Initializing I2C devices...");
+  accelgyro.initialize();
+
+  // verify connection
+  Serial.println("Testing device connections...");
+  Serial.println(accelgyro.testConnection() ? "MPU6050 connection successful" : "MPU6050 connection failed");
+
+  // set offsets for mpu6050
+  accelgyro.setXAccelOffset(ACC_OFF_X);
+  accelgyro.setYAccelOffset(ACC_OFF_Y);
+  accelgyro.setZAccelOffset(ACC_OFF_Z);
+  accelgyro.setXGyroOffset(GYR_OFF_X);
+  accelgyro.setYGyroOffset(GYR_OFF_Y);
+  accelgyro.setZGyroOffset(GYR_OFF_Z);
+}
+
+// initialize i2c bus
+void init_i2c()
+{
+  // join I2C bus (I2Cdev library doesn't do this automatically)
+#if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
+  Wire.begin();
+#elif I2CDEV_IMPLEMENTATION == I2CDEV_BUILTIN_FASTWIRE
+  Fastwire::setup(400, true);
+#endif
+}
+
+// starting setup for uC
+void setup()
+{
+  init_i2c();
+  init_oled();
+  init_mpu();
+  Serial.begin(SERIAL_SPEED);
+  pinMode(LED_PIN, OUTPUT);
+  //attachInterrupt(digitalPinToInterrupt(KEY_PIN), change_mode, RISING);
+}
+
+// main program loop
+// read data according to mode, display on led, send via uart
+void loop()
+{
+  bind_buff();
+  send_serial();
+  display_oled();
+  delay(LOOP_INTERVAL);
 }
