@@ -12,6 +12,7 @@
 #include "libs/shader_stuff.h"
 
 #include "Light.hpp"
+#include "IOHandler.hpp"
 
 using namespace std;
 class ProgramHandler

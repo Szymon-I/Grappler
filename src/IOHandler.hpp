@@ -10,7 +10,18 @@ GLfloat _scene_rotate_x = 0.0f;
 GLfloat _scene_rotate_y = 0.0f;
 GLfloat _scene_translate_x = 0.0f;
 GLfloat _scene_translate_y = 0.0f;
-GLfloat _scene_translate_z = -3.0f;
+GLfloat _scene_translate_z = -1.0f;
+
+// angle of rotation for the camera direction
+GLfloat angle = 0.0;
+// actual vector representing the camera’s direction
+GLfloat lx = 1.0f, lz = -1.0f, ly = 0.0f;
+// XZ position of the camera
+GLfloat xx = 0.0f, zz = -1.0f, yy = 1.0f;
+// mouse variables
+GLfloat mouseOnEdgeSpeed = 0.0002, fraction = 0.2f;
+int oldMouseX = 960, oldMouseY = 540;
+
 int _mouse_buttonState = GLUT_UP;
 int _mouse_buttonX, _mouse_buttonY;
 extern float vanishing;
@@ -22,19 +33,19 @@ void SpecialKeys( int key, int x, int y )
     {
 
         case GLUT_KEY_LEFT:
-            _scene_translate_x -= 0.1f;
+            //_scene_translate_x -= 0.1f;
             break;
 
         case GLUT_KEY_RIGHT:
-            _scene_translate_x += 0.1f;
+            //_scene_translate_x += 0.1f;
             break;
 
         case GLUT_KEY_UP:
-            _scene_translate_y += 0.1f;
+            //_scene_translate_y += 0.1f;
             break;
 
         case GLUT_KEY_DOWN:
-            _scene_translate_y -= 0.1f;
+            //_scene_translate_y -= 0.1f;
             break;
     }
 
@@ -46,25 +57,42 @@ void vanish_info(float x){
 // --------------------------------------------------------------
 void Keyboard( unsigned char key, int x, int y )
 {
-    switch(key)
-    {
-		case 27:	// ESC key
-			exit(0);
-			break;
+	switch (key) {
+	case 'a':
+		xx -= cos(angle);
+		zz -= sin(angle);
+		break;
+	case 'd':
+		xx += cos(angle);
+		zz += sin(angle);
+		break;
+	case 'w':
+		xx += lx * fraction;
+		zz += lz * fraction;
+		yy += ly * fraction;
+		break;
+	case 's':
+		xx -= lx * fraction;
+		zz -= lz * fraction;
+		yy -= ly * fraction;
+		break;
+	case 27:
+		exit(0);
+		break;
+	}
 
-    }
-
+    glutPostRedisplay();
 }
 
 // --------------------------------------------------------------
 void MouseButton( int button, int state, int x, int y )
 {
-    
+
 	if(button==3){
-		_scene_translate_z += 0.1f;
+		//_scene_translate_z += 0.1f;
 	}
 	if(button==4){
-		_scene_translate_z -= 0.1f;
+		//_scene_translate_z -= 0.1f;
 	}
 
 	if( button == GLUT_LEFT_BUTTON )
@@ -75,8 +103,8 @@ void MouseButton( int button, int state, int x, int y )
 
         if( state == GLUT_DOWN )
         {
-            _mouse_buttonX = x;
-            _mouse_buttonY = y;
+            //_mouse_buttonX = x;
+            //_mouse_buttonY = y;
         }
     }
 	glutPostRedisplay();
@@ -85,29 +113,33 @@ void MouseButton( int button, int state, int x, int y )
 // --------------------------------------------------------------
 void MouseMotion( int x, int y )
 {
-    if( _mouse_buttonState == GLUT_DOWN )
-    {
-        _scene_rotate_y += 2*(x - _mouse_buttonX)/(float)glutGet( GLUT_WINDOW_WIDTH );
-        _mouse_buttonX = x;
-        _scene_rotate_x -= 2*(_mouse_buttonY - y)/(float)glutGet( GLUT_WINDOW_HEIGHT );
-        _mouse_buttonY = y;
-        glutPostRedisplay();
-    }
+	angle += (x - oldMouseX) / 100.0;
+	ly -= (y - oldMouseY) / 100.0;
+
+	lx = sin(angle);
+	lz = -cos(angle);
+
+	oldMouseX = x;
+	oldMouseY = y;
+    glutPostRedisplay();
+
 }
 
 // --------------------------------------------------------------
 void MouseWheel(int button, int dir, int x, int y)
 {
     if (dir > 0)
-    {
-        // Zoom in
-        _scene_translate_z += 0.1f;
-    }
-    else
-    {
-        // Zoom out
-        _scene_translate_z -= 0.1f;
-    }
+	{
+		xx += lx * fraction;
+		zz += lz * fraction;
+		yy += ly * fraction;
+	}
+	else
+	{
+		xx -= lx * fraction;
+		zz -= lz * fraction;
+		yy -= ly * fraction;
+	}
 
     glutPostRedisplay();
 }

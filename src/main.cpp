@@ -13,7 +13,7 @@
 
 #include "Light.hpp"
 #include "ProgramHandler.hpp"
-#include "IOHandler.hpp"
+//#include "IOHandler.hpp"
 #include "Serial.hpp"
 #include "Grappler.hpp"
 
@@ -79,10 +79,13 @@ void DisplayScene()
 
 void mod_mv()
 {
-    Matrix_mv = glm::mat4x4(1.0);
+    Matrix_mv = glm::lookAt(glm::vec3(xx, yy, zz),
+		                    glm::vec3(xx + lx, yy + ly, zz + lz),
+		                    glm::vec3(0.0f, 1.0f, 0.0f));
+
     Matrix_mv = glm::translate(Matrix_mv, glm::vec3(_scene_translate_x, _scene_translate_y, _scene_translate_z));
-    Matrix_mv = glm::rotate(Matrix_mv, _scene_rotate_x, glm::vec3(1.0f, 0.0f, 0.0f));
-    Matrix_mv = glm::rotate(Matrix_mv, _scene_rotate_y, glm::vec3(0.0f, 1.0f, 0.0f));
+    Matrix_mv = glm::rotate(Matrix_mv, _scene_translate_x + _scene_rotate_x, glm::vec3(1.0f, 0.0f, 0.0f));
+    Matrix_mv = glm::rotate(Matrix_mv, _scene_translate_y + _scene_rotate_y, glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
 void sow_trees()
@@ -123,7 +126,8 @@ void monkey_circle()
 void Reshape(int width, int height)
 {
     glViewport(0, 0, width, height);
-    Matrix_proj = glm::perspectiveFov(glm::radians(60.0f), (float)width, (float)height, 0.1f, 100.f);
+
+    Matrix_proj = glm::perspectiveFov(glm::radians(60.0f), (float)width, (float)height, 0.1f, 1000.0f);
 }
 
 // ---------------------------------------------------
@@ -139,7 +143,7 @@ void Initialize()
     std::vector < glm::vec3 > position = {glm::vec3(0.0, 1.0, 8.0), glm::vec3(0.0, 1.0, -8.0), glm::vec3(8.0, 1.0, 0.0)};
     global_light.init(ambient, diffuse, position);
 
-    
+
     ground_program.init("objects/ground2.obj", "shaders/vertex_ground.glsl", "shaders/fragment.glsl", "textures/ground.png", global_light);
     sky_program1.init("objects/sky.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/sky.png", global_light);
     sky_program2.init("objects/sky.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/sky.png", global_light);
@@ -211,10 +215,12 @@ int main(int argc, char *argv[])
 
     Initialize();
     glutIdleFunc(getSerialHandler);
+    //glutIdleFunc(glutPostRedisplay);
     glutDisplayFunc(DisplayScene);
     glutReshapeFunc(Reshape);
     glutMouseFunc(MouseButton);
     glutMotionFunc(MouseMotion);
+    glutPassiveMotionFunc(MouseMotion);
     glutMouseWheelFunc(MouseWheel);
     glutKeyboardFunc(Keyboard);
     glutSpecialFunc(SpecialKeys);
