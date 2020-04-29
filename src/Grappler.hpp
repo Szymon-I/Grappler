@@ -78,6 +78,5 @@ public:
             print_position();
         }
         program.set_translate(position);
-        glutPostRedisplay();
     }
 };

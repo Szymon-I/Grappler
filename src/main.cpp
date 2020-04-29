@@ -54,6 +54,8 @@ void DisplayScene()
 
     mod_mv();
 
+    MouseOnEdge();
+
     // wolf_program.set_translate(glm::vec3(0.5f, 0.0f, 0.0f));
     // wolf_program.set_scale(glm::vec3(1.5f, 1.5f, 1.5f));
     // wolf_program.display(Matrix_proj, Matrix_mv);
@@ -127,6 +129,9 @@ void Reshape(int width, int height)
 {
     glViewport(0, 0, width, height);
 
+    windowWidth = width;
+    windowHeight = height;
+
     Matrix_proj = glm::perspectiveFov(glm::radians(60.0f), (float)width, (float)height, 0.1f, 1000.0f);
 }
 
@@ -183,6 +188,12 @@ void getSerialHandler()
     }
 }
 
+void Idle(void)
+{
+    getSerialHandler();
+    glutPostRedisplay();
+}
+
 // ---------------------------------------------------
 int main(int argc, char *argv[])
 {
@@ -191,7 +202,7 @@ int main(int argc, char *argv[])
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitContextVersion(3, 2);
     glutInitContextProfile(GLUT_CORE_PROFILE);
-    glutInitWindowSize(1920, 1080);
+    glutInitWindowSize(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
     glutCreateWindow("Grappler");
 
     // GLEW
@@ -214,12 +225,11 @@ int main(int argc, char *argv[])
     serial.init(argv[1], atoi(argv[2]));
 
     Initialize();
-    glutIdleFunc(getSerialHandler);
-    //glutIdleFunc(glutPostRedisplay);
+    glutIdleFunc(Idle);
     glutDisplayFunc(DisplayScene);
     glutReshapeFunc(Reshape);
     glutMouseFunc(MouseButton);
-    glutMotionFunc(MouseMotion);
+    //glutMotionFunc(MouseMotion);
     glutPassiveMotionFunc(MouseMotion);
     glutMouseWheelFunc(MouseWheel);
     glutKeyboardFunc(Keyboard);

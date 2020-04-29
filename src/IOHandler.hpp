@@ -5,12 +5,18 @@
 #include <stdio.h>
 
 #define VANISH_CHANGE 0.1
+#define DEFAULT_WINDOW_WIDTH 1920
+#define DEFAULT_WINDOW_HEIGHT 1080
+
+int windowHeight = DEFAULT_WINDOW_HEIGHT, windowWidth = DEFAULT_WINDOW_WIDTH;
 
 GLfloat _scene_rotate_x = 0.0f;
 GLfloat _scene_rotate_y = 0.0f;
 GLfloat _scene_translate_x = 0.0f;
 GLfloat _scene_translate_y = 0.0f;
 GLfloat _scene_translate_z = -1.0f;
+
+// ------------ MOUSE VARIABLES ----------------------//
 
 // angle of rotation for the camera direction
 GLfloat angle = 0.0;
@@ -19,8 +25,8 @@ GLfloat lx = 1.0f, lz = -1.0f, ly = 0.0f;
 // XZ position of the camera
 GLfloat xx = 0.0f, zz = -1.0f, yy = 1.0f;
 // mouse variables
-GLfloat mouseOnEdgeSpeed = 0.0002, fraction = 0.2f;
-int oldMouseX = 960, oldMouseY = 540;
+GLfloat mouseOnEdgeSpeed = 0.02, fraction = 0.2f;
+int oldMouseX = DEFAULT_WINDOW_WIDTH/2, oldMouseY = DEFAULT_WINDOW_HEIGHT/2;
 
 int _mouse_buttonState = GLUT_UP;
 int _mouse_buttonX, _mouse_buttonY;
@@ -49,7 +55,6 @@ void SpecialKeys( int key, int x, int y )
             break;
     }
 
-    glutPostRedisplay();
 }
 void vanish_info(float x){
 	printf("Vanishing: %.1f\n",x);
@@ -80,8 +85,6 @@ void Keyboard( unsigned char key, int x, int y )
 		exit(0);
 		break;
 	}
-
-    glutPostRedisplay();
 }
 
 // --------------------------------------------------------------
@@ -107,7 +110,6 @@ void MouseButton( int button, int state, int x, int y )
             //_mouse_buttonY = y;
         }
     }
-	glutPostRedisplay();
 }
 
 // --------------------------------------------------------------
@@ -121,8 +123,6 @@ void MouseMotion( int x, int y )
 
 	oldMouseX = x;
 	oldMouseY = y;
-    glutPostRedisplay();
-
 }
 
 // --------------------------------------------------------------
@@ -140,6 +140,21 @@ void MouseWheel(int button, int dir, int x, int y)
 		zz -= lz * fraction;
 		yy -= ly * fraction;
 	}
+}
+// --------------------------------------------------------------
 
-    glutPostRedisplay();
+void MouseOnEdge(void)
+{
+	if (oldMouseX > windowWidth - 40)
+	{
+		angle += mouseOnEdgeSpeed;
+		lx = sin(angle);
+		lz = -cos(angle);
+	}
+	else if (oldMouseX < 40)
+	{
+		angle -= mouseOnEdgeSpeed;
+		lx = sin(angle);
+		lz = -cos(angle);
+	}
 }
