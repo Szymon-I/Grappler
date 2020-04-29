@@ -11,11 +11,13 @@
 #include "libs/shader_stuff.h"
 #include "libs/texture_loader.hpp"
 
+#include "main.hpp"
 #include "Light.hpp"
 #include "ProgramHandler.hpp"
-//#include "IOHandler.hpp"
+#include "IOHandler.hpp"
 #include "Serial.hpp"
 #include "Grappler.hpp"
+#include "Camera.hpp"
 
 #define SERIAL_PORT "/dev/pts/3"
 #define SERIAL_SPEED 115200
@@ -25,6 +27,8 @@
 #define M_PI 3.14159265358979323846
 // ---------------------------------------
 // Macierze przeksztalcen i rzutowania
+
+Camera camera;
 
 glm::mat4x4 Matrix_proj;    // projection matrix
 glm::mat4x4 Matrix_mv;      // modelview matrix
@@ -52,13 +56,9 @@ void DisplayScene()
     // Czyszczenie ramki
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    mod_mv();
-
-    MouseOnEdge();
-
-    // wolf_program.set_translate(glm::vec3(0.5f, 0.0f, 0.0f));
-    // wolf_program.set_scale(glm::vec3(1.5f, 1.5f, 1.5f));
-    // wolf_program.display(Matrix_proj, Matrix_mv);
+    // apply all camera modifications to global Matrix_mv
+    Matrix_mv = camera.apply_camera(Matrix_mv);
+    camera.mouse_edge();
 
     //movement is handled inside getSerialHandler
     grappler.display_grappler(Matrix_proj, Matrix_mv);
@@ -77,17 +77,6 @@ void DisplayScene()
     monkey_circle();
 
     glutSwapBuffers();
-}
-
-void mod_mv()
-{
-    Matrix_mv = glm::lookAt(glm::vec3(xx, yy, zz),
-		                    glm::vec3(xx + lx, yy + ly, zz + lz),
-		                    glm::vec3(0.0f, 1.0f, 0.0f));
-
-    Matrix_mv = glm::translate(Matrix_mv, glm::vec3(_scene_translate_x, _scene_translate_y, _scene_translate_z));
-    Matrix_mv = glm::rotate(Matrix_mv, _scene_translate_x + _scene_rotate_x, glm::vec3(1.0f, 0.0f, 0.0f));
-    Matrix_mv = glm::rotate(Matrix_mv, _scene_translate_y + _scene_rotate_y, glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
 void sow_trees()
@@ -128,26 +117,19 @@ void monkey_circle()
 void Reshape(int width, int height)
 {
     glViewport(0, 0, width, height);
-
-    windowWidth = width;
-    windowHeight = height;
-
+    camera.set_window_dimenstions(width, height);
     Matrix_proj = glm::perspectiveFov(glm::radians(60.0f), (float)width, (float)height, 0.1f, 1000.0f);
 }
 
 // ---------------------------------------------------
 void Initialize()
 {
-    _scene_translate_z = -10.0;
-    _scene_rotate_x = 0.2f;
-    _scene_rotate_y = -0.65f;
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-    std::vector < glm::vec3 > ambient = {glm::vec3(0.3, 0.3, 0.3), glm::vec3(0.3, 0.3, 0.3), glm::vec3(0.3, 0.3, 0.3)};
-    std::vector < glm::vec3 > diffuse = {glm::vec3(1.0, 1.0, 1.0), glm::vec3(1.0, 1.0, 1.0), glm::vec3(1.0, 1.0, 1.0)};
-    std::vector < glm::vec3 > position = {glm::vec3(0.0, 1.0, 8.0), glm::vec3(0.0, 1.0, -8.0), glm::vec3(8.0, 1.0, 0.0)};
+    std::vector<glm::vec3> ambient = {glm::vec3(0.3, 0.3, 0.3), glm::vec3(0.3, 0.3, 0.3), glm::vec3(0.3, 0.3, 0.3)};
+    std::vector<glm::vec3> diffuse = {glm::vec3(1.0, 1.0, 1.0), glm::vec3(1.0, 1.0, 1.0), glm::vec3(1.0, 1.0, 1.0)};
+    std::vector<glm::vec3> position = {glm::vec3(0.0, 1.0, 8.0), glm::vec3(0.0, 1.0, -8.0), glm::vec3(8.0, 1.0, 0.0)};
     global_light.init(ambient, diffuse, position);
-
 
     ground_program.init("objects/ground2.obj", "shaders/vertex_ground.glsl", "shaders/fragment.glsl", "textures/ground.png", global_light);
     sky_program1.init("objects/sky.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/sky.png", global_light);
@@ -158,7 +140,6 @@ void Initialize()
 
     for (int i = 0; i < MONKEY_N; i++)
         monkey_programs[i].init("objects/monkey.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/monkey.png", global_light);
-
 
     // grapler = wolf
     wolf_program.init("objects/wolf.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/wolf.png", global_light);
@@ -183,7 +164,8 @@ void clean(void)
 void getSerialHandler()
 {
     serial.handler();
-    if(serial.is_ready()){
+    if (serial.is_ready())
+    {
         grappler.move_grappler(serial.pass_message());
     }
 }
@@ -231,10 +213,8 @@ int main(int argc, char *argv[])
     glutMouseFunc(MouseButton);
     //glutMotionFunc(MouseMotion);
     glutPassiveMotionFunc(MouseMotion);
-    glutMouseWheelFunc(MouseWheel);
     glutKeyboardFunc(Keyboard);
     glutSpecialFunc(SpecialKeys);
-
 
     glutMainLoop();
 
