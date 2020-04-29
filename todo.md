@@ -15,3 +15,6 @@ od poprzedniego przerwania
 - dodac kamere poruszajaca sie razem z grapplerem, spacja powoduje zmiane kamery miedzy:
 free camera, camera 3-os grapplera, poruszanie sie kamery 3 os mozna wywolac w klasie Grappler, 
 za kazdym obsluzeniem nowej pozycji
+- dodac flage w klasie Grappler, ktora bedzie informowala o tym, ze obiekt sie przemiescil wzgledem
+poprzedniej pozycji, bo w innym przypadku za kazdym razem, gdy odbierany jest pakiet (w firware
+okreslony jest czas LOOP_INTERVAL) generowana jest nowa scena poprzez wywolanie glutPostRedisplay
