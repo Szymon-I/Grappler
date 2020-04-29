@@ -7,9 +7,12 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <stdlib.h>
 #include <iostream>
 #include "ProgramHandler.hpp"
 
+#define Y_THRESHOLD 0.02
+#define DATA_NORMALIZER 1000
 class Grappler
 {
 
@@ -17,7 +20,14 @@ private:
     ProgramHandler program;
     glm::vec3 position = {0.0f, 0.0f, 0.0f};
     float sensitivity;
+    float y_sensitivity = 0.0f;
     bool monitor_position;
+    float prev_y;
+
+    float parse_data_float(std::string data)
+    {
+        return atof(data.c_str()) / DATA_NORMALIZER;
+    }
     //serial input is in format <x_acc>/<y_acc>/<potentiometer>
     void parse_position(std::string s)
     {
@@ -33,9 +43,15 @@ private:
             s.erase(0, pos + delimiter.length());
         }
         pos_s[i] = s;
-        position.x += atof(pos_s[0].c_str()) * sensitivity;
-        position.y += atof(pos_s[1].c_str()) * sensitivity;
-        position.z += atof(pos_s[2].c_str()) * sensitivity;
+        position.x += parse_data_float(pos_s[0]) * sensitivity;
+        position.z += parse_data_float(pos_s[1]) * sensitivity;
+        // y position is absolute
+        float y_pos = parse_data_float(pos_s[2]);
+        if (abs(prev_y - y_pos) > Y_THRESHOLD)
+        {
+            position.y = parse_data_float(pos_s[2]) * y_sensitivity;
+            prev_y = y_pos;
+        }
     }
     void print_position()
     {
@@ -43,10 +59,11 @@ private:
     }
 
 public:
-    void init(ProgramHandler program, float sensitivity = 1, bool monitor_position = true)
+    void init(ProgramHandler program, float sensitivity = 1, float y_sensitivity = 5, bool monitor_position = true)
     {
         this->program = program;
         this->sensitivity = sensitivity;
+        this->y_sensitivity = y_sensitivity;
         this->monitor_position = monitor_position;
     }
     void display_grappler(glm::mat4x4 Matrix_proj, glm::mat4x4 Matrix_mv)
