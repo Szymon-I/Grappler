@@ -10,8 +10,8 @@
 #define SCREEN_SIZE_H 64
 #define UP_DATA_LIMIT 1000
 #define LOW_DATA_LIMIT -1000
-#define JOY_THRESHOLD UP_DATA_LIMIT/67
-#define ACC_THRESHOLD UP_DATA_LIMIT/100
+#define JOY_THRESHOLD UP_DATA_LIMIT / 67
+#define ACC_THRESHOLD UP_DATA_LIMIT / 100
 //#define POT_THRESHOLD UP_DATA_LIMIT/50
 #define ACC_UP_LIMIT 16000
 #define ACC_DOWN_LIMIT -16000
@@ -26,6 +26,7 @@
 #define GYR_OFF_Y -48
 #define GYR_OFF_Z 8
 #define OLED_DISPLAY_INTERVAL 300
+#define START_DELAY 2000
 
 #include "I2Cdev.h"
 #include "MPU6050.h"
@@ -137,9 +138,10 @@ void bind_buff()
 // diplay actual data on oled screen
 void display_oled()
 {
-  static int prev_time=0;
-  int actual_time=millis();
-  if(actual_time-prev_time<OLED_DISPLAY_INTERVAL){
+  static int prev_time = 0;
+  int actual_time = millis();
+  if (actual_time - prev_time < OLED_DISPLAY_INTERVAL)
+  {
     return;
   }
   prev_time = actual_time;
@@ -158,6 +160,9 @@ void display_oled()
   display.setCursor(0, 20); // (x,y)
   display.setTextSize(0);
   display.print((const char *)out_buff);
+  display.setCursor(0, 50);
+  display.print("Baudrate: ");
+  display.print(SERIAL_SPEED);
   display.display();
 }
 
@@ -193,13 +198,15 @@ void init_oled()
 // initialize mpu6050
 void init_mpu()
 {
-  // initialize device
-  Serial.println("Initializing I2C devices...");
+  display.clearDisplay();
+  display.setCursor(0, 0);
+  display.print("Initializing I2C...");
   accelgyro.initialize();
-
-  // verify connection
-  Serial.println("Testing device connections...");
-  Serial.println(accelgyro.testConnection() ? "MPU6050 connection successful" : "MPU6050 connection failed");
+  display.setCursor(0, 20);
+  display.print("Testing connections...");
+  display.setCursor(0, 30);
+  display.print(accelgyro.testConnection() ? "MPU6050 OK\n" : "MPU6050 BAD\n");
+  display.display();
 
   // set offsets for mpu6050
   accelgyro.setXAccelOffset(ACC_OFF_X);
@@ -229,6 +236,7 @@ void setup()
   init_mpu();
   Serial.begin(SERIAL_SPEED);
   pinMode(LED_PIN, OUTPUT);
+  delay(START_DELAY);
   //attachInterrupt(digitalPinToInterrupt(KEY_PIN), change_mode, RISING);
 }
 
