@@ -21,7 +21,7 @@ private:
     glm::vec3 position = {0.0f, 0.0f, 0.0f};
     float sensitivity;
     float y_sensitivity = 0.0f;
-    bool monitor_position;
+    bool monitor_position = false;
     float prev_y;
 
     float parse_data_float(std::string data)
@@ -59,15 +59,26 @@ private:
     }
 
 public:
-    void init(ProgramHandler program, float sensitivity = 1, float y_sensitivity = 5, bool monitor_position = true)
+    void init(ProgramHandler program, float sensitivity = 1, float y_sensitivity = 5)
     {
         this->program = program;
         this->sensitivity = sensitivity;
         this->y_sensitivity = y_sensitivity;
-        this->monitor_position = monitor_position;
     }
-    void display_grappler(glm::mat4x4 Matrix_proj, glm::mat4x4 Matrix_mv)
+    void set_monitor(bool x)
     {
+        this->monitor_position = x;
+    }
+    glm::vec3 get_position()
+    {
+        return this->position;
+    }
+    void display_grappler(glm::mat4x4 Matrix_proj, glm::mat4x4 Matrix_mv, Camera camera)
+    {
+        if (camera.get_mode() == THIRD_PERSON)
+        {
+            program.set_translate(camera.GetCameraPos() + camera.get_offsets());
+        }
         program.display(Matrix_proj, Matrix_mv);
     }
     void move_grappler(std::string data)
