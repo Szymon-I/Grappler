@@ -100,7 +100,7 @@ void monkey_circle()
     monkey_programs[0].set_translate(glm::vec3(0.0f, 0.0f, -10.0f));
 
     monkey_programs[1].set_rotation(glm::vec3(0.0, 1.0, 0.0), 2 * M_PI / 2);
-    monkey_programs[1].set_translation_animation(0.02);
+    monkey_programs[1].set_translation_animation(0.01);
     monkey_programs[1].set_translate(glm::vec3(0.0f, 0.0f, 10.0f));
 
     monkey_programs[2].set_rotation(glm::vec3(0.0, 1.0, 0.0), 1 * M_PI / 2);
@@ -172,10 +172,10 @@ void getSerialHandler()
     }
 }
 
-void Idle(void)
+void timer(int)
 {
-    getSerialHandler();
     glutPostRedisplay();
+    glutTimerFunc(1000.0/60.0, timer, 0);
 }
 
 // ---------------------------------------------------
@@ -209,7 +209,7 @@ int main(int argc, char *argv[])
     serial.init(argv[1], atoi(argv[2]));
 
     Initialize();
-    glutIdleFunc(Idle);
+    glutIdleFunc(getSerialHandler);
     glutDisplayFunc(DisplayScene);
     glutReshapeFunc(Reshape);
     glutMouseFunc(MouseButton);
@@ -217,6 +217,8 @@ int main(int argc, char *argv[])
     glutPassiveMotionFunc(MouseMotion);
     glutKeyboardFunc(Keyboard);
     glutSpecialFunc(SpecialKeys);
+    glutTimerFunc(1000.0/60.0, timer, 0);
+
 
     glutMainLoop();
 
