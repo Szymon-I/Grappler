@@ -57,18 +57,18 @@ void main()
         ambients += Light_Ambient[i];
 
 		// Specular
-		//vec3 viewDir = normalize(Camera_Position - vec3(ourPosition));
-		//vec3  reflectDir = reflect(-lightDirection, ourNormal);
-		//float specularCoeff = pow(max(dot(viewDir, reflectDir), 0.0), myMaterial.Shininess);
-		//vec3  resultSpecular = specularCoeff * vec3(myLight.Specular) * myMaterial.Specular;
+		vec3 viewDir = normalize(Camera_Position - vec3(ourPosition));
+		vec3  reflectDir = reflect(-lightDirection, ourNormal);
+		float specularCoeff = pow(max(dot(viewDir, reflectDir), 0.0), myMaterial.Shininess);
+		vec3  resultSpecular = specularCoeff * vec3(1.0, 1.0, 1.0) * myMaterial.Specular;
 
-		//specularPart = resultSpecular * odlMod;
+		specularPart += resultSpecular * odlMod;
 
 	}
 	// Zastosowanie oswietlenia do fragmentu
 	vec4 objectColor = texture( tex0, inoutUV );
 
-	vec4 result =  vec4(ambients/Number_Of_Lights, 1.0) * objectColor + vec4(pointLights, 1.0) * objectColor + vec4(specularPart/Number_Of_Lights, 1.0) * objectColor;
+	vec4 result =  (vec4(ambients/Number_Of_Lights, 1.0) + vec4(pointLights, 1.0)+ vec4(specularPart, 1.0)) * objectColor;
 
 	outColor = result;
 }

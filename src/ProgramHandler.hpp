@@ -142,7 +142,7 @@ private:
 	// display final matrix
 	void display_util(glm::mat4x4 &Matrix_proj_mv)
 	{
-		global_light.move_light(1);
+		//global_light.move_light(1);
 
 		glBindVertexArray(vArray);
 		glUseProgram(this->program);
