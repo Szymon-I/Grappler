@@ -7,8 +7,8 @@ in vec2 inoutUV;
 out vec4 outColor;
 
 // Parametry oswietlenia
-#define LIGHT_STRENGTH    2
-#define LIGHT_REACH       9
+#define LIGHT_ATTENUATION 0.01
+#define LIGHT_SPECULAR    vec3(2.0, 2.0, 2.0)
 
 #define MAX_LIGHTS        20
 
@@ -41,7 +41,7 @@ void main()
 	{
 		//zmniejszenie mocy wraz z odlegloscia
 	    float odl = distance(vec3(ourPosition),Light_Position[i]);
-		float odlMod = LIGHT_STRENGTH - (odl/LIGHT_REACH);
+		float odlMod = 1.0 / (1.0 + LIGHT_ATTENUATION * (odl * odl));
 
 		// Obliczenie wektora (swiatlo - wierzcholek)
 		// czyli kierunku padania swiatla na wierzcholek
@@ -60,7 +60,7 @@ void main()
 		vec3 viewDir = normalize(Camera_Position - vec3(ourPosition));
 		vec3  reflectDir = reflect(-lightDirection, ourNormal);
 		float specularCoeff = pow(max(dot(viewDir, reflectDir), 0.0), myMaterial.Shininess);
-		vec3  resultSpecular = specularCoeff * vec3(1.0, 1.0, 1.0) * myMaterial.Specular;
+		vec3  resultSpecular = specularCoeff * LIGHT_SPECULAR * myMaterial.Specular;
 
 		specularPart += resultSpecular * odlMod;
 
