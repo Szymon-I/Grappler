@@ -14,9 +14,9 @@
 #include "main.hpp"
 #include "ProgramHandler.hpp"
 #include "IOHandler.hpp"
-#include "Serial.hpp"
-#include "Grappler.hpp"
-#include "Camera.hpp"
+//#include "Serial.hpp"
+//#include "Grappler.hpp"
+//#include "Camera.hpp"
 #include "Menu.hpp"
 #include "Material.hpp"
 
@@ -55,12 +55,13 @@ void DisplayScene()
     // Czyszczenie ramki
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    Matrix_mv = glm::mat4x4(1.0f);
     // apply all camera modifications to global Matrix_mv
-    Matrix_mv = camera.apply_camera(Matrix_mv);
+    Matrix_mv = camera.apply_camera(Matrix_mv, grappler.get_position());
     camera.mouse_edge();
 
     //movement is handled inside getSerialHandler
-    grappler.display_grappler(Matrix_proj, Matrix_mv);
+    grappler.display_grappler(Matrix_proj, Matrix_mv, camera);
 
     ground_program.set_scale(glm::vec3(1.5f, 1.5f, 1.5f));
     ground_program.display(Matrix_proj, Matrix_mv);
@@ -181,7 +182,7 @@ void getSerialHandler()
 void timer(int)
 {
     glutPostRedisplay();
-    glutTimerFunc(1000.0/60.0, timer, 0);
+    glutTimerFunc(1000.0 / 60.0, timer, 0);
 }
 
 // ---------------------------------------------------
@@ -223,7 +224,7 @@ int main(int argc, char *argv[])
     glutPassiveMotionFunc(MouseMotion);
     glutKeyboardFunc(Keyboard);
     glutSpecialFunc(SpecialKeys);
-    glutTimerFunc(1000.0/60.0, timer, 0);
+    glutTimerFunc(1000.0 / 60.0, timer, 0);
 
     glutMainLoop();
 
