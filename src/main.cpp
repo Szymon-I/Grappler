@@ -17,6 +17,7 @@
 #include "Serial.hpp"
 #include "Grappler.hpp"
 #include "Camera.hpp"
+#include "Menu.hpp"
 
 #define MONKEY_N 4
 #define TREE_N 3
@@ -184,7 +185,7 @@ int main(int argc, char *argv[])
     glutInitContextProfile(GLUT_CORE_PROFILE);
     glutInitWindowSize(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
     glutCreateWindow("Grappler");
-
+    init_menu();
     // GLEW
     glewExperimental = GL_TRUE;
     GLenum err = glewInit();

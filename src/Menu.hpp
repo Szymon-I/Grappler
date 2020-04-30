@@ -1,22 +1,18 @@
 enum
 {
     CAMERA_OPTIONS,
-    EXIT, // wyjście
-} MAIN_MENU;
+    EXIT,
+};
 enum
 {
     FREE_CAMERA,
-    THIRD_PERSON, // wyjście
-} CAMERA_MENU;
+    THIRD_PERSON,
+};
 
 void Menu(int value)
 {
     switch (value)
     {
-    case CAMERA_OPTIONS:
-        printf("test");
-        break;
-        // wyjście
     case EXIT:
         exit(0);
     }
@@ -37,12 +33,11 @@ void CameraMenu(int value)
 void init_menu()
 {
     int camera_menu = glutCreateMenu(CameraMenu);
-    glutAddMenuEntry("third_person", THIRD_PERSON);
-    glutAddMenuEntry("free_camera", FREE_CAMERA);
-
+    glutAddMenuEntry("third person", THIRD_PERSON);
+    glutAddMenuEntry("free camera", FREE_CAMERA);
 
     int main_menu = glutCreateMenu(Menu);
-    glutAddSubMenu("camera_options", camera_menu);
-    glutAddMenuEntry("Exit", EXIT);
+    glutAddSubMenu("change camera", camera_menu);
+    glutAddMenuEntry("exit", EXIT);
     glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
