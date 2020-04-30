@@ -1,7 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
+#include "Grappler.hpp"
 #define EDGE_CORRECTION 40
 
 #define DEFAULT_WINDOW_WIDTH 1920
@@ -11,6 +11,12 @@
 #define CAMERA_MOVE_RIGHT_KEY 'd'
 #define CAMERA_MOVE_FORWARD_KEY 'w'
 #define CAMERA_MOVE_BACK_KEY 's'
+
+enum CAMERA_MODES
+{
+    FREE_CAMERA,
+    THIRD_PERSON
+};
 
 class Camera
 {
@@ -36,6 +42,9 @@ private:
     GLfloat _scene_translate_z;
 
     glm::mat4x4 Matrix_mv;
+    CAMERA_MODES mode = FREE_CAMERA;
+
+    glm::vec3 THIRD_PERSON_OFFSETS = glm::vec3(0.0f, -2.0f, 2.0f);
 
 public:
     Camera()
@@ -59,6 +68,18 @@ public:
         this->_scene_translate_x = translate_x;
         this->_scene_translate_y = translate_y;
         this->_scene_translate_z = translate_z;
+    }
+    CAMERA_MODES get_mode()
+    {
+        return this->mode;
+    }
+    void set_mode(CAMERA_MODES mode)
+    {
+        this->mode = mode;
+    }
+    glm::vec3 get_offsets()
+    {
+        return this->THIRD_PERSON_OFFSETS;
     }
     void set_window_dimenstions(int width, int height)
     {
@@ -117,14 +138,31 @@ public:
             lz = -cos(angle);
         }
     }
-    glm::mat4x4 apply_camera(glm::mat4x4 Matrix_mv)
+    glm::mat4x4 apply_camera(glm::mat4x4 Matrix_mv, glm::vec3 grappler_pos)
     {
-        Matrix_mv = glm::lookAt(glm::vec3(xx, yy, zz),
-                                glm::vec3(xx + lx, yy + ly, zz + lz),
-                                glm::vec3(0.0f, 1.0f, 0.0f));
-        Matrix_mv = glm::translate(Matrix_mv, glm::vec3(_scene_translate_x, _scene_translate_y, _scene_translate_z));
-        Matrix_mv = glm::rotate(Matrix_mv, _scene_translate_x + _scene_rotate_x, glm::vec3(1.0f, 0.0f, 0.0f));
-        Matrix_mv = glm::rotate(Matrix_mv, _scene_translate_y + _scene_rotate_y, glm::vec3(0.0f, 1.0f, 0.0f));
+        switch (mode)
+        {
+        case FREE_CAMERA:
+            Matrix_mv = glm::lookAt(glm::vec3(xx, yy, zz),
+                                    glm::vec3(xx + lx, yy + ly, zz + lz),
+                                    glm::vec3(0.0f, 1.0f, 0.0f));
+            Matrix_mv = glm::translate(Matrix_mv, glm::vec3(_scene_translate_x, _scene_translate_y, _scene_translate_z));
+            Matrix_mv = glm::rotate(Matrix_mv, _scene_translate_x + _scene_rotate_x, glm::vec3(1.0f, 0.0f, 0.0f));
+            Matrix_mv = glm::rotate(Matrix_mv, _scene_translate_y + _scene_rotate_y, glm::vec3(0.0f, 1.0f, 0.0f));
+            break;
+        case THIRD_PERSON:
+            Matrix_mv = glm::lookAt(glm::vec3(xx, yy, zz),
+                                    glm::vec3(xx + lx, yy + ly, zz + lz),
+                                    glm::vec3(0.0f, 1.0f, 0.0f));
+
+            Matrix_mv = glm::translate(Matrix_mv, grappler_pos + THIRD_PERSON_OFFSETS);
+            Matrix_mv = glm::rotate(Matrix_mv, _scene_translate_x + _scene_rotate_x, glm::vec3(1.0f, 0.0f, 0.0f));
+            Matrix_mv = glm::rotate(Matrix_mv, _scene_translate_y + _scene_rotate_y, glm::vec3(0.0f, 1.0f, 0.0f));
+            break;
+        default:
+            break;
+        }
+
         this->Matrix_mv = Matrix_mv;
         return Matrix_mv;
     }
