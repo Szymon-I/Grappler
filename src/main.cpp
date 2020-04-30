@@ -18,6 +18,7 @@
 #include "Grappler.hpp"
 #include "Camera.hpp"
 #include "Menu.hpp"
+#include "Material.hpp"
 
 #define MONKEY_N 4
 #define TREE_N 3
@@ -148,6 +149,8 @@ void Initialize()
     // grapler = wolf
     wolf_program.init("objects/wolf.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/wolf.png", global_light, Material::WhiteRubber);
     grappler.init(wolf_program, 0.2);
+
+    virus_program.init("objects/virus.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/virus.png", global_light, Material::Tin);
 }
 
 void clean(void)
