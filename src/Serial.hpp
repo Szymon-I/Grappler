@@ -1,3 +1,4 @@
+#pragma once
 #include "libs/serialib.h"
 #include <unistd.h>
 #include <stdio.h>
@@ -18,7 +19,7 @@ private:
     int bytes_received;
 
     bool data_rdy = false;
-    bool input_monitor;
+    bool input_monitor = false;
 
     void print_input()
     {
@@ -30,7 +31,7 @@ private:
     }
 
 public:
-    char init(std::string serial_port, int speed, bool input_monitor = false)
+    char init(std::string serial_port, int speed)
     {
         this->serial_port = serial_port;
         this->speed = speed;
@@ -45,6 +46,10 @@ public:
         }
         printf("Successful connection to %s\n", serial_port.c_str());
         return 0;
+    }
+    void set_monitor(bool x)
+    {
+        this->input_monitor = x;
     }
 
     // close connection at object destruction
@@ -63,7 +68,8 @@ public:
             // send data to grappler
             this->data_rdy = true;
 
-            if(input_monitor){
+            if (input_monitor)
+            {
                 print_input();
             }
         }
