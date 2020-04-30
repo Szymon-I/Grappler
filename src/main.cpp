@@ -135,22 +135,12 @@ void Initialize()
     std::vector<glm::vec3> position = {glm::vec3(0.0, 1.0, 8.0), glm::vec3(0.0, 1.0, -8.0), glm::vec3(8.0, 1.0, 0.0)};
     global_light.init(ambient, diffuse, position);
 
-<<<<<<< HEAD
     ground_program.init("objects/ground2.obj", "shaders/vertex_ground.glsl", "shaders/fragment.glsl", "textures/ground.png", global_light, Material::Brass);
     sky_program1.init("objects/sky.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/sky.png", global_light, Material::Tin);
     sky_program2.init("objects/sky.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/sky.png", global_light, Material::Tin);
 
     for (int i = 0; i < TREE_N; i++)
         tree_programs[i].init("objects/tree.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/tree.png", global_light, Material::Emerald);
-=======
-    ground_program.init("objects/ground2.obj", "shaders/vertex_ground.glsl", "shaders/fragment.glsl", "textures/ground.png", global_light, Material::Brass());
-    sky_program1.init("objects/sky.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/sky.png", global_light, Material::Tin());
-    sky_program2.init("objects/sky.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/sky.png", global_light, Material::Tin());
-    virus_program.init("objects/virus.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/virus.png", global_light, Material::Tin());
-
-    for (int i = 0; i < TREE_N; i++)
-        tree_programs[i].init("objects/tree2.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/tree.png", global_light, Material::Emerald());
->>>>>>> 79680524f666ba4b321c54feeaa5bef2a9535c3c
 
     for (int i = 0; i < MONKEY_N; i++)
         monkey_programs[i].init("objects/monkey.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/monkey.png", global_light, Material::BlackRubber);
