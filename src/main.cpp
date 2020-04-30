@@ -37,6 +37,7 @@ ProgramHandler sky_program1;
 ProgramHandler sky_program2;
 ProgramHandler monkey_programs[MONKEY_N];
 ProgramHandler tree_programs[TREE_N];
+ProgramHandler virus_program;
 
 Serial serial;
 Grappler grappler;
@@ -70,6 +71,11 @@ void DisplayScene()
     sky_program2.set_rotation(glm::vec3(1.0, 0.0, 0.0), M_PI);
     sky_program2.display(Matrix_proj, Matrix_mv);
 
+    virus_program.set_rotation(glm::vec3(0.0, 1.0, 0.0), 0);
+    virus_program.set_rotation_animation(0.02);
+    virus_program.set_translate(glm::vec3(-6.0f, 0.5f, 6.0f));
+    virus_program.display(Matrix_proj, Matrix_mv);
+
     sow_trees();
     monkey_circle();
 
@@ -92,7 +98,6 @@ void sow_trees()
 
 void monkey_circle()
 {
-    monkey_programs[0].set_rotation_animation(0.02);
     monkey_programs[0].set_rotation(glm::vec3(0.0, 1.0, 0.0), 0 * M_PI / 2);
     monkey_programs[0].set_translate(glm::vec3(0.0f, 0.0f, -10.0f));
 
@@ -133,6 +138,7 @@ void Initialize()
     ground_program.init("objects/ground2.obj", "shaders/vertex_ground.glsl", "shaders/fragment.glsl", "textures/ground.png", global_light, Material::Brass());
     sky_program1.init("objects/sky.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/sky.png", global_light, Material::Tin());
     sky_program2.init("objects/sky.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/sky.png", global_light, Material::Tin());
+    virus_program.init("objects/virus.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/virus.png", global_light, Material::Tin());
 
     for (int i = 0; i < TREE_N; i++)
         tree_programs[i].init("objects/tree2.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/tree.png", global_light, Material::Emerald());
@@ -151,6 +157,7 @@ void clean(void)
     ground_program.clean();
     sky_program1.clean();
     sky_program2.clean();
+    virus_program.clean();
 
     for (int i = 0; i < TREE_N; i++)
         tree_programs[i].clean();
