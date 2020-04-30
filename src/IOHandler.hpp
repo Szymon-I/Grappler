@@ -31,6 +31,17 @@ void SpecialKeys(int key, int x, int y)
 // --------------------------------------------------------------
 void Keyboard(unsigned char key, int x, int y)
 {
+	// keyboards events - not for camera
+	switch (key)
+	{
+	case ESC_KEY:
+		exit(0);
+	}
+	// camera events
+	if (camera.get_mode() == THIRD_PERSON)
+	{
+		return;
+	}
 	switch (key)
 	{
 	case CAMERA_MOVE_LEFT_KEY:
@@ -45,23 +56,12 @@ void Keyboard(unsigned char key, int x, int y)
 	case CAMERA_MOVE_BACK_KEY:
 		camera.move_back();
 		break;
-	case ESC_KEY:
-		exit(0);
 	}
 }
 
 // --------------------------------------------------------------
 void MouseButton(int button, int state, int x, int y)
 {
-
-	if (button == 3)
-	{
-		camera.move_forward();
-	}
-	if (button == 4)
-	{
-		camera.move_back();
-	}
 
 	if (button == GLUT_LEFT_BUTTON)
 	{
@@ -71,6 +71,21 @@ void MouseButton(int button, int state, int x, int y)
 		if (state == GLUT_DOWN)
 		{
 		}
+	}
+	// camera events
+	if (camera.get_mode() == THIRD_PERSON)
+	{
+		return;
+	}
+	// scroll up
+	if (button == 3)
+	{
+		camera.move_forward();
+	}
+	// scroll down
+	if (button == 4)
+	{
+		camera.move_back();
 	}
 }
 
