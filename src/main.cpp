@@ -130,17 +130,17 @@ void Initialize()
     global_light.init(ambient, diffuse, position);
 
     ground_program.init("objects/ground2.obj", "shaders/vertex_ground.glsl", "shaders/fragment.glsl", "textures/ground.png", global_light, Material::Brass());
-    sky_program1.init("objects/sky.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/sky.png", global_light, Material::Brass());
-    sky_program2.init("objects/sky.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/sky.png", global_light, Material::Brass());
+    sky_program1.init("objects/sky.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/sky.png", global_light, Material::Tin());
+    sky_program2.init("objects/sky.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/sky.png", global_light, Material::Tin());
 
     for (int i = 0; i < TREE_N; i++)
-        tree_programs[i].init("objects/tree.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/tree.png", global_light, Material::Brass());
+        tree_programs[i].init("objects/tree.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/tree.png", global_light, Material::Emerald());
 
     for (int i = 0; i < MONKEY_N; i++)
-        monkey_programs[i].init("objects/monkey.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/monkey.png", global_light, Material::Brass());
+        monkey_programs[i].init("objects/monkey.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/monkey.png", global_light, Material::BlackRubber());
 
     // grapler = wolf
-    wolf_program.init("objects/wolf.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/wolf.png", global_light, Material::Brass());
+    wolf_program.init("objects/wolf.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/wolf.png", global_light, Material::WhiteRubber());
     grappler.init(wolf_program, 0.2);
 }
 
@@ -180,7 +180,7 @@ int main(int argc, char *argv[])
     // GLUT
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-    glutInitContextVersion(3, 2);
+    //glutInitContextVersion(3, 2);
     glutInitContextProfile(GLUT_CORE_PROFILE);
     glutInitWindowSize(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
     glutCreateWindow("Grappler");
