@@ -34,12 +34,13 @@ private:
 	glm::vec3 custom_translate;
 	glm::vec3 custom_scale;
 	glm::vec3 custom_rotate;
+	GLfloat translation_animation = 0.0;
 	GLfloat rotate_angle;
+	GLfloat rotation_animation = 0.0;
 	bool rotation_applied = false;
 	bool texture_applied = false;
 
 	Light global_light;
-	float light_movement = 0.1;
 
 	// add shader path
 	void assign_shaders(string vertex_shader, string fragment_shader)
@@ -129,9 +130,7 @@ private:
 	// display final matrix
 	void display_util(glm::mat4x4 &Matrix_proj_mv)
 	{
-		if (global_light.Light_Position[0].z > 10.0 || global_light.Light_Position[0].z < -10.0)
-			light_movement = -light_movement;
-		global_light.Light_Position[0].z += light_movement;
+		global_light.move_light(1);
 
 		glBindVertexArray(vArray);
 		glUseProgram(this->program);
@@ -168,10 +167,21 @@ public:
 		bind_buffers();
 	}
 
+	void set_translation_animation(GLfloat translation_animation)
+	{
+		this->translation_animation += translation_animation;
+	}
+
 	// translate object
 	void set_translate(glm::vec3 translate)
 	{
 		this->custom_translate = translate;
+		if (translation_animation < -0.01 || translation_animation > 0.01)
+		{
+			GLfloat r = sqrt(custom_translate.x*custom_translate.x+custom_translate.z*custom_translate.z);
+			this->custom_translate.x = cos(this->translation_animation) * r;
+			this->custom_translate.z = sin(this->translation_animation) * r;
+		}
 	}
 
 	// scale object
@@ -180,11 +190,17 @@ public:
 		this->custom_scale = scale;
 	}
 
+	// animate rotation
+	void set_rotation_animation(GLfloat rotation_animation)
+	{
+		this->rotation_animation += rotation_animation;
+	}
+
 	// rotate object
 	void set_rotation(glm::vec3 rotation_matrix, GLfloat rotation)
 	{
 		this->custom_rotate = rotation_matrix;
-		this->rotate_angle = rotation;
+		this->rotate_angle = rotation + this->rotation_animation;
 		this->rotation_applied = true;
 	}
 

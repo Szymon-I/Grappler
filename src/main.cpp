@@ -95,10 +95,12 @@ void sow_trees()
 
 void monkey_circle()
 {
+    monkey_programs[0].set_rotation_animation(0.02);
     monkey_programs[0].set_rotation(glm::vec3(0.0, 1.0, 0.0), 0 * M_PI / 2);
     monkey_programs[0].set_translate(glm::vec3(0.0f, 0.0f, -10.0f));
 
     monkey_programs[1].set_rotation(glm::vec3(0.0, 1.0, 0.0), 2 * M_PI / 2);
+    monkey_programs[1].set_translation_animation(0.02);
     monkey_programs[1].set_translate(glm::vec3(0.0f, 0.0f, 10.0f));
 
     monkey_programs[2].set_rotation(glm::vec3(0.0, 1.0, 0.0), 1 * M_PI / 2);
