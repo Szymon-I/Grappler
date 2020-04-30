@@ -6,6 +6,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#define MAX_Z 10.0
+#define MIN_Z -10.0
 class Light{
 private:
 
@@ -37,7 +40,7 @@ public:
 
         void move_light(int index)
         {
-            if (Light_Position[index].z > 10.0 || Light_Position[index].z < -10.0)
+            if (Light_Position[index].z > MAX_Z || Light_Position[index].z < MIN_Z)
 			    light_movement = -light_movement;
 		    Light_Position[index].z += light_movement;
         }

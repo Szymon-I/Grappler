@@ -8,7 +8,7 @@ out vec4 outColor;
 
 // Parametry oswietlenia
 #define LIGHT_STRENGTH    2
-#define LIGHT_REACH       10
+#define LIGHT_REACH       9
 
 #define MAX_LIGHTS        20
 

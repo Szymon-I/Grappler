@@ -12,6 +12,7 @@
 #include "libs/shader_stuff.h"
 
 #include "Light.hpp"
+#include "Material.hpp"
 
 using namespace std;
 class ProgramHandler
@@ -41,6 +42,7 @@ private:
 	bool texture_applied = false;
 
 	Light global_light;
+	vector<glm::vec3> global_material;
 
 	// add shader path
 	void assign_shaders(string vertex_shader, string fragment_shader)
@@ -115,6 +117,11 @@ private:
 		glUniform3fv(glGetUniformLocation(program, "Light_Ambient"), size, &(global_light.get_ambient()[0])[0]);
 		glUniform3fv(glGetUniformLocation(program, "Light_Diffuse"), size, &(global_light.get_diffuse()[0])[0]);
 		glUniform3fv(glGetUniformLocation(program, "Light_Position"), size, &(global_light.get_position()[0])[0]);
+
+		glUniform3fv( glGetUniformLocation(program, "myMaterial.Ambient"), 1, &(global_material[0])[0]);
+		glUniform3fv( glGetUniformLocation(program, "myMaterial.Diffuse"), 1, &(global_material[1])[0]);
+		glUniform3fv( glGetUniformLocation(program, "myMaterial.Specular"), 1, &(global_material[2])[0]);
+		glUniform1f( glGetUniformLocation(program, "myMaterial.Shininess"), global_material[3][0]);
 	}
 
 	// reset all mods for object
@@ -156,13 +163,14 @@ private:
 
 public:
 	// create program
-	void init(string obj_path, string vertex_shader, string fragment_shader, string texture, Light light)
+	void init(string obj_path, string vertex_shader, string fragment_shader, string texture, Light light, std::vector <glm::vec3> material)
 	{
 		this->program = glCreateProgram();
 		loadOBJ(obj_path.c_str(), this->OBJ_vertices, this->OBJ_uvs, this->OBJ_normals);
 		assign_shaders(vertex_shader, fragment_shader);
 		load_texture(texture);
 		this->global_light = light;
+		this->global_material = material;
 		reset_mod();
 		bind_buffers();
 	}
