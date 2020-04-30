@@ -13,6 +13,7 @@
 
 #include "Light.hpp"
 #include "Material.hpp"
+#include "Camera.hpp"
 
 extern Camera camera;
 
@@ -120,13 +121,13 @@ private:
 		glUniform3fv(glGetUniformLocation(program, "Light_Diffuse"), size, &(global_light.get_diffuse()[0])[0]);
 		glUniform3fv(glGetUniformLocation(program, "Light_Position"), size, &(global_light.get_position()[0])[0]);
 
-		glUniform3fv( glGetUniformLocation(program, "myMaterial.Ambient"), 1, &(global_material[0])[0]);
-		glUniform3fv( glGetUniformLocation(program, "myMaterial.Diffuse"), 1, &(global_material[1])[0]);
-		glUniform3fv( glGetUniformLocation(program, "myMaterial.Specular"), 1, &(global_material[2])[0]);
-		glUniform1f( glGetUniformLocation(program, "myMaterial.Shininess"), global_material[3][0]);
+		glUniform3fv(glGetUniformLocation(program, "myMaterial.Ambient"), 1, &(global_material[0])[0]);
+		glUniform3fv(glGetUniformLocation(program, "myMaterial.Diffuse"), 1, &(global_material[1])[0]);
+		glUniform3fv(glGetUniformLocation(program, "myMaterial.Specular"), 1, &(global_material[2])[0]);
+		glUniform1f(glGetUniformLocation(program, "myMaterial.Shininess"), global_material[3][0]);
 
 		glm::vec3 Camera_Position = camera.GetCameraPos();
-		glUniform3fv( glGetUniformLocation( program, "Camera_Position" ), 1, &Camera_Position[0] );
+		glUniform3fv(glGetUniformLocation(program, "Camera_Position"), 1, &Camera_Position[0]);
 	}
 
 	// reset all mods for object
@@ -168,7 +169,7 @@ private:
 
 public:
 	// create program
-	void init(string obj_path, string vertex_shader, string fragment_shader, string texture, Light light, std::vector <glm::vec3> material)
+	void init(string obj_path, string vertex_shader, string fragment_shader, string texture, Light light, std::vector<glm::vec3> material)
 	{
 		this->program = glCreateProgram();
 		loadOBJ(obj_path.c_str(), this->OBJ_vertices, this->OBJ_uvs, this->OBJ_normals);
@@ -191,10 +192,14 @@ public:
 		this->custom_translate = translate;
 		if (translation_animation < -0.01 || translation_animation > 0.01)
 		{
-			GLfloat r = sqrt(custom_translate.x*custom_translate.x+custom_translate.z*custom_translate.z);
+			GLfloat r = sqrt(custom_translate.x * custom_translate.x + custom_translate.z * custom_translate.z);
 			this->custom_translate.x = cos(this->translation_animation) * r;
 			this->custom_translate.z = sin(this->translation_animation) * r;
 		}
+	}
+	glm::vec3 get_translate()
+	{
+		return this->custom_translate;
 	}
 
 	// scale object
