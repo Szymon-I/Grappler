@@ -18,9 +18,6 @@
 #include "Grappler.hpp"
 #include "Camera.hpp"
 
-#define SERIAL_PORT "/dev/pts/3"
-#define SERIAL_SPEED 115200
-
 #define MONKEY_N 4
 #define TREE_N 3
 #define M_PI 3.14159265358979323846

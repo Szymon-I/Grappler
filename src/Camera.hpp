@@ -35,6 +35,8 @@ private:
     GLfloat _scene_translate_y;
     GLfloat _scene_translate_z;
 
+    glm::mat4x4 Matrix_mv;
+
 public:
     Camera()
     {
@@ -123,6 +125,29 @@ public:
         Matrix_mv = glm::translate(Matrix_mv, glm::vec3(_scene_translate_x, _scene_translate_y, _scene_translate_z));
         Matrix_mv = glm::rotate(Matrix_mv, _scene_translate_x + _scene_rotate_x, glm::vec3(1.0f, 0.0f, 0.0f));
         Matrix_mv = glm::rotate(Matrix_mv, _scene_translate_y + _scene_rotate_y, glm::vec3(0.0f, 1.0f, 0.0f));
+        this->Matrix_mv = Matrix_mv;
         return Matrix_mv;
+    }
+
+    glm::vec3 GetCameraPos(void)
+    {
+        glm::mat4 modelViewT = transpose(this->Matrix_mv);
+
+        glm::vec3 n1(modelViewT[0]);
+        glm::vec3 n2(modelViewT[1]);
+        glm::vec3 n3(modelViewT[2]);
+
+        float d1(modelViewT[0].w);
+        float d2(modelViewT[1].w);
+        float d3(modelViewT[2].w);
+
+        glm::vec3 n2n3 = cross(n2, n3);
+        glm::vec3 n3n1 = cross(n3, n1);
+        glm::vec3 n1n2 = cross(n1, n2);
+
+        glm::vec3 top = (n2n3 * d1) + (n3n1 * d2) + (n1n2 * d3);
+        float denom = dot(n1, n2n3);
+
+        return top / -denom;
     }
 };

@@ -39,8 +39,10 @@ public:
         char errorOpening = serial.openDevice(serial_port.c_str(), speed);
         // If connection fails, return the error code otherwise, display a success message
         if (errorOpening != 1)
+        {
             printf("Could not connect to %s\n", serial_port.c_str());
-        return errorOpening;
+            return errorOpening;
+        }
         printf("Successful connection to %s\n", serial_port.c_str());
         return 0;
     }

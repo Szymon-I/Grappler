@@ -14,6 +14,8 @@
 #include "Light.hpp"
 #include "Material.hpp"
 
+extern Camera camera;
+
 using namespace std;
 class ProgramHandler
 {
@@ -122,6 +124,9 @@ private:
 		glUniform3fv( glGetUniformLocation(program, "myMaterial.Diffuse"), 1, &(global_material[1])[0]);
 		glUniform3fv( glGetUniformLocation(program, "myMaterial.Specular"), 1, &(global_material[2])[0]);
 		glUniform1f( glGetUniformLocation(program, "myMaterial.Shininess"), global_material[3][0]);
+
+		glm::vec3 Camera_Position = camera.GetCameraPos();
+		glUniform3fv( glGetUniformLocation( program, "Camera_Position" ), 1, &Camera_Position[0] );
 	}
 
 	// reset all mods for object
