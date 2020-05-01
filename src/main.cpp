@@ -41,6 +41,8 @@ ProgramHandler tree_programs[TREE_N];
 ProgramHandler flower_program[FLOWER_N];
 ProgramHandler virus_program;
 
+vector<ProgramHandler> AllPrograms;
+
 Serial serial;
 Grappler grappler;
 
@@ -88,7 +90,7 @@ void sow_flowers(void)
 {
     for (int i = 0; i < FLOWER_N; i++)
     {
-        flower_program[i].set_translate(glm::vec3(i%10, 0.0f, i/10+6.0));
+        flower_program[i].set_translate(glm::vec3(i % 10, 0.0f, i / 10 + 6.0));
         flower_program[i].set_scale(glm::vec3(0.5, 0.5, 0.5));
         flower_program[i].display(Matrix_proj, Matrix_mv);
     }
@@ -152,16 +154,30 @@ void Initialize()
     virus_program.init("objects/virus.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/virus.png", global_light, Material::Tin);
 
     for (int i = 0; i < TREE_N; i++)
+    {
         tree_programs[i].init("objects/tree.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/tree.png", global_light, Material::Emerald);
+        AllPrograms.push_back(tree_programs[i]);
+    }
 
     for (int i = 0; i < MONKEY_N; i++)
+    {
         monkey_programs[i].init("objects/monkey.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/monkey.png", global_light, Material::BlackRubber);
+        AllPrograms.push_back(monkey_programs[i]);
+    }
     for (int i = 0; i < FLOWER_N; i++)
+    {
         flower_program[i].init("objects/flower.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/flower.png", global_light, Material::Emerald);
+        AllPrograms.push_back(flower_program[i]);
+    }
 
     // grapler = wolf
     wolf_program.init("objects/wolf.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/wolf.png", global_light, Material::WhiteRubber);
     grappler.init(wolf_program, 0.2);
+
+    AllPrograms.push_back(ground_program);
+    AllPrograms.push_back(sky_program1);
+    AllPrograms.push_back(virus_program);
+    AllPrograms.push_back(wolf_program);
 }
 
 void clean(void)
