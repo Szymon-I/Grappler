@@ -48,6 +48,11 @@ private:
 	Light global_light;
 	vector<glm::vec3> global_material;
 
+	string vertex_shader_path;
+	string fragment_shader_path;
+	string obj_path;
+	string texture;
+
 	// add shader path
 	void assign_shaders(string vertex_shader, string fragment_shader)
 	{
@@ -170,18 +175,30 @@ private:
 
 public:
 	// create program
-	void init(string obj_path, string vertex_shader, string fragment_shader, string texture, Light light, std::vector<glm::vec3> material)
+	void init(string obj_path, string vertex_shader, string fragment_shader, string texture, Light light, std::vector<glm::vec3> material, bool reset_mods = true)
 	{
 		this->program = glCreateProgram();
 		loadOBJ(obj_path.c_str(), this->OBJ_vertices, this->OBJ_uvs, this->OBJ_normals);
 		assign_shaders(vertex_shader, fragment_shader);
 		load_texture(texture);
+		this->obj_path = obj_path;
+		this->texture = texture;
 		this->global_light = light;
 		this->global_material = material;
-		reset_mod();
+		this->vertex_shader_path = vertex_shader;
+		this->fragment_shader_path = fragment_shader;
+		if (reset_mods)
+		{
+			reset_mod();
+		}
 		bind_buffers();
 	}
 
+	void update_fragment_shader(string fragment_shader_path)
+	{
+		clean();
+		init(this->obj_path, this->vertex_shader_path, fragment_shader_path, this->texture, this->global_light, this->global_material, false);
+	}
 	void set_translation_animation(GLfloat translation_animation)
 	{
 		this->translation_animation += translation_animation;
@@ -191,7 +208,7 @@ public:
 	void set_translate(glm::vec3 translate)
 	{
 		this->custom_translate = translate;
-		if (translation_animation < -FLOAT_THRESHOLD|| translation_animation > FLOAT_THRESHOLD)
+		if (translation_animation < -FLOAT_THRESHOLD || translation_animation > FLOAT_THRESHOLD)
 		{
 			GLfloat r = sqrt(custom_translate.x * custom_translate.x + custom_translate.z * custom_translate.z);
 			this->custom_translate.x = cos(this->translation_animation) * r;
