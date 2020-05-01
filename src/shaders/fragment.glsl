@@ -1,16 +1,15 @@
 #version 150 core
 
+#define LIGHT_ATTENUATION 0.01
+#define LIGHT_SPECULAR    vec3(2.0, 2.0, 2.0)
+
+#define MAX_LIGHTS        20
+
 in vec4 ourPosition;
 in vec3 ourNormal;
 in vec2 inoutUV;
 
 out vec4 outColor;
-
-// Parametry oswietlenia
-#define LIGHT_ATTENUATION 0.01
-#define LIGHT_SPECULAR    vec3(2.0, 2.0, 2.0)
-
-#define MAX_LIGHTS        20
 
 uniform int Number_Of_Lights;
 uniform vec3 Light_Position[MAX_LIGHTS];

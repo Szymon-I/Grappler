@@ -30,7 +30,7 @@ private:
     // XZ position of the camera
     GLfloat xx = 0.0f, zz = -1.0f, yy = 1.0f;
     // mouse variables
-    GLfloat fraction = 0.2f;
+    GLfloat fraction = 0.1f;
     GLfloat mouseOnEdgeSpeed = fraction / 10;
     int oldMouseX = DEFAULT_WINDOW_WIDTH / 2, oldMouseY = DEFAULT_WINDOW_HEIGHT / 2;
 
@@ -92,13 +92,13 @@ public:
     }
     void move_left()
     {
-        xx -= cos(angle);
-        zz -= sin(angle);
+        xx -= cos(angle) * fraction;
+        zz -= sin(angle) * fraction;
     }
     void move_right()
     {
-        xx += cos(angle);
-        zz += sin(angle);
+        xx += cos(angle) * fraction;
+        zz += sin(angle) * fraction;
     }
     void move_forward()
     {
