@@ -39,6 +39,7 @@ ProgramHandler sky_program2;
 ProgramHandler monkey_programs[MONKEY_N];
 ProgramHandler tree_programs[TREE_N];
 ProgramHandler virus_program;
+ProgramHandler flower_program;
 
 Serial serial;
 Grappler grappler;
@@ -63,7 +64,7 @@ void DisplayScene()
     //movement is handled inside getSerialHandler
     grappler.display_grappler(Matrix_proj, Matrix_mv, camera);
 
-    ground_program.set_scale(glm::vec3(1.5f, 1.5f, 1.5f));
+    //ground_program.set_scale(glm::vec3(1.5f, 1.5f, 1.5f));
     ground_program.display(Matrix_proj, Matrix_mv);
 
     sky_program1.set_scale(glm::vec3(10.0, 10.0, 10.0));
@@ -77,6 +78,9 @@ void DisplayScene()
     virus_program.set_rotation_animation(0.02);
     virus_program.set_translate(glm::vec3(-6.0f, 0.5f, 6.0f));
     virus_program.display(Matrix_proj, Matrix_mv);
+
+    flower_program.set_scale(glm::vec3(0.5, 0.5, 0.5));
+    flower_program.display(Matrix_proj, Matrix_mv);
 
     sow_trees();
     monkey_circle();
@@ -152,6 +156,7 @@ void Initialize()
     grappler.init(wolf_program, 0.2);
 
     virus_program.init("objects/virus.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/virus.png", global_light, Material::Tin);
+    flower_program.init("objects/flower.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/flower.png", global_light, Material::Emerald);
 }
 
 void clean(void)
@@ -161,6 +166,7 @@ void clean(void)
     sky_program1.clean();
     sky_program2.clean();
     virus_program.clean();
+    flower_program.clean();
 
     for (int i = 0; i < TREE_N; i++)
         tree_programs[i].clean();
@@ -190,7 +196,7 @@ int main(int argc, char *argv[])
 {
     // GLUT
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
     //glutInitContextVersion(3, 2);
     glutInitContextProfile(GLUT_CORE_PROFILE);
     glutInitWindowSize(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);

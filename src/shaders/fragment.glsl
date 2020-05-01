@@ -31,6 +31,12 @@ uniform sampler2D tex0;
 
 void main()
 {
+	// Zastosowanie oswietlenia do fragmentu
+	vec4 objectColor = texture( tex0, inoutUV );
+
+	if(objectColor.a < 0.1)
+    	discard;
+
 	// zmienna kumulujaca swiatlo punktowe
 	vec3 pointLights = vec3(0.0);
     vec3 ambients = vec3(0.0);
@@ -64,8 +70,6 @@ void main()
 		specularPart += resultSpecular * odlMod;
 
 	}
-	// Zastosowanie oswietlenia do fragmentu
-	vec4 objectColor = texture( tex0, inoutUV );
 
 	vec4 result =  (vec4(ambients/Number_Of_Lights, 1.0) + vec4(pointLights, 1.0)+ vec4(specularPart, 1.0)) * objectColor;
 

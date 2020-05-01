@@ -12,8 +12,6 @@ in vec2 inoutUV;
 
 out vec4 outColor;
 
-uniform int Number_Of_Lights;
-uniform vec3 Light_Position[MAX_LIGHTS];
 uniform vec3 Light_Ambient[MAX_LIGHTS];
 uniform vec3 Light_Diffuse[MAX_LIGHTS];
 
@@ -32,6 +30,12 @@ uniform sampler2D tex0;
 
 void main()
 {
+	// Zastosowanie oswietlenia do fragmentu
+	vec4 objectColor = texture( tex0, inoutUV );
+
+	if(objectColor.a < 0.1)
+    	discard;
+
 	// zmienna kumulujaca swiatlo punktowe
 	vec3 pointLights = vec3(0.0);
     vec3 ambients = vec3(0.0);
@@ -55,9 +59,6 @@ void main()
 	vec3  resultSpecular = specularCoeff * LIGHT_SPECULAR * myMaterial.Specular;
 
 	specularPart += resultSpecular;
-
-	// Zastosowanie oswietlenia do fragmentu
-	vec4 objectColor = texture( tex0, inoutUV );
 
 	vec4 result =  (vec4(Light_Ambient[0], 1.0) + vec4(pointLights, 1.0)+ vec4(specularPart, 1.0)) * objectColor;
 
