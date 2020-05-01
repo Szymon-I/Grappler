@@ -175,10 +175,14 @@ private:
 
 public:
 	// create program
-	void init(string obj_path, string vertex_shader, string fragment_shader, string texture, Light light, std::vector<glm::vec3> material, bool reset_mods = true)
+	void init(string obj_path, string vertex_shader, string fragment_shader, string texture, Light light, std::vector<glm::vec3> material, bool reset_mods = true, bool reload_obj = true)
 	{
 		this->program = glCreateProgram();
-		loadOBJ(obj_path.c_str(), this->OBJ_vertices, this->OBJ_uvs, this->OBJ_normals);
+		if (reload_obj)
+		{
+			loadOBJ(obj_path.c_str(), this->OBJ_vertices, this->OBJ_uvs, this->OBJ_normals);
+		}
+
 		assign_shaders(vertex_shader, fragment_shader);
 		load_texture(texture);
 		this->obj_path = obj_path;
@@ -197,7 +201,7 @@ public:
 	void update_fragment_shader(string fragment_shader_path)
 	{
 		clean();
-		init(this->obj_path, this->vertex_shader_path, fragment_shader_path, this->texture, this->global_light, this->global_material, false);
+		init(this->obj_path, this->vertex_shader_path, fragment_shader_path, this->texture, this->global_light, this->global_material, false, false);
 	}
 	void set_translation_animation(GLfloat translation_animation)
 	{
