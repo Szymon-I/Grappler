@@ -24,11 +24,11 @@ void CameraMenu(int value)
     {
     case FREE_CAMERA:
         printf("FREE_CAMERA\n");
-        camera.set_mode(FREE_CAMERA);
+        camera.set_mode(FREE_CAMERA, grappler.get_position());
         break;
     case THIRD_PERSON:
         printf("THIRD_PERSON\n");
-        camera.set_mode(THIRD_PERSON);
+        camera.set_mode(THIRD_PERSON, grappler.get_position());
     }
     glutPostRedisplay();
 }

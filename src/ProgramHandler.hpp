@@ -14,6 +14,7 @@
 #include "Light.hpp"
 #include "Material.hpp"
 #include "Camera.hpp"
+#define FLOAT_THRESHOLD 0.01
 
 extern Camera camera;
 
@@ -190,7 +191,7 @@ public:
 	void set_translate(glm::vec3 translate)
 	{
 		this->custom_translate = translate;
-		if (translation_animation < -0.01 || translation_animation > 0.01)
+		if (translation_animation < -FLOAT_THRESHOLD|| translation_animation > FLOAT_THRESHOLD)
 		{
 			GLfloat r = sqrt(custom_translate.x * custom_translate.x + custom_translate.z * custom_translate.z);
 			this->custom_translate.x = cos(this->translation_animation) * r;

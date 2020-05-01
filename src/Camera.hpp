@@ -73,13 +73,33 @@ public:
     {
         return this->mode;
     }
-    void set_mode(CAMERA_MODES mode)
+    void set_mode(CAMERA_MODES mode, glm::vec3 pos)
     {
         this->mode = mode;
+        if (mode == THIRD_PERSON)
+        {
+            set_look(pos);
+        }
+        // if (mode == FREE_CAMERA)
+        // {
+        //     set_look(pos);
+        // }
     }
     glm::vec3 get_offsets()
     {
         return this->THIRD_PERSON_OFFSETS;
+    }
+    void set_look(glm::vec3 pos)
+    {
+        xx = pos.x;
+        zz = pos.y;
+        yy = pos.z;
+    }
+    void set_translate(glm::vec3 pos)
+    {
+        _scene_translate_x = pos.x;
+        _scene_translate_y = pos.y;
+        _scene_translate_z = pos.z;
     }
     void set_window_dimenstions(int width, int height)
     {
