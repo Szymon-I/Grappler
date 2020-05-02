@@ -1,19 +1,22 @@
 #pragma once
-#include <algorithm>
+// shaders paths
 #define FRAGMENT_BASIC_PATH "./shaders/fragment.glsl"
 #define FRAGMENT_DIRECTIONAL_PATH "./shaders/fragment_directional.glsl"
 #define FRAGMENT_SPOTLIGHT_PATH "./shaders/fragment_spotlight.glsl"
+// main menu options
 enum
 {
     CAMERA_OPTIONS,
     SHADERS,
     EXIT,
 };
+// serial menu options
 enum
 {
     SERIAL_MONITOR_TURN_ON,
     SERIAL_MONITOR_TURN_OFF,
 };
+// shader menu options
 enum
 {
     FRAGMENT_BASIC,
@@ -21,6 +24,7 @@ enum
     FRAGMENT_SPOTLIGHT
 };
 
+// main menu
 void Menu(int value)
 {
     switch (value)
@@ -29,6 +33,7 @@ void Menu(int value)
         exit(0);
     }
 }
+// apply new shaders for every program
 void applyShaders(std::string shader_path)
 {
     for (ProgramHandler program : AllPrograms)
@@ -36,7 +41,7 @@ void applyShaders(std::string shader_path)
         program.update_fragment_shader(shader_path);
     };
 }
-
+// camera menu
 void CameraMenu(int value)
 {
     switch (value)
@@ -52,7 +57,7 @@ void CameraMenu(int value)
     }
     glutPostRedisplay();
 }
-
+// shader menu
 void ShaderMenu(int value)
 {
     switch (value)
@@ -71,7 +76,7 @@ void ShaderMenu(int value)
         break;
     }
 }
-
+// serial menu
 void SerialMenu(int value)
 {
     switch (value)
@@ -85,7 +90,7 @@ void SerialMenu(int value)
         grappler.set_monitor(false);
     }
 }
-
+// initialize all menu options
 void init_menu()
 {
     int camera_menu = glutCreateMenu(CameraMenu);
