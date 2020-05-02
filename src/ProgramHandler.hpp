@@ -45,15 +45,17 @@ private:
 	bool rotation_applied = false;
 	bool texture_applied = false;
 
+	// global light and material
 	Light global_light;
 	vector<glm::vec3> global_material;
 
+	// data passed into initialize
 	string vertex_shader_path;
 	string fragment_shader_path;
 	string obj_path;
 	string texture;
 
-	// add shader path
+	// add shaders paths
 	void assign_shaders(string vertex_shader, string fragment_shader)
 	{
 		glAttachShader(this->program, LoadShader(GL_VERTEX_SHADER, vertex_shader.c_str()));
@@ -91,32 +93,34 @@ private:
 		glGenVertexArrays(1, &vArray);
 		glBindVertexArray(vArray);
 
+		// object verticles
 		glGenBuffers(1, &vBuffer_coord);
 		glBindBuffer(GL_ARRAY_BUFFER, vBuffer_coord);
 		glBufferData(GL_ARRAY_BUFFER, OBJ_vertices.size() * sizeof(glm::vec3), &OBJ_vertices[0], GL_STATIC_DRAW);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 		glEnableVertexAttribArray(0);
 
-		// Wektory normalne
+		// object normals
 		glGenBuffers(1, &vBuffer_normal);
 		glBindBuffer(GL_ARRAY_BUFFER, vBuffer_normal);
 		glBufferData(GL_ARRAY_BUFFER, OBJ_normals.size() * sizeof(glm::vec3), &OBJ_normals[0], GL_STATIC_DRAW);
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 		glEnableVertexAttribArray(1);
 
-		// Wspolrzedne textury UV
+		// object uvs
 		glGenBuffers(1, &vBuffer_uv);
 		glBindBuffer(GL_ARRAY_BUFFER, vBuffer_uv);
 		glBufferData(GL_ARRAY_BUFFER, OBJ_uvs.size() * sizeof(glm::vec2), &OBJ_uvs[0], GL_STATIC_DRAW);
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, NULL);
 		glEnableVertexAttribArray(2);
 
+		// flags for options
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
-	// pass matrix to shader
+	// pass unform data to shader
 	void uniform_matrix_send(glm::mat4x4 Matrix_proj_mv)
 	{
 		glUniformMatrix4fv(glGetUniformLocation(program, "Matrix_proj_mv"), 1, GL_FALSE, glm::value_ptr(Matrix_proj_mv));
@@ -174,41 +178,39 @@ private:
 	}
 
 public:
-	// create program
+	// create program with given parameters
 	void init(string obj_path, string vertex_shader, string fragment_shader, string texture, Light light, std::vector<glm::vec3> material, bool reset_mods = true, bool reload_obj = true)
 	{
 		this->program = glCreateProgram();
-		if (reload_obj)
-		{
-			loadOBJ(obj_path.c_str(), this->OBJ_vertices, this->OBJ_uvs, this->OBJ_normals);
-		}
-
-		assign_shaders(vertex_shader, fragment_shader);
-		load_texture(texture);
 		this->obj_path = obj_path;
 		this->texture = texture;
 		this->global_light = light;
 		this->global_material = material;
 		this->vertex_shader_path = vertex_shader;
 		this->fragment_shader_path = fragment_shader;
+		assign_shaders(vertex_shader, fragment_shader);
+		load_texture(texture);
+		// if object reload is needed
+		if (reload_obj)
+		{
+			loadOBJ(obj_path.c_str(), this->OBJ_vertices, this->OBJ_uvs, this->OBJ_normals);
+		}
+		// if reset modifications is needed
 		if (reset_mods)
 		{
 			reset_mod();
 		}
+		// bind obj data to buffers used in shaders
 		bind_buffers();
 	}
 
+	// change fragment shader for program
 	void update_fragment_shader(string fragment_shader_path)
 	{
 		clean();
 		init(this->obj_path, this->vertex_shader_path, fragment_shader_path, this->texture, this->global_light, this->global_material, false, false);
 	}
-	void set_translation_animation(GLfloat translation_animation)
-	{
-		this->translation_animation += translation_animation;
-	}
-
-	// translate object
+	// set translate for object
 	void set_translate(glm::vec3 translate)
 	{
 		this->custom_translate = translate;
@@ -219,38 +221,40 @@ public:
 			this->custom_translate.z = sin(this->translation_animation) * r;
 		}
 	}
-	glm::vec3 get_translate()
-	{
-		return this->custom_translate;
-	}
-
-	// scale object
+	// set object scale
 	void set_scale(glm::vec3 scale)
 	{
 		this->custom_scale = scale;
 	}
-
-	// animate rotation
-	void set_rotation_animation(GLfloat rotation_animation)
-	{
-		this->rotation_animation += rotation_animation;
-	}
-
-	// rotate object
+	// set object rotation
 	void set_rotation(glm::vec3 rotation_matrix, GLfloat rotation)
 	{
 		this->custom_rotate = rotation_matrix;
 		this->rotate_angle = rotation + this->rotation_animation;
 		this->rotation_applied = true;
 	}
-
+	// set translation animation for object
+	void set_translation_animation(GLfloat translation_animation)
+	{
+		this->translation_animation += translation_animation;
+	}
+	// set rotation animation for object
+	void set_rotation_animation(GLfloat rotation_animation)
+	{
+		this->rotation_animation += rotation_animation;
+	}
+	// get object translate
+	glm::vec3 get_translate()
+	{
+		return this->custom_translate;
+	}
 	// display function with mods
 	void display(glm::mat4x4 Matrix_proj, glm::mat4x4 Matrix_mv)
 	{
 		glm::mat4x4 Matrix_proj_mv = apply_mods(Matrix_proj, Matrix_mv);
 		display_util(Matrix_proj_mv);
 	}
-
+	// clean all allocated data for program
 	void clean(void)
 	{
 		glDeleteProgram(program);
