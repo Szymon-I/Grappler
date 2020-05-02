@@ -14,6 +14,7 @@
 // paremetrs to filter noise from uC
 #define Y_THRESHOLD 0.02
 #define DATA_NORMALIZER 1000.0
+#define Y_OFFSET 3.0
 class Grappler
 {
 private:
@@ -53,7 +54,7 @@ private:
         float y_pos = parse_data_float(pos_s[2]);
         if (abs(prev_y - y_pos) > Y_THRESHOLD)
         {
-            position.y = parse_data_float(pos_s[2]) * y_sensitivity;
+            position.y = parse_data_float(pos_s[2]) * y_sensitivity + Y_OFFSET;
             prev_y = y_pos;
         }
     }
@@ -80,6 +81,11 @@ public:
     glm::vec3 get_position()
     {
         return this->position;
+    }
+    void set_position(glm::vec3 position)
+    {
+        this->position = position;
+        program.set_translate(position);
     }
     // move grappler
     void move_grappler(std::string data)
