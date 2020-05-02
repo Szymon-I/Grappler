@@ -40,6 +40,7 @@ ProgramHandler monkey_programs[MONKEY_N];
 ProgramHandler tree_programs[TREE_N];
 ProgramHandler flower_program[FLOWER_N];
 ProgramHandler virus_program;
+ProgramHandler hook_program;
 
 // all objects in list format
 vector<ProgramHandler> AllPrograms;
@@ -88,6 +89,9 @@ void DisplayScene()
     virus_program.set_rotation_animation(0.02);
     virus_program.set_translate(glm::vec3(-6.0f, 0.5f, 6.0f));
     virus_program.display(Matrix_proj, Matrix_mv);
+
+    wolf_program.set_translate(glm::vec3(3.0f, 0.0f, 0.0f));
+    wolf_program.display(Matrix_proj, Matrix_mv);
 
     // display other objects in loops
     sow_flowers();
@@ -168,6 +172,14 @@ void Initialize()
     sky_program1.init("objects/sky.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/sky.png", global_light, Material::Tin);
     virus_program.init("objects/virus.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/virus.png", global_light, Material::Tin);
 
+    hook_program.init("objects/hook.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/hook.png", global_light, Material::Tin);
+    hook_program.set_scale(glm::vec3(0.5f, 0.5f, 0.5f));
+
+    // use hook as a grappler object
+    grappler.init(hook_program, 0.2);
+    // set starting position
+    //grappler.set_position(glm::vec3(0.0f, 3.0f, 0.0f));
+
     for (int i = 0; i < TREE_N; i++)
     {
         tree_programs[i].init("objects/tree.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/tree.png", global_light, Material::Emerald);
@@ -185,9 +197,7 @@ void Initialize()
         AllPrograms.push_back(flower_program[i]);
     }
 
-    // use wolf as a grappler object
     wolf_program.init("objects/wolf.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/wolf.png", global_light, Material::WhiteRubber);
-    grappler.init(wolf_program, 0.2);
 
     // add all remaining objects/programs to global list
     AllPrograms.push_back(ground_program);
@@ -202,6 +212,7 @@ void clean(void)
     ground_program.clean();
     sky_program1.clean();
     virus_program.clean();
+    hook_program.clean();
 
     for (int i = 0; i < FLOWER_N; i++)
         flower_program[i].clean();
