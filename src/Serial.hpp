@@ -21,6 +21,7 @@ private:
     bool data_rdy = false;
     bool input_monitor = false;
 
+    // print incoming serial data (without parsing)
     void print_input()
     {
         for (int i = 0; i < bytes_received; i++)
@@ -31,22 +32,24 @@ private:
     }
 
 public:
+    // initialize serial communication
     char init(std::string serial_port, int speed)
     {
         this->serial_port = serial_port;
         this->speed = speed;
         this->input_monitor = input_monitor;
-        // Connection to serial port
         char errorOpening = serial.openDevice(serial_port.c_str(), speed);
-        // If connection fails, return the error code otherwise, display a success message
         if (errorOpening != 1)
         {
             printf("Could not connect to %s\n", serial_port.c_str());
-            return errorOpening;
         }
-        printf("Successful connection to %s\n", serial_port.c_str());
-        return 0;
+        else
+        {
+            printf("Successful connection to %s\n", serial_port.c_str());
+        }
+        return errorOpening;
     }
+    // set monitor listener
     void set_monitor(bool x)
     {
         this->input_monitor = x;
@@ -58,27 +61,26 @@ public:
         this->serial.closeDevice();
     }
 
-    // handle incoming uart data and print in terminal
+    // handle incoming uart data
     void handler()
     {
         bytes_received = serial.available();
         if (bytes_received)
         {
             serial.readString(buff, '\n', bytes_received);
-            // send data to grappler
             this->data_rdy = true;
-
             if (input_monitor)
             {
                 print_input();
             }
         }
     }
+    // flag for cheking if there is incoming data in seral buffer
     bool is_ready()
     {
         return this->data_rdy;
     }
-
+    // return string of recieved data
     std::string pass_message()
     {
         std::string str_data((const char *)buff, bytes_received);
