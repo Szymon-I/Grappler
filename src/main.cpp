@@ -14,9 +14,6 @@
 #include "main.hpp"
 #include "ProgramHandler.hpp"
 #include "IOHandler.hpp"
-//#include "Serial.hpp"
-//#include "Grappler.hpp"
-//#include "Camera.hpp"
 #include "Menu.hpp"
 #include "Material.hpp"
 
@@ -24,15 +21,18 @@
 #define TREE_N 3
 #define FLOWER_N 100
 #define M_PI 3.14159265358979323846
-// ---------------------------------------
-// Macierze przeksztalcen i rzutowania
 
+// Global variables
+
+// Global camera
 Camera camera;
 
+// matrices for diplaying content
 glm::mat4x4 Matrix_proj;    // projection matrix
 glm::mat4x4 Matrix_mv;      // modelview matrix
-glm::mat4x4 Matrix_proj_mv; // projection*modelview matrix
+glm::mat4x4 Matrix_proj_mv; // projection * modelview matrix
 
+// all objects
 ProgramHandler wolf_program;
 ProgramHandler ground_program;
 ProgramHandler sky_program1;
@@ -41,51 +41,64 @@ ProgramHandler tree_programs[TREE_N];
 ProgramHandler flower_program[FLOWER_N];
 ProgramHandler virus_program;
 
+// all objects in list format
 vector<ProgramHandler> AllPrograms;
 
+// Serial handler
 Serial serial;
+
+// Grappler objects
 Grappler grappler;
 
+// Global light cointaining all lights on scene
 Light global_light;
 
+// function prototypes
 void monkey_circle();
 void mod_mv();
 void sow_trees();
 void sow_flowers();
 
-// ---------------------------------------
+// main function for displaying all content
 void DisplayScene()
 {
-    // Czyszczenie ramki
+    // clear buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    // re-initialize Matrix_mv for new display
     Matrix_mv = glm::mat4x4(1.0f);
-    // apply all camera modifications to global Matrix_mv
-    Matrix_mv = camera.apply_camera(Matrix_mv, grappler.get_position());
+
+    // move camera if mouse is outside window
     camera.mouse_edge();
+    // apply all camera modifications to global Matrix_mv made by camera
+    Matrix_mv = camera.apply_camera(Matrix_mv, grappler.get_position());
 
     //movement is handled inside getSerialHandler
     grappler.display_grappler(Matrix_proj, Matrix_mv, camera);
 
-    //ground_program.set_scale(glm::vec3(1.5f, 1.5f, 1.5f));
+    // diplay ground
     ground_program.display(Matrix_proj, Matrix_mv);
 
+    // display sky objects
     sky_program1.set_scale(glm::vec3(10.0, 10.0, 10.0));
     sky_program1.display(Matrix_proj, Matrix_mv);
 
+    // diplay virus
     virus_program.set_rotation(glm::vec3(0.0, 1.0, 0.0), 0);
     virus_program.set_rotation_animation(0.02);
     virus_program.set_translate(glm::vec3(-6.0f, 0.5f, 6.0f));
     virus_program.display(Matrix_proj, Matrix_mv);
 
+    // display other objects in loops
     sow_flowers();
-
     sow_trees();
     monkey_circle();
 
+    // swap buffer with the new generated one
     glutSwapBuffers();
 }
 
+// display all flowers
 void sow_flowers(void)
 {
     for (int i = 0; i < FLOWER_N; i++)
@@ -95,7 +108,7 @@ void sow_flowers(void)
         flower_program[i].display(Matrix_proj, Matrix_mv);
     }
 }
-
+// display all trees
 void sow_trees()
 {
 
@@ -109,7 +122,7 @@ void sow_trees()
         tree_programs[i].display(Matrix_proj, Matrix_mv);
     }
 }
-
+// display all monkeys
 void monkey_circle()
 {
     monkey_programs[0].set_rotation(glm::vec3(0.0, 1.0, 0.0), 0 * M_PI / 2);
@@ -131,24 +144,26 @@ void monkey_circle()
         monkey_programs[i].display(Matrix_proj, Matrix_mv);
     }
 }
-// ---------------------------------------
+// change window size
 void Reshape(int width, int height)
 {
     glViewport(0, 0, width, height);
     camera.set_window_dimenstions(width, height);
     Matrix_proj = glm::perspectiveFov(glm::radians(60.0f), (float)width, (float)height, 0.1f, 1000.0f);
 }
-
-// ---------------------------------------------------
+// initializations of all objects
 void Initialize()
 {
+    // clear buffer with black color
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
+    // initialize global light
     std::vector<glm::vec3> ambient = {glm::vec3(0.3, 0.3, 0.3), glm::vec3(0.3, 0.3, 0.3), glm::vec3(0.3, 0.3, 0.3)};
     std::vector<glm::vec3> diffuse = {glm::vec3(1.0, 1.0, 1.0), glm::vec3(1.0, 1.0, 1.0), glm::vec3(1.0, 1.0, 1.0)};
     std::vector<glm::vec3> position = {glm::vec3(0.0, 1.0, 8.0), glm::vec3(0.0, 1.0, -8.0), glm::vec3(8.0, 1.0, 0.0)};
     global_light.init(ambient, diffuse, position);
 
+    // initialize all objects
     ground_program.init("objects/ground.obj", "shaders/vertex_ground.glsl", "shaders/fragment.glsl", "textures/ground.png", global_light, Material::Brass);
     sky_program1.init("objects/sky.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/sky.png", global_light, Material::Tin);
     virus_program.init("objects/virus.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/virus.png", global_light, Material::Tin);
@@ -170,16 +185,17 @@ void Initialize()
         AllPrograms.push_back(flower_program[i]);
     }
 
-    // grapler = wolf
+    // use wolf as a grappler object
     wolf_program.init("objects/wolf.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/wolf.png", global_light, Material::WhiteRubber);
     grappler.init(wolf_program, 0.2);
 
+    // add all remaining objects/programs to global list
     AllPrograms.push_back(ground_program);
     AllPrograms.push_back(sky_program1);
     AllPrograms.push_back(virus_program);
     AllPrograms.push_back(wolf_program);
 }
-
+// clean all allocated data for objects
 void clean(void)
 {
     wolf_program.clean();
@@ -206,17 +222,16 @@ void getSerialHandler()
         grappler.move_grappler(serial.pass_message());
     }
 }
-
+// timer for rendering view in const fps
 void timer(int)
 {
     glutPostRedisplay();
     glutTimerFunc(1000.0 / 60.0, timer, 0);
 }
 
-// ---------------------------------------------------
+// main function
 int main(int argc, char *argv[])
 {
-    // GLUT
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
     //glutInitContextVersion(3, 2);
@@ -224,6 +239,7 @@ int main(int argc, char *argv[])
     glutInitWindowSize(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
     glutCreateWindow("Grappler");
     init_menu();
+
     // GLEW
     glewExperimental = GL_TRUE;
     GLenum err = glewInit();
@@ -240,7 +256,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    // init serial with main arguments
+    // init serial with two main arguments
     serial.init(argv[1], atoi(argv[2]));
 
     Initialize();
