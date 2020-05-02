@@ -99,9 +99,9 @@ void sow_flowers(void)
 void sow_trees()
 {
 
-    tree_programs[0].set_translate(glm::vec3(3.0f, 0.0f, 0.0f));
-    tree_programs[1].set_translate(glm::vec3(3.0f, 0.0f, 3.0f));
-    tree_programs[2].set_translate(glm::vec3(-3.0f, 0.0f, -3.0f));
+    tree_programs[0].set_translate(glm::vec3(15.0f, 0.0f, 0.0f));
+    tree_programs[1].set_translate(glm::vec3(20.0f, 0.0f, 10.0f));
+    tree_programs[2].set_translate(glm::vec3(-10.0f, 0.0f, -10.0f));
 
     for (int i = 0; i < TREE_N; i++)
     {
