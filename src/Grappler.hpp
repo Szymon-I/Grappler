@@ -12,7 +12,7 @@
 #include "ProgramHandler.hpp"
 
 #define Y_THRESHOLD 0.02
-#define DATA_NORMALIZER 1000
+#define DATA_NORMALIZER 1000.0
 class Grappler
 {
 
