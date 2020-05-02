@@ -184,3 +184,8 @@ Uruchomienie programu w trybie symulacji zostało opisane w rozdziale `Symulacja
         - używane shadery
         - światła
     - Serial.hpp -> obsługa portu szeregowego
+
+# Zdjęcia
+
+![Scena](./img/img1.png "Scena")
+![kontroler](./img/img2.jpg "Kontroler")
