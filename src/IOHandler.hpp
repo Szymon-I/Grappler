@@ -10,7 +10,7 @@ extern Camera camera;
 int _mouse_buttonState = GLUT_UP;
 int _mouse_buttonX, _mouse_buttonY;
 
-// --------------------------------------------------------------
+// handler for special keys on keyboard
 void SpecialKeys(int key, int x, int y)
 {
 	switch (key)
@@ -28,7 +28,7 @@ void SpecialKeys(int key, int x, int y)
 		break;
 	}
 }
-// --------------------------------------------------------------
+//handler for keyboard events
 void Keyboard(unsigned char key, int x, int y)
 {
 	// keyboards events - not for camera
@@ -37,9 +37,12 @@ void Keyboard(unsigned char key, int x, int y)
 	case ESC_KEY:
 		exit(0);
 	}
+
 	// camera events
+	// camera position is relative to grappler
 	if (camera.get_mode() == THIRD_PERSON)
 	{
+		// simulate serial input for program with 'w,a,s,d' (move grappler)
 		switch (key)
 		{
 		case CAMERA_MOVE_RIGHT_KEY:
@@ -56,9 +59,9 @@ void Keyboard(unsigned char key, int x, int y)
 			break;
 		}
 	}
+	// camera position is independent to grappler
 	else if (camera.get_mode() == FREE_CAMERA)
 	{
-
 		switch (key)
 		{
 		case CAMERA_MOVE_LEFT_KEY:
@@ -78,7 +81,7 @@ void Keyboard(unsigned char key, int x, int y)
 	glutPostRedisplay();
 }
 
-// --------------------------------------------------------------
+// handle mouse buttons events
 void MouseButton(int button, int state, int x, int y)
 {
 
@@ -86,15 +89,9 @@ void MouseButton(int button, int state, int x, int y)
 	{
 
 		_mouse_buttonState = state;
-
 		if (state == GLUT_DOWN)
 		{
 		}
-	}
-	// camera events
-	if (camera.get_mode() == THIRD_PERSON)
-	{
-		return;
 	}
 	// scroll up
 	if (button == 3)
@@ -108,7 +105,7 @@ void MouseButton(int button, int state, int x, int y)
 	}
 }
 
-// --------------------------------------------------------------
+// look around with mouse motion
 void MouseMotion(int x, int y)
 {
 	camera.move_on_mouse_movement(x, y);
