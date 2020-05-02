@@ -7,8 +7,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-using namespace std;
-
 class Material
 {
 public:
@@ -19,6 +17,7 @@ public:
     const static std::vector<glm::vec3> WhiteRubber;
 };
 
+// all defined materials ready to use
 const std::vector<glm::vec3> Material::Brass{glm::vec3(0.329412f, 0.223529f, 0.027451f),
                                              glm::vec3(0.780392f, 0.568627f, 0.113725f),
                                              glm::vec3(0.992157f, 0.941176f, 0.807843f),
