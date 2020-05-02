@@ -2,16 +2,21 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "Grappler.hpp"
+
+// paramater for correcting camera while mouse is outside window
 #define EDGE_CORRECTION 40
 
+// default window parameters
 #define DEFAULT_WINDOW_WIDTH 1920
 #define DEFAULT_WINDOW_HEIGHT 1080
 
+// key bindings for moving camera
 #define CAMERA_MOVE_LEFT_KEY 'a'
 #define CAMERA_MOVE_RIGHT_KEY 'd'
 #define CAMERA_MOVE_FORWARD_KEY 'w'
 #define CAMERA_MOVE_BACK_KEY 's'
 
+// available camera modes
 enum CAMERA_MODES
 {
     FREE_CAMERA,
@@ -21,7 +26,6 @@ enum CAMERA_MODES
 class Camera
 {
 private:
-    // ------------ MOUSE VARIABLES ----------------------//
 
     // angle of rotation for the camera direction
     GLfloat angle = 0.0;
@@ -29,24 +33,33 @@ private:
     GLfloat lx = 1.0f, lz = -1.0f, ly = 0.0f;
     // XZ position of the camera
     GLfloat xx = 0.0f, zz = -1.0f, yy = 1.0f;
-    // mouse variables
+
+    // mouse sensitivity
     GLfloat fraction = 0.1f;
     GLfloat mouseOnEdgeSpeed = fraction / 10;
-    int oldMouseX = DEFAULT_WINDOW_WIDTH / 2, oldMouseY = DEFAULT_WINDOW_HEIGHT / 2;
 
+    // window coordinates
+    int oldMouseX = DEFAULT_WINDOW_WIDTH / 2, oldMouseY = DEFAULT_WINDOW_HEIGHT / 2;
     int windowHeight = DEFAULT_WINDOW_HEIGHT, windowWidth = DEFAULT_WINDOW_WIDTH;
+
+    // parameters for scene
     GLfloat _scene_rotate_x;
     GLfloat _scene_rotate_y;
     GLfloat _scene_translate_x;
     GLfloat _scene_translate_y;
     GLfloat _scene_translate_z;
 
+    // actual scene Matrix_mv
     glm::mat4x4 Matrix_mv;
+
+    // actual camera mode
     CAMERA_MODES mode = FREE_CAMERA;
 
+    // offsets to move camera from grappler object in THIRD_PERSON mode
     glm::vec3 THIRD_PERSON_OFFSETS = glm::vec3(0.0f, -2.0f, 2.0f);
 
 public:
+    // initialize Camera with or without offests
     Camera()
     {
         this->_scene_rotate_x = 0.0f;
@@ -69,10 +82,12 @@ public:
         this->_scene_translate_y = translate_y;
         this->_scene_translate_z = translate_z;
     }
+    // get camera mode
     CAMERA_MODES get_mode()
     {
         return this->mode;
     }
+    // set camera mode
     void set_mode(CAMERA_MODES mode, glm::vec3 pos)
     {
         this->mode = mode;
@@ -80,58 +95,64 @@ public:
         {
             set_look(pos);
         }
-        // if (mode == FREE_CAMERA)
-        // {
-        //     set_look(pos);
-        // }
     }
+    // get camera offsets
     glm::vec3 get_offsets()
     {
         return this->THIRD_PERSON_OFFSETS;
     }
+    // set look for camera
     void set_look(glm::vec3 pos)
     {
         xx = pos.x;
         zz = pos.y;
         yy = pos.z;
     }
+    //set translate for camera
     void set_translate(glm::vec3 pos)
     {
         _scene_translate_x = pos.x;
         _scene_translate_y = pos.y;
         _scene_translate_z = pos.z;
     }
+    // set window width and height (after reshape)
     void set_window_dimenstions(int width, int height)
     {
         windowWidth = width;
         windowHeight = height;
     }
+    // set camera sensitivity
     void set_camera_sensitivity(GLfloat sensitivity)
     {
         this->fraction = sensitivity;
     }
+    // move camera left (strafing)
     void move_left()
     {
         xx -= cos(angle) * fraction;
         zz -= sin(angle) * fraction;
     }
+    // move camera right (strafing)
     void move_right()
     {
         xx += cos(angle) * fraction;
         zz += sin(angle) * fraction;
     }
+    // move camera forward (zoom in)
     void move_forward()
     {
         xx += lx * fraction;
         zz += lz * fraction;
         yy += ly * fraction;
     }
+    // move camera forward (zoom out)
     void move_back()
     {
         xx -= lx * fraction;
         zz -= lz * fraction;
         yy -= ly * fraction;
     }
+    // move camera with mouse (look around)
     void move_on_mouse_movement(int x, int y)
     {
         angle += (x - oldMouseX) / 100.0;
@@ -143,6 +164,7 @@ public:
         oldMouseX = x;
         oldMouseY = y;
     }
+    // move camera if mouse is outside program window
     void mouse_edge()
     {
         if (oldMouseX > windowWidth - EDGE_CORRECTION)
@@ -158,6 +180,7 @@ public:
             lz = -cos(angle);
         }
     }
+    // apply camera for actual scene with given camera mode (modify Matrix_mv)
     glm::mat4x4 apply_camera(glm::mat4x4 Matrix_mv, glm::vec3 grappler_pos)
     {
         switch (mode)
@@ -186,7 +209,7 @@ public:
         this->Matrix_mv = Matrix_mv;
         return Matrix_mv;
     }
-
+    // get actual camera position
     glm::vec3 GetCameraPos(void)
     {
         glm::mat4 modelViewT = transpose(this->Matrix_mv);
