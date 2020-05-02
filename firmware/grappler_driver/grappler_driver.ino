@@ -3,7 +3,7 @@
 #define POTENTIOMETER_PIN A1
 #define JOY_X_PIN A2
 #define JOY_Y_PIN A3
-#define KEY_PIN 3
+#define KEY_PIN 7
 #define LOOP_INTERVAL 25
 #define LED_PIN 13
 #define SCREEN_SIZE_W 128
@@ -172,15 +172,13 @@ void send_serial()
   Serial.print(out_buff);
 }
 
-// change mode acceleromter <-> joystick on key interrupt
-void change_mode()
-{
-  static int prev_time = 0;
-  int actual_time = millis();
-  if (actual_time - prev_time > 1000)
-  {
-    acc_mode = !acc_mode;
-    prev_time = actual_time;
+// change mode between acc <-> joystick
+void handle_mode_change(){
+  if(digitalRead(KEY_PIN)==HIGH){
+    acc_mode = true;
+  }
+  else{
+    acc_mode = false;
   }
 }
 
@@ -237,7 +235,7 @@ void setup()
   Serial.begin(SERIAL_SPEED);
   pinMode(LED_PIN, OUTPUT);
   delay(START_DELAY);
-  //attachInterrupt(digitalPinToInterrupt(KEY_PIN), change_mode, RISING);
+  pinMode(KEY_PIN, INPUT_PULLUP);
 }
 
 // main program loop
@@ -247,5 +245,6 @@ void loop()
   bind_buff();
   send_serial();
   display_oled();
+  handle_mode_change();
   delay(LOOP_INTERVAL);
 }
