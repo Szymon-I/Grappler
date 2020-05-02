@@ -160,7 +160,9 @@ Uruchomienie programu w trybie symulacji zostało opisane w rozdziale `Symulacja
 
 # Zawartość plików źródłowych
 - folder blender -> przechowywanie projektów programu blender
-- folder firmware -> firmware napisany na mikrokontroler
+- firmware -> firmware napisany na mikrokontroler
+    - libs -> dodatkowe biblioteki
+    - grappler_driver -> firmware mikrontrolera
 - img -> obrazy użyte do readme
 - src -> głowny folder z kodem programu
     - libs -> folder z dodatkowymi bibliotekami
