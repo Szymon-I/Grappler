@@ -178,7 +178,7 @@ void Initialize()
     // use hook as a grappler object
     grappler.init(hook_program, 0.2);
     // set starting position
-    //grappler.set_position(glm::vec3(0.0f, 3.0f, 0.0f));
+    grappler.set_position(glm::vec3(0.0f, Y_OFFSET, 0.0f));
 
     for (int i = 0; i < TREE_N; i++)
     {
@@ -204,6 +204,7 @@ void Initialize()
     AllPrograms.push_back(sky_program1);
     AllPrograms.push_back(virus_program);
     AllPrograms.push_back(wolf_program);
+    AllPrograms.push_back(hook_program);
 }
 // clean all allocated data for objects
 void clean(void)
