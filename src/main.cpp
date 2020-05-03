@@ -285,7 +285,7 @@ int main(int argc, char *argv[])
     glutMainLoop();
 
     // Cleaning();
-    clean();
+    //clean();
 
     return 0;
 }
