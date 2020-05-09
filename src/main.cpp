@@ -104,7 +104,7 @@ void DisplayScene()
     sow_trees();
     monkey_circle();
 
-    RenderText(std::to_string(fps), 25, 450, 0.5f, glm::vec3(1.0, 0.0f, 0.0f));
+    RenderText(std::to_string(fps), 10, glutGet(GLUT_WINDOW_HEIGHT) - 30, 0.8f, glm::vec3(1.0, 0.0f, 0.0f));
 
     // swap buffer with the new generated one
     glutSwapBuffers();
@@ -251,8 +251,6 @@ void measureFps(void)
     clock_t this_frame = clock();
 
     fps = (CLOCKS_PER_SEC/((float)(this_frame - last_frame)));
-
-    printf("%f\n", fps);
 
     last_frame = this_frame;
 }
