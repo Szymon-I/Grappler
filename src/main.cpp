@@ -10,6 +10,7 @@
 #include "libs/obj_loader.hpp"
 #include "libs/shader_stuff.h"
 #include "libs/texture_loader.hpp"
+#include "libs/text-ft.h"
 
 #include "main.hpp"
 #include "ProgramHandler.hpp"
