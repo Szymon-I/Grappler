@@ -7,6 +7,7 @@ layout( location = 3 ) in mat4 matModelInst;
 
 uniform mat4 matProj;
 uniform mat4 matView;
+uniform float move;
 
 out vec4 inoutPos;
 out vec2 inoutUV;
@@ -14,8 +15,9 @@ out vec2 inoutUV;
 
 void main()
 {
-	gl_Position = matProj * matView * matModelInst * inPosition;
 
+	gl_Position = matProj * matView * matModelInst * inPosition;
+    gl_Position.y -= move;
 	inoutPos = inPosition;
 	inoutUV = inUV;
 }
