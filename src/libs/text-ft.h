@@ -81,8 +81,8 @@ void InitText(char *font_filename, int font_size)
 
     // Fonts
     text_program = glCreateProgram();
-    glAttachShader( text_program, LoadShader(GL_VERTEX_SHADER, "text-ft-vertex.glsl"));
-    glAttachShader( text_program, LoadShader(GL_FRAGMENT_SHADER, "text-ft-fragment.glsl"));
+    glAttachShader( text_program, LoadShader(GL_VERTEX_SHADER, "shaders/text-ft-vertex.glsl"));
+    glAttachShader( text_program, LoadShader(GL_FRAGMENT_SHADER, "shaders/text-ft-fragment.glsl"));
     LinkAndValidateProgram( text_program );
 
     int Window_Width = glutGet(GLUT_WINDOW_WIDTH);

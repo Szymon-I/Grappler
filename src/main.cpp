@@ -104,6 +104,8 @@ void DisplayScene()
     sow_trees();
     monkey_circle();
 
+    RenderText(std::to_string(fps), 25, 450, 0.5f, glm::vec3(1.0, 0.0f, 0.0f));
+
     // swap buffer with the new generated one
     glutSwapBuffers();
 }
@@ -211,6 +213,8 @@ void Initialize()
     AllPrograms.push_back(virus_program);
     AllPrograms.push_back(wolf_program);
     AllPrograms.push_back(hook_program);
+
+    InitText("libs/arial.ttf", 36);
 }
 // clean all allocated data for objects
 void clean(void)
@@ -300,7 +304,7 @@ int main(int argc, char *argv[])
     glutPassiveMotionFunc(MouseMotion);
     glutKeyboardFunc(Keyboard);
     glutSpecialFunc(SpecialKeys);
-    glutTimerFunc(1000.0 / 60.0, timer, 0);
+    glutTimerFunc(1000.0 / MAX_FPS, timer, 0);
 
     glutMainLoop();
 
