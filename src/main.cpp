@@ -18,12 +18,12 @@
 #include "IOHandler.hpp"
 #include "Menu.hpp"
 #include "Material.hpp"
+#include "Text.hpp"
 
 #define MONKEY_N 4
 #define TREE_N 3
 #define FLOWER_N 100
 #define M_PI 3.14159265358979323846
-#define MAX_FPS 58.0
 
 // Global variables
 
@@ -56,6 +56,10 @@ Grappler grappler;
 
 // Global light cointaining all lights on scene
 Light global_light;
+
+// Texts displayed on screen
+Text textFPS;
+Text textFPSCAP;
 
 // FPS
 float fps = 0.0;
@@ -104,7 +108,11 @@ void DisplayScene()
     sow_trees();
     monkey_circle();
 
-    RenderText(std::to_string(fps), 10, glutGet(GLUT_WINDOW_HEIGHT) - 30, 0.8f, glm::vec3(1.0, 0.0f, 0.0f));
+    textFPSCAP.RenderText("FPS CAP: 59.9", 10, glutGet(GLUT_WINDOW_HEIGHT) - 30, 0.8f, glm::vec3(0.0, 1.0f, 0.0f));
+    char str[10];
+    snprintf(str, sizeof(str), "%.1f", fps);
+    std::string s(str);
+    textFPS.RenderText("FPS: " + s, 10, glutGet(GLUT_WINDOW_HEIGHT) - 70, 0.8f, glm::vec3(1.0, 0.0f, 0.0f));
 
     // swap buffer with the new generated one
     glutSwapBuffers();
@@ -214,7 +222,8 @@ void Initialize()
     AllPrograms.push_back(wolf_program);
     AllPrograms.push_back(hook_program);
 
-    InitText("libs/arial.ttf", 36);
+    textFPSCAP.InitText("libs/FFF_Tusj.ttf", 36);
+    textFPS.InitText("libs/arial.ttf", 36);
 }
 // clean all allocated data for objects
 void clean(void)
@@ -259,7 +268,7 @@ void measureFps(void)
 void timer(int)
 {
     glutPostRedisplay();
-    glutTimerFunc(1000.0 / MAX_FPS, timer, 0);
+    glutTimerFunc(17, timer, 0);
     measureFps();
 }
 
@@ -302,7 +311,7 @@ int main(int argc, char *argv[])
     glutPassiveMotionFunc(MouseMotion);
     glutKeyboardFunc(Keyboard);
     glutSpecialFunc(SpecialKeys);
-    glutTimerFunc(1000.0 / MAX_FPS, timer, 0);
+    glutTimerFunc(17, timer, 0);
 
     glutMainLoop();
 
