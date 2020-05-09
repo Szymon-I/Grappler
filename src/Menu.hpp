@@ -55,7 +55,6 @@ void CameraMenu(int value)
         camera.set_mode(THIRD_PERSON, grappler.get_position());
         break;
     }
-    glutPostRedisplay();
 }
 // shader menu
 void ShaderMenu(int value)

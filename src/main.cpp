@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <time.h>
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 #include <glm/glm.hpp>
@@ -21,6 +22,7 @@
 #define TREE_N 3
 #define FLOWER_N 100
 #define M_PI 3.14159265358979323846
+#define MAX_FPS 58.0
 
 // Global variables
 
@@ -53,6 +55,9 @@ Grappler grappler;
 
 // Global light cointaining all lights on scene
 Light global_light;
+
+// FPS
+float fps = 0.0;
 
 // function prototypes
 void monkey_circle();
@@ -234,11 +239,25 @@ void getSerialHandler()
         grappler.move_grappler(serial.pass_message());
     }
 }
+
+void measureFps(void)
+{
+    static clock_t last_frame = 0.0;
+    clock_t this_frame = clock();
+
+    fps = (CLOCKS_PER_SEC/((float)(this_frame - last_frame)));
+
+    printf("%f\n", fps);
+
+    last_frame = this_frame;
+}
+
 // timer for rendering view in const fps
 void timer(int)
 {
     glutPostRedisplay();
-    glutTimerFunc(1000.0 / 60.0, timer, 0);
+    glutTimerFunc(1000.0 / MAX_FPS, timer, 0);
+    measureFps();
 }
 
 // main function

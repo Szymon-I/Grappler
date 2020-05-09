@@ -78,7 +78,6 @@ void Keyboard(unsigned char key, int x, int y)
 			break;
 		}
 	}
-	glutPostRedisplay();
 }
 
 // handle mouse buttons events
