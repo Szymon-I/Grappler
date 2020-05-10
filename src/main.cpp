@@ -25,7 +25,7 @@
 #define M_PI 3.14159265358979323846
 
 // Global variables
-
+bool serial_attached = false;
 // Global camera
 Camera camera;
 
@@ -258,7 +258,7 @@ void measureFps(void)
     static clock_t last_frame = 0.0;
     clock_t this_frame = clock();
 
-    fps = (CLOCKS_PER_SEC/((float)(this_frame - last_frame)));
+    fps = (CLOCKS_PER_SEC / ((float)(this_frame - last_frame)));
 
     last_frame = this_frame;
 }
@@ -298,11 +298,14 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    // init serial with two main arguments
-    serial.init(argv[1], atoi(argv[2]));
-
     Initialize();
-    glutIdleFunc(getSerialHandler);
+    // init serial with two main arguments
+    if (argc >= 3)
+    {
+        serial_attached = true;
+        serial.init(argv[1], atoi(argv[2]));
+        glutIdleFunc(getSerialHandler);
+    }
     glutDisplayFunc(DisplayScene);
     glutReshapeFunc(Reshape);
     glutMouseFunc(MouseButton);
