@@ -55,6 +55,8 @@ private:
 	string obj_path;
 	string texture;
 
+	float collision_radius;
+
 	// add shaders paths
 	void assign_shaders(string vertex_shader, string fragment_shader)
 	{
@@ -177,6 +179,17 @@ private:
 		return Matrix_proj * Matrix_mv;
 	}
 
+	float get_colision_radius()
+	{
+		float radius = 0.0f;
+		for (int i = 0; i < OBJ_vertices.size(); i++)
+		{
+			float len = glm::length(OBJ_vertices[i]);
+			radius = max(len, radius);
+		}
+		return radius;
+	}
+
 public:
 	// create program with given parameters
 	void init(string obj_path, string vertex_shader, string fragment_shader, string texture, Light light, std::vector<glm::vec3> material, bool reset_mods = true, bool reload_obj = true)
@@ -194,6 +207,8 @@ public:
 		if (reload_obj)
 		{
 			loadOBJ(obj_path.c_str(), this->OBJ_vertices, this->OBJ_uvs, this->OBJ_normals);
+			this->collision_radius = get_colision_radius();
+			printf("r=%f\n", collision_radius);
 		}
 		// if reset modifications is needed
 		if (reset_mods)
