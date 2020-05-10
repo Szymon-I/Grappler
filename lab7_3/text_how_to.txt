@@ -1,0 +1,32 @@
+// ------------------------------------------
+// Rendering tekstu w OpenGL za pomoca FreeType
+// Tutorial:
+// https://learnopengl.com/In-Practice/Text-Rendering
+// ------------------------------------------
+
+
+// 0. Potrzebne nam sa:
+
+a) biblioteka freetype: https://www.freetype.org
+b) plik naglowkowy text-ft.h z funkcjami
+c) shader wierzcholkow text-ft-vertex.glsl
+d) shader fragmentow text-ft-fragment.glsl
+e) plik fontu np. arial.ttf
+
+
+// 1. Wczytanie plikow naglowkowych
+
+#include "text-ft.h"
+
+
+// 2. Inicjalizacja funkcji (jednokrotnie w funkcji inicjalizujacej)
+//InitText(plik_fontu, rozmiar);
+
+InitText("arial.ttf", 36);
+
+
+// 3. Rysowanie na ekranie za pomoca funkcji
+// void RenderText(string, x, y, skala, kolor);
+
+RenderText("ESC - Exit", 25, 450, 0.5f, glm::vec3(1.0, 0.0f, 0.0f));
+
