@@ -22,6 +22,7 @@ using namespace std;
 class ProgramHandler
 {
 private:
+	int _id;
 	// opengl masks
 	GLuint program;
 	GLuint vBuffer_coord;
@@ -191,6 +192,11 @@ private:
 	}
 
 public:
+	ProgramHandler()
+	{
+		static int id = 0;
+		_id = id++;
+	}
 	// create program with given parameters
 	void init(string obj_path, string vertex_shader, string fragment_shader, string texture, Light light, std::vector<glm::vec3> material, bool reset_mods = true, bool reload_obj = true)
 	{
@@ -209,6 +215,7 @@ public:
 			loadOBJ(obj_path.c_str(), this->OBJ_vertices, this->OBJ_uvs, this->OBJ_normals);
 			this->collision_radius = get_colision_radius();
 			printf("r=%f\n", collision_radius);
+			printf("id=%d\n", _id);
 		}
 		// if reset modifications is needed
 		if (reset_mods)
@@ -277,5 +284,11 @@ public:
 		glDeleteBuffers(1, &vBuffer_uv);
 		glDeleteBuffers(1, &vBuffer_normal);
 		glDeleteVertexArrays(1, &vArray);
+	}
+	int get_id(){
+		return this->_id;
+	}
+	float get_collision_radius(){
+		return this->collision_radius;
 	}
 };

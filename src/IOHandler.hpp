@@ -46,16 +46,16 @@ void Keyboard(unsigned char key, int x, int y)
 		switch (key)
 		{
 		case CAMERA_MOVE_RIGHT_KEY:
-			grappler.move_grappler(std::to_string(DATA_NORMALIZER) + "/0.0/0.0");
+			grappler.move_grappler(std::to_string(DATA_NORMALIZER) + "/0.0/0.0", AllPrograms);
 			break;
 		case CAMERA_MOVE_LEFT_KEY:
-			grappler.move_grappler(std::to_string(-DATA_NORMALIZER) + "/0.0/0.0");
+			grappler.move_grappler(std::to_string(-DATA_NORMALIZER) + "/0.0/0.0", AllPrograms);
 			break;
 		case CAMERA_MOVE_BACK_KEY:
-			grappler.move_grappler("0.0/" + std::to_string(DATA_NORMALIZER) + "/0.0");
+			grappler.move_grappler("0.0/" + std::to_string(DATA_NORMALIZER) + "/0.0", AllPrograms);
 			break;
 		case CAMERA_MOVE_FORWARD_KEY:
-			grappler.move_grappler("0.0/" + std::to_string(-DATA_NORMALIZER) + "/0.0");
+			grappler.move_grappler("0.0/" + std::to_string(-DATA_NORMALIZER) + "/0.0", AllPrograms);
 			break;
 		}
 	}

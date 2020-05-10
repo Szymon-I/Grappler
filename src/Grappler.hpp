@@ -63,6 +63,22 @@ private:
     {
         printf("x: %f \t y: %f \t z: %f\n", position.x, position.y, position.z);
     }
+    bool is_colliding(vector<ProgramHandler> AllPrograms)
+    {
+        for (int i = 0; i < AllPrograms.size(); i++)
+        {
+            if (this->program.get_id() == AllPrograms[i].get_id())
+            {
+                continue;
+            }
+            glm::vec3 obj_pos = AllPrograms[i].get_translate();
+            if (glm::distance(obj_pos, this->position) <= (this->program.get_collision_radius() + AllPrograms[i].get_collision_radius()))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
 public:
     // initialize grappler program with object program and settings
@@ -88,13 +104,17 @@ public:
         program.set_translate(position);
     }
     // move grappler
-    void move_grappler(std::string data)
+    void move_grappler(std::string data, vector<ProgramHandler> AllPrograms)
     {
         parse_position(data);
         if (monitor_position)
         {
             print_position();
         }
+        // if (!is_colliding(AllPrograms))
+        // {
+        //     program.set_translate(position);
+        // }
         program.set_translate(position);
     }
     // display grappler
