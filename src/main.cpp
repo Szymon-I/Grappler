@@ -203,7 +203,7 @@ void Initialize()
 
     for (int i = 0; i < MONKEY_N; i++)
     {
-        monkey_programs[i].init("objects/monkey.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/monkey.png", global_light, Material::BlackRubber);
+        monkey_programs[i].init("objects/monkey.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/monkey.png", global_light, Material::BlackRubber, false);
         AllPrograms.push_back(monkey_programs[i]);
     }
     for (int i = 0; i < FLOWER_N; i++)
@@ -212,7 +212,7 @@ void Initialize()
         AllPrograms.push_back(flower_program[i]);
     }
 
-    wolf_program.init("objects/wolf.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/wolf.png", global_light, Material::WhiteRubber, false);
+    wolf_program.init("objects/wolf.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/wolf.png", global_light, Material::WhiteRubber);
 
     // add all remaining objects/programs to global list
     AllPrograms.push_back(ground_program);
