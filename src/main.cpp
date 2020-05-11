@@ -169,6 +169,8 @@ void Reshape(int width, int height)
     glViewport(0, 0, width, height);
     camera.set_window_dimenstions(width, height);
     Matrix_proj = glm::perspectiveFov(glm::radians(60.0f), (float)width, (float)height, 0.1f, 1000.0f);
+    textFPSCAP.InitText("libs/FFF_Tusj.ttf", 36);
+    textFPS.InitText("libs/arial.ttf", 36);
 }
 // initializations of all objects
 void Initialize()
@@ -220,9 +222,6 @@ void Initialize()
     AllPrograms.push_back(virus_program);
     AllPrograms.push_back(wolf_program);
     AllPrograms.push_back(hook_program);
-
-    textFPSCAP.InitText("libs/FFF_Tusj.ttf", 36);
-    textFPS.InitText("libs/arial.ttf", 36);
 }
 // clean all allocated data for objects
 void clean(void)
