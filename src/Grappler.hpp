@@ -21,6 +21,7 @@ private:
     // program for grappler object and actual position of it
     ProgramHandler program;
     glm::vec3 position = {0.0f, 0.0f, 0.0f};
+    glm::vec3 next_position = {0.0f, 0.0f, 0.0f};
     float sensitivity;
     float y_sensitivity = 0.0f;
     bool monitor_position = false;
@@ -47,15 +48,19 @@ private:
             s.erase(0, pos + delimiter.length());
         }
         pos_s[i] = s;
-        position.x += parse_data_float(pos_s[0]) * sensitivity;
-        position.z += parse_data_float(pos_s[1]) * sensitivity;
+        next_position.x = position.x + parse_data_float(pos_s[0]) * sensitivity;
+        next_position.z = position.z + parse_data_float(pos_s[1]) * sensitivity;
+
+        // position.x += parse_data_float(pos_s[0]) * sensitivity;
+        // position.z += parse_data_float(pos_s[1]) * sensitivity;
 
         // y position is absolute
         float y_pos = parse_data_float(pos_s[2]);
-        if (abs(prev_y - y_pos) > Y_THRESHOLD)
+        if (abs(position.y - y_pos) > Y_THRESHOLD)
         {
-            position.y = parse_data_float(pos_s[2]) * y_sensitivity + Y_OFFSET;
-            prev_y = y_pos;
+            next_position.y = parse_data_float(pos_s[2]) * y_sensitivity + Y_OFFSET;
+            //position.y = parse_data_float(pos_s[2]) * y_sensitivity + Y_OFFSET;
+            //prev_y = y_pos;
         }
     }
     // print position of grappler
@@ -72,7 +77,7 @@ private:
                 continue;
             }
             glm::vec3 obj_pos = AllPrograms[i].get_translate();
-            if ((float)glm::length(obj_pos - this->position) <= (this->program.get_collision_radius() + AllPrograms[i].get_collision_radius()))
+            if ((float)glm::length(obj_pos - this->next_position) <= (this->program.get_collision_radius() + AllPrograms[i].get_collision_radius()))
             {
                 return true;
             }
@@ -85,6 +90,8 @@ public:
     void init(ProgramHandler program, float sensitivity = 1, float y_sensitivity = 5)
     {
         this->program = program;
+        this->position = program.get_translate();
+        this->next_position = this->position;
         this->sensitivity = sensitivity;
         this->y_sensitivity = y_sensitivity;
     }
@@ -101,19 +108,22 @@ public:
     void set_position(glm::vec3 position)
     {
         this->position = position;
+        this->next_position = this->position;
         program.set_translate(position);
     }
     // move grappler
     void move_grappler(std::string data, vector<ProgramHandler> AllPrograms)
     {
-        parse_position(data);
         if (monitor_position)
         {
             print_position();
         }
+        parse_position(data);
         if (!is_colliding(AllPrograms))
         {
-            program.set_translate(position);
+
+            program.set_translate(this->next_position);
+            this->position = this->next_position;
         }
         else
         {
