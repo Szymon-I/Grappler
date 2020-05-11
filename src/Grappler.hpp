@@ -67,12 +67,12 @@ private:
     {
         for (int i = 0; i < AllPrograms.size(); i++)
         {
-            if (this->program.get_id() == AllPrograms[i].get_id())
+            if (this->program.get_id() == AllPrograms[i].get_id() || !AllPrograms[i].get_collidable())
             {
                 continue;
             }
             glm::vec3 obj_pos = AllPrograms[i].get_translate();
-            if (glm::distance(obj_pos, this->position) <= (this->program.get_collision_radius() + AllPrograms[i].get_collision_radius()))
+            if ((float)glm::length(obj_pos - this->position) <= (this->program.get_collision_radius() + AllPrograms[i].get_collision_radius()))
             {
                 return true;
             }
@@ -111,11 +111,15 @@ public:
         {
             print_position();
         }
-        // if (!is_colliding(AllPrograms))
-        // {
-        //     program.set_translate(position);
-        // }
-        program.set_translate(position);
+        if (!is_colliding(AllPrograms))
+        {
+            program.set_translate(position);
+        }
+        else
+        {
+            printf("colliding\n");
+        }
+        //program.set_translate(position);
     }
     // display grappler
     void display_grappler(glm::mat4x4 Matrix_proj, glm::mat4x4 Matrix_mv, Camera camera)

@@ -183,9 +183,9 @@ void Initialize()
     global_light.init(ambient, diffuse, position);
 
     // initialize all objects
-    ground_program.init("objects/ground.obj", "shaders/vertex_ground.glsl", "shaders/fragment.glsl", "textures/ground.png", global_light, Material::Brass);
-    sky_program1.init("objects/sky.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/sky.png", global_light, Material::Tin);
-    virus_program.init("objects/virus.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/virus.png", global_light, Material::Tin);
+    ground_program.init("objects/ground.obj", "shaders/vertex_ground.glsl", "shaders/fragment.glsl", "textures/ground.png", global_light, Material::Brass, false);
+    sky_program1.init("objects/sky.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/sky.png", global_light, Material::Tin, false);
+    virus_program.init("objects/virus.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/virus.png", global_light, Material::Tin, false);
 
     hook_program.init("objects/hook.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/hook.png", global_light, Material::Tin);
     hook_program.set_scale(glm::vec3(0.5f, 0.5f, 0.5f));
@@ -197,7 +197,7 @@ void Initialize()
 
     for (int i = 0; i < TREE_N; i++)
     {
-        tree_programs[i].init("objects/tree.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/tree.png", global_light, Material::Emerald);
+        tree_programs[i].init("objects/tree.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/tree.png", global_light, Material::Emerald, false);
         AllPrograms.push_back(tree_programs[i]);
     }
 
@@ -208,11 +208,11 @@ void Initialize()
     }
     for (int i = 0; i < FLOWER_N; i++)
     {
-        flower_program[i].init("objects/flower.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/flower.png", global_light, Material::Emerald);
+        flower_program[i].init("objects/flower.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/flower.png", global_light, Material::Emerald, false);
         AllPrograms.push_back(flower_program[i]);
     }
 
-    wolf_program.init("objects/wolf.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/wolf.png", global_light, Material::WhiteRubber);
+    wolf_program.init("objects/wolf.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/wolf.png", global_light, Material::WhiteRubber, false);
 
     // add all remaining objects/programs to global list
     AllPrograms.push_back(ground_program);

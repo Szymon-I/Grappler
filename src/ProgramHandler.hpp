@@ -56,8 +56,8 @@ private:
 	string obj_path;
 	string texture;
 
-	float collision_radius;
-
+	glm::vec3 radius_vector;
+	bool collidable;
 	// add shaders paths
 	void assign_shaders(string vertex_shader, string fragment_shader)
 	{
@@ -180,15 +180,20 @@ private:
 		return Matrix_proj * Matrix_mv;
 	}
 
-	float get_colision_radius()
+	glm::vec3 get_colision_vector()
 	{
 		float radius = 0.0f;
+		glm::vec3 radius_vector;
 		for (int i = 0; i < OBJ_vertices.size(); i++)
 		{
 			float len = glm::length(OBJ_vertices[i]);
-			radius = max(len, radius);
+			if (len > radius)
+			{
+				radius_vector = OBJ_vertices[i];
+				radius = len;
+			}
 		}
-		return radius;
+		return radius_vector;
 	}
 
 public:
@@ -198,7 +203,7 @@ public:
 		_id = id++;
 	}
 	// create program with given parameters
-	void init(string obj_path, string vertex_shader, string fragment_shader, string texture, Light light, std::vector<glm::vec3> material, bool reset_mods = true, bool reload_obj = true)
+	void init(string obj_path, string vertex_shader, string fragment_shader, string texture, Light light, std::vector<glm::vec3> material, bool collidable = true, bool reset_mods = true, bool reload_obj = true)
 	{
 		this->program = glCreateProgram();
 		this->obj_path = obj_path;
@@ -207,14 +212,15 @@ public:
 		this->global_material = material;
 		this->vertex_shader_path = vertex_shader;
 		this->fragment_shader_path = fragment_shader;
+		this->collidable = collidable;
 		assign_shaders(vertex_shader, fragment_shader);
 		load_texture(texture);
 		// if object reload is needed
 		if (reload_obj)
 		{
 			loadOBJ(obj_path.c_str(), this->OBJ_vertices, this->OBJ_uvs, this->OBJ_normals);
-			this->collision_radius = get_colision_radius();
-			printf("r=%f\n", collision_radius);
+			this->radius_vector = get_colision_vector();
+			//printf("r=%f\n", collision_radius);
 			printf("id=%d\n", _id);
 		}
 		// if reset modifications is needed
@@ -247,6 +253,10 @@ public:
 	void set_scale(glm::vec3 scale)
 	{
 		this->custom_scale = scale;
+	}
+	glm::vec3 get_scale()
+	{
+		return this->custom_scale;
 	}
 	// set object rotation
 	void set_rotation(glm::vec3 rotation_matrix, GLfloat rotation)
@@ -285,10 +295,16 @@ public:
 		glDeleteBuffers(1, &vBuffer_normal);
 		glDeleteVertexArrays(1, &vArray);
 	}
-	int get_id(){
+	int get_id()
+	{
 		return this->_id;
 	}
-	float get_collision_radius(){
-		return this->collision_radius;
+	float get_collision_radius()
+	{
+		return glm::length(this->radius_vector * get_scale());
+	}
+	bool get_collidable()
+	{
+		return this->collidable;
 	}
 };
