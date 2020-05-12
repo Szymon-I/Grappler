@@ -19,7 +19,7 @@
 				"-L/usr/local/lib",
 				"-lfreetype",
 				"-o",
-				"${workspaceFolder}/run.out",
+				"${workspaceFolder}/src/run.out",
 			],
 			"options": {
 				"cwd": "/usr/bin"
