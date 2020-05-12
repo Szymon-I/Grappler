@@ -15,6 +15,7 @@
 #define Y_THRESHOLD 0.02
 #define DATA_NORMALIZER 1000.0
 #define Y_OFFSET 3.0
+#define MOVEMENT_THRESHOLD 0.05
 class Grappler
 {
 private:
@@ -119,6 +120,10 @@ public:
             print_position();
         }
         parse_position(data);
+        if ((float)glm::length(this->position - this->next_position) < MOVEMENT_THRESHOLD)
+        {
+            return;
+        }
         if (!is_colliding(AllPrograms))
         {
 
