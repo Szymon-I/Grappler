@@ -281,8 +281,8 @@ int main(int argc, char *argv[])
     {
         serial_attached = true;
         serial.init(argv[1], atoi(argv[2]));
-        glutIdleFunc(getSerialHandler);
     }
+    glutIdleFunc(getSerialHandler);
     glutDisplayFunc(DisplayScene);
     glutReshapeFunc(Reshape);
     glutMouseFunc(MouseButton);
