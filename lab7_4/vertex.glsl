@@ -4,6 +4,7 @@ layout( location = 0 ) in vec4 inPosition;
 layout( location = 1 ) in vec2 inUV;
 layout( location = 2 ) in vec3 inNormal;
 layout( location = 3 ) in mat4 matModelInst;
+layout( location = 7 ) in mat4 matModelTranslate;
 
 uniform mat4 matProj;
 uniform mat4 matView;
@@ -16,7 +17,7 @@ out vec2 inoutUV;
 void main()
 {
 
-	gl_Position = matProj * matView * matModelInst * inPosition * matModel;
+	gl_Position = matProj * matView * matModelTranslate * matModel * matModelInst * inPosition;
     gl_Position.y -= move;
 
 	inoutPos = inPosition;

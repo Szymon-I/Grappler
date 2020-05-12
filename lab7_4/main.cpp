@@ -17,6 +17,7 @@ GLuint vBuffer_uv;
 GLuint vBuffer_normal;
 GLuint vArray;
 GLuint vInstances;
+GLuint vTranslates;
 
 // ---------------------------------------
 glm::mat4x4 matProj;
@@ -32,6 +33,7 @@ GLuint TextureID;
 
 const int Number_of_Viruses = 100;
 glm::mat4x4 Table_of_Viruses_matModel[Number_of_Viruses];
+glm::mat4x4 Table_of_Viruses_translates[Number_of_Viruses];
 
 float move = 0.0;
 
@@ -48,7 +50,10 @@ void DisplayScene()
 	matView = glm::rotate(matView, _scene_rotate_y, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	// Macierz modelu
+	move += 0.01;
 	matModel = glm::mat4x4(1.0);
+	//matModel = glm::translate(matModel, glm::vec3(0.0f, 0.0f, move));
+	matModel = glm::rotate(matModel, move, glm::vec3(0.0f, 1.0f, 0.0f));
 	// AKTYWUJEMY program (wazne! przed przekazaniem zmiennych uniform)
 	glUseProgram(program);
 
@@ -56,7 +61,6 @@ void DisplayScene()
 	glUniformMatrix4fv(glGetUniformLocation(program, "matProj"), 1, GL_FALSE, glm::value_ptr(matProj));
 	glUniformMatrix4fv(glGetUniformLocation(program, "matView"), 1, GL_FALSE, glm::value_ptr(matView));
 	glUniformMatrix4fv(glGetUniformLocation(program, "matModel"), 1, GL_FALSE, glm::value_ptr(matModel));
-	move += 0.01;
 	glUniform1f(glGetUniformLocation(program, "move"), move);
 
 	// AKTYWUJEMY tekstury
@@ -105,7 +109,8 @@ void Initialize()
 
 		float angle = (rand() % 314) / 100.0;
 
-		Table_of_Viruses_matModel[i] = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, z));
+		Table_of_Viruses_translates[i] = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, z));
+		Table_of_Viruses_matModel[i] = glm::mat4(1.0f);
 		Table_of_Viruses_matModel[i] = glm::rotate(Table_of_Viruses_matModel[i], angle, glm::vec3(0.0f, 1.0f, 0.0f));
 		Table_of_Viruses_matModel[i] = glm::scale(Table_of_Viruses_matModel[i], glm::vec3(scale, scale, scale));
 	}
@@ -182,6 +187,25 @@ void Initialize()
 	glVertexAttribDivisor(4, 1);
 	glVertexAttribDivisor(5, 1);
 	glVertexAttribDivisor(6, 1);
+
+
+	glGenBuffers(1, &vTranslates);
+	glBindBuffer(GL_ARRAY_BUFFER, vTranslates);
+	glBufferData(GL_ARRAY_BUFFER, Number_of_Viruses * sizeof(glm::mat4), &Table_of_Viruses_translates[0], GL_STATIC_DRAW);
+
+	glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void *)0);
+	glEnableVertexAttribArray(7);
+	glVertexAttribPointer(8, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void *)(sizeof(glm::vec4)));
+	glEnableVertexAttribArray(8);
+	glVertexAttribPointer(9, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void *)(2 * sizeof(glm::vec4)));
+	glEnableVertexAttribArray(9);
+	glVertexAttribPointer(10, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void *)(3 * sizeof(glm::vec4)));
+	glEnableVertexAttribArray(10);
+
+	glVertexAttribDivisor(7, 1);
+	glVertexAttribDivisor(8, 1);
+	glVertexAttribDivisor(9, 1);
+	glVertexAttribDivisor(10, 1);
 
 	// Inne ustawienia openGL i sceny
 	glEnable(GL_DEPTH_TEST);
