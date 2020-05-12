@@ -23,7 +23,6 @@
 #define TREE_N 3
 #define FLOWER_N 100
 #define M_PI 3.14159265358979323846
-#define PACKET_DIVISOR 4
 // Global variables
 bool serial_attached = false;
 // Global camera
@@ -245,16 +244,11 @@ void clean(void)
 // handle uart interrupt
 void getSerialHandler()
 {
-    static int packet_counter = 0;
     serial.handler();
-
-    if (serial.is_ready() && packet_counter >= PACKET_DIVISOR)
+    if (serial.is_ready())
     {
-
         grappler.move_grappler(serial.pass_message(), AllPrograms);
-        packet_counter = 0;
     }
-    packet_counter++;
 }
 
 void measureFps(void)
