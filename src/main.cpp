@@ -23,7 +23,6 @@
 #define TREE_N 3
 #define FLOWER_N 100
 #define M_PI 3.14159265358979323846
-#define PACKET_DIVISOR 4
 // Global variables
 bool serial_attached = false;
 // Global camera
@@ -40,7 +39,6 @@ ProgramHandler ground_program;
 ProgramHandler sky_program1;
 ProgramHandler monkey_programs[MONKEY_N];
 ProgramHandler tree_programs[TREE_N];
-ProgramHandler flower_program[FLOWER_N];
 ProgramHandler virus_program;
 ProgramHandler hook_program;
 
@@ -67,7 +65,6 @@ float fps = 0.0;
 void monkey_circle();
 void mod_mv();
 void sow_trees();
-void sow_flowers();
 
 // main function for displaying all content
 void DisplayScene()
@@ -103,7 +100,6 @@ void DisplayScene()
     wolf_program.display(Matrix_proj, Matrix_mv);
 
     // display other objects in loops
-    sow_flowers();
     sow_trees();
     monkey_circle();
 
@@ -117,16 +113,6 @@ void DisplayScene()
     glutSwapBuffers();
 }
 
-// display all flowers
-void sow_flowers(void)
-{
-    for (int i = 0; i < FLOWER_N; i++)
-    {
-        flower_program[i].set_translate(glm::vec3(i % 10, 0.0f, i / 10 + 6.0));
-        flower_program[i].set_scale(glm::vec3(0.5, 0.5, 0.5));
-        flower_program[i].display(Matrix_proj, Matrix_mv);
-    }
-}
 // display all trees
 void sow_trees()
 {
@@ -208,11 +194,6 @@ void Initialize()
         monkey_programs[i].init("objects/monkey.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/monkey.png", global_light, Material::BlackRubber, false);
         AllPrograms.push_back(monkey_programs[i]);
     }
-    for (int i = 0; i < FLOWER_N; i++)
-    {
-        flower_program[i].init("objects/flower.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/flower.png", global_light, Material::Emerald, false);
-        AllPrograms.push_back(flower_program[i]);
-    }
 
     wolf_program.init("objects/wolf.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/wolf.png", global_light, Material::WhiteRubber);
 
@@ -232,9 +213,6 @@ void clean(void)
     virus_program.clean();
     hook_program.clean();
 
-    for (int i = 0; i < FLOWER_N; i++)
-        flower_program[i].clean();
-
     for (int i = 0; i < TREE_N; i++)
         tree_programs[i].clean();
 
@@ -245,16 +223,11 @@ void clean(void)
 // handle uart interrupt
 void getSerialHandler()
 {
-    static int packet_counter = 0;
     serial.handler();
-
-    if (serial.is_ready() && packet_counter >= PACKET_DIVISOR)
+    if (serial.is_ready())
     {
-
         grappler.move_grappler(serial.pass_message(), AllPrograms);
-        packet_counter = 0;
     }
-    packet_counter++;
 }
 
 void measureFps(void)
@@ -321,8 +294,7 @@ int main(int argc, char *argv[])
 
     glutMainLoop();
 
-    // Cleaning();
-    //clean();
+    clean();
 
     return 0;
 }

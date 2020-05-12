@@ -88,4 +88,7 @@ public:
         serial.flushReceiver();
         return str_data;
     }
+    char flush_serial(){
+        return serial.flushReceiver();
+    }
 };
