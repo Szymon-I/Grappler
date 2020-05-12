@@ -1,0 +1,36 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "C/C++: g++ build active file",
+			"command": "/usr/bin/g++",
+			"args": [
+				"${workspaceFolder}/src/*.cpp",
+				"${workspaceFolder}/src/libs/*.cpp",
+				"-g",
+				"-lglut",
+				"-lGL",
+				"-lGLU",
+				"-lGLEW",
+				"-lSOIL",
+				"-I/usr/include/freetype2",
+				"-I/usr/include/libpng16",
+				"-L/usr/local/lib",
+				"-lfreetype",
+				"-o",
+				"${workspaceFolder}/run.out",
+			],
+			"options": {
+				"cwd": "/usr/bin"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		}
+	]
+}
