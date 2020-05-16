@@ -52,16 +52,11 @@ private:
         next_position.x = position.x + parse_data_float(pos_s[0]) * sensitivity;
         next_position.z = position.z + parse_data_float(pos_s[1]) * sensitivity;
 
-        // position.x += parse_data_float(pos_s[0]) * sensitivity;
-        // position.z += parse_data_float(pos_s[1]) * sensitivity;
-
         // y position is absolute
         float y_pos = parse_data_float(pos_s[2]);
         if (abs(position.y - y_pos) > Y_THRESHOLD)
         {
             next_position.y = parse_data_float(pos_s[2]) * y_sensitivity + Y_OFFSET;
-            //position.y = parse_data_float(pos_s[2]) * y_sensitivity + Y_OFFSET;
-            //prev_y = y_pos;
         }
     }
     // print position of grappler
@@ -69,16 +64,16 @@ private:
     {
         printf("x: %f \t y: %f \t z: %f\n", position.x, position.y, position.z);
     }
-    bool is_colliding(vector<ProgramHandler> AllPrograms)
+    bool is_colliding(vector<ProgramHandler *> AllPrograms)
     {
         for (int i = 0; i < AllPrograms.size(); i++)
         {
-            if (this->program.get_id() == AllPrograms[i].get_id() || !AllPrograms[i].get_collidable())
+            if (this->program.get_id() == AllPrograms[i]->get_id() || !AllPrograms[i]->get_collidable())
             {
                 continue;
             }
-            glm::vec3 obj_pos = AllPrograms[i].get_translate();
-            if ((float)glm::length(obj_pos - this->next_position) <= (this->program.get_collision_radius() + AllPrograms[i].get_collision_radius()))
+            glm::vec3 obj_pos = AllPrograms[i]->get_translate();
+            if ((float)glm::length(obj_pos - this->next_position) <= (this->program.get_collision_radius() + AllPrograms[i]->get_collision_radius()))
             {
                 return true;
             }
@@ -113,7 +108,7 @@ public:
         program.set_translate(position);
     }
     // move grappler
-    void move_grappler(std::string data, vector<ProgramHandler> AllPrograms)
+    void move_grappler(std::string data, vector<ProgramHandler *> AllPrograms)
     {
         if (monitor_position)
         {
