@@ -43,7 +43,7 @@ ProgramHandler virus_program;
 ProgramHandler hook_program;
 
 // all objects in list format
-vector<ProgramHandler> AllPrograms;
+vector<ProgramHandler*> AllPrograms;
 
 // Serial handler
 Serial serial;
@@ -115,7 +115,6 @@ void sow_trees_init()
     for (int i = 0; i < TREE_N; i++)
     {
         tree_programs[i].set_scale(glm::vec3(0.25f * (i + 1), 0.25f * (i + 1), 0.25f * (i + 1)));
-        tree_programs[i].display(Matrix_proj, Matrix_mv);
     }
 }
 void sow_trees()
@@ -145,14 +144,12 @@ void monkey_circle_init()
     for (int i = 0; i < MONKEY_N; i++)
     {
         monkey_programs[i].set_scale(glm::vec3(2.0f, 2.0f, 2.0f));
-        monkey_programs[i].display(Matrix_proj, Matrix_mv);
     }
 }
 void monkey_circle()
 {
     for (int i = 0; i < MONKEY_N; i++)
     {
-
         monkey_programs[i].display(Matrix_proj, Matrix_mv);
     }
 }
@@ -180,7 +177,7 @@ void Initialize()
     // initialize all objects
     ground_program.init("objects/ground.obj", "shaders/vertex_ground.glsl", "shaders/fragment.glsl", "textures/ground.png", global_light, Material::Brass, false);
     sky_program1.init("objects/sky.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/sky.png", global_light, Material::Tin, false);
-    virus_program.init("objects/virus.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/virus.png", global_light, Material::Tin, false);
+    virus_program.init("objects/virus.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/virus.png", global_light, Material::Tin);
 
     hook_program.init("objects/hook.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/hook.png", global_light, Material::Tin);
     hook_program.set_scale(glm::vec3(0.5f, 0.5f, 0.5f));
@@ -192,14 +189,14 @@ void Initialize()
 
     for (int i = 0; i < TREE_N; i++)
     {
-        tree_programs[i].init("objects/tree.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/tree.png", global_light, Material::Emerald, false);
-        AllPrograms.push_back(tree_programs[i]);
+        tree_programs[i].init("objects/tree.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/tree.png", global_light, Material::Emerald);
+        AllPrograms.push_back(&tree_programs[i]);
     }
 
     for (int i = 0; i < MONKEY_N; i++)
     {
-        monkey_programs[i].init("objects/monkey.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/monkey.png", global_light, Material::BlackRubber, false);
-        AllPrograms.push_back(monkey_programs[i]);
+        monkey_programs[i].init("objects/monkey.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/monkey.png", global_light, Material::BlackRubber);
+        AllPrograms.push_back(&monkey_programs[i]);
     }
 
     wolf_program.init("objects/wolf.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/wolf.png", global_light, Material::WhiteRubber);
@@ -220,11 +217,11 @@ void Initialize()
     sow_trees_init();
     monkey_circle_init();
     // add all remaining objects/programs to global list
-    AllPrograms.push_back(ground_program);
-    AllPrograms.push_back(sky_program1);
-    AllPrograms.push_back(virus_program);
-    AllPrograms.push_back(wolf_program);
-    AllPrograms.push_back(hook_program);
+    AllPrograms.push_back(&ground_program);
+    AllPrograms.push_back(&sky_program1);
+    AllPrograms.push_back(&virus_program);
+    AllPrograms.push_back(&wolf_program);
+    AllPrograms.push_back(&hook_program);
 }
 // clean all allocated data for objects
 void clean(void)
