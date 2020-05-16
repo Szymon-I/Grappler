@@ -36,9 +36,9 @@ void Menu(int value)
 // apply new shaders for every program
 void applyShaders(std::string shader_path)
 {
-    for (ProgramHandler program : AllPrograms)
+    for (ProgramHandler* program : AllPrograms)
     {
-        program.update_fragment_shader(shader_path);
+        program->update_fragment_shader(shader_path);
     };
 }
 // camera menu
