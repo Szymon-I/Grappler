@@ -86,20 +86,11 @@ void DisplayScene()
     // diplay ground
     ground_program.display(Matrix_proj, Matrix_mv);
 
-    // display sky objects
-    sky_program1.set_scale(glm::vec3(10.0, 10.0, 10.0));
     sky_program1.display(Matrix_proj, Matrix_mv);
 
-    // diplay virus
-    virus_program.set_rotation(glm::vec3(0.0, 1.0, 0.0), 0);
-    virus_program.set_rotation_animation(0.02);
-    virus_program.set_translate(glm::vec3(-6.0f, 0.5f, 6.0f));
     virus_program.display(Matrix_proj, Matrix_mv);
 
-    wolf_program.set_translate(glm::vec3(3.0f, 0.0f, 0.0f));
     wolf_program.display(Matrix_proj, Matrix_mv);
-
-    // display other objects in loops
     sow_trees();
     monkey_circle();
 
@@ -114,7 +105,7 @@ void DisplayScene()
 }
 
 // display all trees
-void sow_trees()
+void sow_trees_init()
 {
 
     tree_programs[0].set_translate(glm::vec3(15.0f, 0.0f, 0.0f));
@@ -127,8 +118,16 @@ void sow_trees()
         tree_programs[i].display(Matrix_proj, Matrix_mv);
     }
 }
+void sow_trees()
+{
+    for (int i = 0; i < TREE_N; i++)
+    {
+        tree_programs[i].display(Matrix_proj, Matrix_mv);
+    }
+}
+
 // display all monkeys
-void monkey_circle()
+void monkey_circle_init()
 {
     monkey_programs[0].set_rotation(glm::vec3(0.0, 1.0, 0.0), 0 * M_PI / 2);
     monkey_programs[0].set_translate(glm::vec3(0.0f, 0.0f, -10.0f));
@@ -146,6 +145,14 @@ void monkey_circle()
     for (int i = 0; i < MONKEY_N; i++)
     {
         monkey_programs[i].set_scale(glm::vec3(2.0f, 2.0f, 2.0f));
+        monkey_programs[i].display(Matrix_proj, Matrix_mv);
+    }
+}
+void monkey_circle()
+{
+    for (int i = 0; i < MONKEY_N; i++)
+    {
+
         monkey_programs[i].display(Matrix_proj, Matrix_mv);
     }
 }
@@ -197,6 +204,21 @@ void Initialize()
 
     wolf_program.init("objects/wolf.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/wolf.png", global_light, Material::WhiteRubber);
 
+    // custom translation
+
+    // display sky objects
+    sky_program1.set_scale(glm::vec3(10.0, 10.0, 10.0));
+
+    // diplay virus
+    virus_program.set_rotation(glm::vec3(0.0, 1.0, 0.0), 0);
+    virus_program.set_rotation_animation(0.02);
+    virus_program.set_translate(glm::vec3(-6.0f, 0.5f, 6.0f));
+
+    wolf_program.set_translate(glm::vec3(3.0f, 0.0f, 0.0f));
+
+    // display other objects in loops
+    sow_trees_init();
+    monkey_circle_init();
     // add all remaining objects/programs to global list
     AllPrograms.push_back(ground_program);
     AllPrograms.push_back(sky_program1);
