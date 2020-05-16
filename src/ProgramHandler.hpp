@@ -14,7 +14,7 @@
 #include "Light.hpp"
 #include "Material.hpp"
 #include "Camera.hpp"
-#define FLOAT_THRESHOLD 0.01
+#define FLOAT_THRESHOLD 0.005
 
 extern Camera camera;
 
@@ -40,6 +40,7 @@ private:
 	glm::vec3 custom_translate;
 	glm::vec3 custom_scale;
 	glm::vec3 custom_rotate;
+	GLfloat translate_factor = 0.0;
 	GLfloat translation_animation = 0.0;
 	GLfloat rotate_angle;
 	GLfloat rotation_animation = 0.0;
@@ -153,9 +154,21 @@ private:
 		this->rotation_applied = false;
 	}
 
+	void animation_util(void)
+	{
+		this->rotate_angle += this->rotation_animation;
+		if (translation_animation < -FLOAT_THRESHOLD || translation_animation > FLOAT_THRESHOLD)
+		{
+			this->translate_factor += this->translation_animation;
+			GLfloat r = sqrt(custom_translate.x * custom_translate.x + custom_translate.z * custom_translate.z);
+			this->custom_translate.x = cos(this->translate_factor) * r;
+			this->custom_translate.z = sin(this->translate_factor) * r;
+		}
+	}
 	// display final matrix
 	void display_util(glm::mat4x4 &Matrix_proj_mv)
 	{
+		animation_util();
 		global_light.move_light(1);
 
 		glBindVertexArray(vArray);
@@ -242,12 +255,6 @@ public:
 	void set_translate(glm::vec3 translate)
 	{
 		this->custom_translate = translate;
-		if (translation_animation < -FLOAT_THRESHOLD || translation_animation > FLOAT_THRESHOLD)
-		{
-			GLfloat r = sqrt(custom_translate.x * custom_translate.x + custom_translate.z * custom_translate.z);
-			this->custom_translate.x = cos(this->translation_animation) * r;
-			this->custom_translate.z = sin(this->translation_animation) * r;
-		}
 	}
 	// set object scale
 	void set_scale(glm::vec3 scale)
@@ -262,7 +269,6 @@ public:
 	void set_rotation(glm::vec3 rotation_matrix, GLfloat rotation)
 	{
 		this->custom_rotate = rotation_matrix;
-		this->rotate_angle = rotation + this->rotation_animation;
 		this->rotation_applied = true;
 	}
 	// set translation animation for object
