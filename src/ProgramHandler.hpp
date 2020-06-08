@@ -57,6 +57,18 @@ private:
 	string obj_path;
 	string texture;
 
+	// shadows
+	GLuint DepthMap_Program;
+	GLuint DepthMap_FrameBuffer;
+	GLuint DepthMap_Texture;
+	unsigned int DepthMap_Width = 2024*2, DepthMap_Height = 2024*2;
+	glm::vec3 Light_Direction = glm::normalize(glm::vec3(0.2, -0.8f, 1.1f));
+	glm::vec3 Light_Position = glm::vec3(0.0f, 10.0f, -5.0f);
+	glm::mat4 lightProj = glm::ortho(-30.0f, 30.0f, -30.0f, 30.0f, 1.0f, 30.5f);
+	glm::mat4 lightView = glm::lookAt(Light_Position,
+                                  Light_Position+Light_Direction,
+                                  glm::vec3( 0.0f, 1.0f,  0.0f));
+
 	glm::vec3 radius_vector;
 	bool collidable;
 	// add shaders paths
@@ -124,6 +136,37 @@ private:
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
+	void shadow_init(void)
+	{
+		glGenTextures(1, &DepthMap_Texture);
+		glBindTexture(GL_TEXTURE_2D, DepthMap_Texture);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, DepthMap_Width, DepthMap_Height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		//float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+		float borderColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+		// 2. Frame buffer object
+		glGenFramebuffers(1, &DepthMap_FrameBuffer);
+
+		// 3. Attaching texture to framebuffer
+		glBindFramebuffer(GL_FRAMEBUFFER, DepthMap_FrameBuffer);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, DepthMap_Texture, 0);
+		glDrawBuffer(GL_NONE);
+		glReadBuffer(GL_NONE);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		// 4. OpenGL program for shadow map
+		// Tworzenie potoku OpenGL
+		DepthMap_Program = glCreateProgram();
+		glAttachShader( DepthMap_Program, LoadShader(GL_VERTEX_SHADER, "shaders/depthmapvertex.glsl"));
+		glAttachShader( DepthMap_Program, LoadShader(GL_FRAGMENT_SHADER, "shaders/depthmapfragment.glsl"));
+		LinkAndValidateProgram( DepthMap_Program );
+	}
+
 	// pass unform data to shader
 	void uniform_matrix_send(glm::mat4x4 Matrix_proj_mv)
 	{
@@ -140,8 +183,12 @@ private:
 		glUniform3fv(glGetUniformLocation(program, "myMaterial.Specular"), 1, &(global_material[2])[0]);
 		glUniform1f(glGetUniformLocation(program, "myMaterial.Shininess"), global_material[3][0]);
 
+		glUniformMatrix4fv( glGetUniformLocation( program, "lightProj" ), 1, GL_FALSE, glm::value_ptr(lightProj) );
+		glUniformMatrix4fv( glGetUniformLocation( program, "lightView" ), 1, GL_FALSE, glm::value_ptr(lightView) );
+
 		glm::vec3 Camera_Position = camera.GetCameraPos();
 		glUniform3fv(glGetUniformLocation(program, "Camera_Position"), 1, &Camera_Position[0]);
+		glUniform3fv( glGetUniformLocation( program, "Light_Direction" ), 1, glm::value_ptr(Light_Direction) );
 	}
 
 	// reset all mods for object
@@ -165,22 +212,53 @@ private:
 			this->custom_translate.z = sin(this->translate_factor) * r;
 		}
 	}
+	// shadows util
+	void DrawShadowMap()
+	{
+		glViewport(0, 0, DepthMap_Width, DepthMap_Height);
+		glBindFramebuffer(GL_FRAMEBUFFER, DepthMap_FrameBuffer);
+		glClear(GL_DEPTH_BUFFER_BIT);
+
+		// AKTYWUJEMY program
+		glUseProgram( DepthMap_Program );
+
+			glUniformMatrix4fv( glGetUniformLocation( DepthMap_Program, "lightProj" ), 1, GL_FALSE, glm::value_ptr(lightProj) );
+			glUniformMatrix4fv( glGetUniformLocation( DepthMap_Program, "lightView" ), 1, GL_FALSE, glm::value_ptr(lightView) );
+
+			glBindVertexArray( vArray );
+			glDrawArrays( GL_TRIANGLES, 0, OBJ_vertices.size() );
+			glBindVertexArray( 0 );
+
+
+		// WYLACZAMY program
+		glUseProgram(0);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
+	}
 	// display final matrix
 	void display_util(glm::mat4x4 &Matrix_proj_mv)
 	{
 		animation_util();
 		global_light.move_light(1);
 
-		glBindVertexArray(vArray);
+		DrawShadowMap();
+
 		glUseProgram(this->program);
 
-		glActiveTexture(GL_TEXTURE0);
-
-		glBindTexture(GL_TEXTURE_2D, TextureID);
-		glUniform1i(glGetUniformLocation(program, "tex0"), 0);
 		uniform_matrix_send(Matrix_proj_mv);
 
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, TextureID);
+		glUniform1i(glGetUniformLocation(program, "tex0"), 0);
+
+		// Shadow map texture slot 1
+		glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, DepthMap_Texture);
+		glUniform1i(glGetUniformLocation( program, "shadowMap" ), 1);
+
+		glBindVertexArray(vArray);
 		glDrawArrays(GL_TRIANGLES, 0, OBJ_vertices.size());
+		glBindVertexArray( 0 );
 	}
 
 	// apply all modifications (scale/rotate/translate)
@@ -243,6 +321,8 @@ public:
 		}
 		// bind obj data to buffers used in shaders
 		bind_buffers();
+
+		shadow_init();
 	}
 
 	// change fragment shader for program

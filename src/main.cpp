@@ -84,7 +84,6 @@ void DisplayScene()
     grappler.display_grappler(Matrix_proj, Matrix_mv, camera);
 
     // diplay ground
-    ground_program.display(Matrix_proj, Matrix_mv);
 
     sky_program1.display(Matrix_proj, Matrix_mv);
 
@@ -93,6 +92,7 @@ void DisplayScene()
     wolf_program.display(Matrix_proj, Matrix_mv);
     sow_trees();
     monkey_circle();
+    ground_program.display(Matrix_proj, Matrix_mv);
 
     textFPSCAP.RenderText("FPS CAP: 59.9", 10, glutGet(GLUT_WINDOW_HEIGHT) - 30, 0.8f, glm::vec3(0.0, 1.0f, 0.0f));
     char str[10];
@@ -175,8 +175,8 @@ void Initialize()
     global_light.init(ambient, diffuse, position);
 
     // initialize all objects
-    ground_program.init("objects/ground.obj", "shaders/vertex_ground.glsl", "shaders/fragment.glsl", "textures/ground.png", global_light, Material::Brass, false);
-    sky_program1.init("objects/sky.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/sky.png", global_light, Material::Tin, false);
+    ground_program.init("objects/scene.obj", "shaders/vertex_ground.glsl", "shaders/fragment.glsl", "textures/ground.png", global_light, Material::Brass, false);
+    sky_program1.init("objects/sky.obj", "shaders/vertex.glsl", "shaders/fragment_sky.glsl", "textures/sky.png", global_light, Material::Tin, false);
     virus_program.init("objects/virus.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/virus.png", global_light, Material::Tin);
 
     hook_program.init("objects/hook.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/hook.png", global_light, Material::Tin);
