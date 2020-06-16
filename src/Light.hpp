@@ -7,9 +7,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-// max boundary for movement in z axis
-#define MAX_Z 10.0
-#define MIN_Z -10.0
+// max boundary for movement in x axis
+#define MAX_X 10.0
+#define MIN_X -10.0
 class Light{
 private:
     // light parameters
@@ -42,8 +42,8 @@ public:
         // move light
         void move_light(int index)
         {
-            if (Light_Position[index].z > MAX_Z || Light_Position[index].z < MIN_Z)
+            if (Light_Position[index].x > MAX_X || Light_Position[index].x < MIN_X)
 			    light_movement = -light_movement;
-		    Light_Position[index].z += light_movement;
+		    Light_Position[index].x += light_movement;
         }
 };

@@ -171,11 +171,11 @@ void Initialize()
     // initialize global light
     std::vector<glm::vec3> ambient = {glm::vec3(0.3, 0.3, 0.3), glm::vec3(0.3, 0.3, 0.3), glm::vec3(0.3, 0.3, 0.3)};
     std::vector<glm::vec3> diffuse = {glm::vec3(1.0, 1.0, 1.0), glm::vec3(1.0, 1.0, 1.0), glm::vec3(1.0, 1.0, 1.0)};
-    std::vector<glm::vec3> position = {glm::vec3(0.0, 1.0, 8.0), glm::vec3(0.0, 1.0, -8.0), glm::vec3(8.0, 1.0, 0.0)};
+    std::vector<glm::vec3> position = {glm::vec3(0.0, 1.0, -10.0), glm::vec3(0.0, 1.0, -10.0), glm::vec3(8.0, 1.0, -10.0)};
     global_light.init(ambient, diffuse, position);
 
     // initialize all objects
-    ground_program.init("objects/scene.obj", "shaders/vertex_ground.glsl", "shaders/fragment.glsl", "textures/ground.png", global_light, Material::Brass, false);
+    ground_program.init("objects/warehouse.obj", "shaders/vertex_ground.glsl", "shaders/fragment.glsl", "textures/ground.png", global_light, Material::Brass, false);
     sky_program1.init("objects/sky.obj", "shaders/vertex.glsl", "shaders/fragment_sky.glsl", "textures/sky.png", global_light, Material::Tin, false);
     virus_program.init("objects/virus.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/virus.png", global_light, Material::Tin);
 
@@ -199,7 +199,7 @@ void Initialize()
         AllPrograms.push_back(&monkey_programs[i]);
     }
 
-    wolf_program.init("objects/wolf.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/wolf.png", global_light, Material::WhiteRubber);
+    wolf_program.init("objects/box.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/wolf.png", global_light, Material::WhiteRubber);
 
     // custom translation
 
