@@ -19,14 +19,13 @@
 // available camera modes
 enum CAMERA_MODES
 {
-    FREE_CAMERA,
+    FREE_CAMERA = 0,
     THIRD_PERSON
 };
 
 class Camera
 {
 private:
-
     // angle of rotation for the camera direction
     GLfloat angle = 0.0;
     // actual vector representing the camera’s direction
