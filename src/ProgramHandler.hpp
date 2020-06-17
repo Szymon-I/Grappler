@@ -65,7 +65,7 @@ private:
 	GLuint DepthMap_Texture;
 	unsigned int DepthMap_Width = 2024 * 2, DepthMap_Height = 2024 * 2;
 	glm::vec3 Light_Direction = glm::normalize(glm::vec3(0.5, -0.8f, 1.1f));
-	glm::vec3 Light_Position = glm::vec3(-15.0f, 15.0f, -15.0f);
+	glm::vec3 Light_Position = glm::vec3(-15.0f, 5.0f, -15.0f);
 	glm::mat4 lightProj = glm::ortho(-30.0f, 30.0f, -30.0f, 30.0f, 1.0f, 30.5f);
 	glm::mat4 lightView = glm::lookAt(Light_Position,
 									  Light_Position + Light_Direction,
