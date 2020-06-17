@@ -41,6 +41,7 @@ glm::mat4x4 Matrix_proj_mv; // projection * modelview matrix
 // all objects
 ProgramHandler box_programs[BOX_N];
 ProgramHandler ground_program;
+ProgramHandler roof_program;
 ProgramHandler sky_program1;
 ProgramHandler monkey_programs[MONKEY_N];
 ProgramHandler tree_programs[TREE_N];
@@ -91,6 +92,7 @@ void DisplayScene()
 
     sky_program1.display(Matrix_proj, Matrix_mv);
     ground_program.display(Matrix_proj, Matrix_mv);
+    roof_program.display(Matrix_proj, Matrix_mv);
 
     display_boxes();
     show_fps();
@@ -139,6 +141,10 @@ void Initialize()
     ground_program.set_scale(glm::vec3(2.0f, 2.0f, 2.0f));
     AllPrograms.push_back(&ground_program);
 
+    roof_program.init("objects/roof.obj", "shaders/vertex_ground.glsl", "shaders/fragment.glsl", "textures/ground.png", global_light, Material::Brass, false);
+    roof_program.set_scale(glm::vec3(2.0f, 2.0f, 2.0f));
+    AllPrograms.push_back(&roof_program);
+
     sky_program1.init("objects/sky.obj", "shaders/vertex.glsl", "shaders/fragment_sky.glsl", "textures/sky.png", global_light, Material::Tin, false);
     sky_program1.set_scale(glm::vec3(40.0, 40.0, 40.0));
     AllPrograms.push_back(&sky_program1);
@@ -171,6 +177,7 @@ void Initialize()
 void clean(void)
 {
     ground_program.clean();
+    roof_program.clean();
     sky_program1.clean();
     hook_program.clean();
     for (Box *box : Boxes)
