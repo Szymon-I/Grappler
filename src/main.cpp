@@ -23,6 +23,10 @@
 #define TREE_N 3
 #define FLOWER_N 100
 #define M_PI 3.14159265358979323846
+#define BOX_N 5
+#define GRAVITATION_PULL 0.02
+// delay in ms for applying gravitation
+#define GRAVITATION_TIME 17
 // Global variables
 bool serial_attached = false;
 // Global camera
@@ -34,7 +38,7 @@ glm::mat4x4 Matrix_mv;      // modelview matrix
 glm::mat4x4 Matrix_proj_mv; // projection * modelview matrix
 
 // all objects
-ProgramHandler wolf_program;
+ProgramHandler box_programs[BOX_N];
 ProgramHandler ground_program;
 ProgramHandler sky_program1;
 ProgramHandler monkey_programs[MONKEY_N];
@@ -43,7 +47,7 @@ ProgramHandler virus_program;
 ProgramHandler hook_program;
 
 // all objects in list format
-vector<ProgramHandler*> AllPrograms;
+vector<ProgramHandler *> AllPrograms;
 
 // Serial handler
 Serial serial;
@@ -62,9 +66,9 @@ Text textFPSCAP;
 float fps = 0.0;
 
 // function prototypes
-void monkey_circle();
+void show_fps();
 void mod_mv();
-void sow_trees();
+void display_boxes();
 
 // main function for displaying all content
 void DisplayScene()
@@ -83,75 +87,29 @@ void DisplayScene()
     //movement is handled inside getSerialHandler
     grappler.display_grappler(Matrix_proj, Matrix_mv, camera);
 
-    // diplay ground
-
     sky_program1.display(Matrix_proj, Matrix_mv);
-
-    virus_program.display(Matrix_proj, Matrix_mv);
-
-    wolf_program.display(Matrix_proj, Matrix_mv);
-    sow_trees();
-    monkey_circle();
     ground_program.display(Matrix_proj, Matrix_mv);
 
+    display_boxes();
+
+    // swap buffer with the new generated one
+    glutSwapBuffers();
+}
+void display_boxes()
+{
+    for (int i = 0; i < BOX_N; i++)
+    {
+        box_programs[i].display(Matrix_proj, Matrix_mv);
+    }
+}
+
+void show_fps()
+{
     textFPSCAP.RenderText("FPS CAP: 59.9", 10, glutGet(GLUT_WINDOW_HEIGHT) - 30, 0.8f, glm::vec3(0.0, 1.0f, 0.0f));
     char str[10];
     snprintf(str, sizeof(str), "%.1f", fps);
     std::string s(str);
     textFPS.RenderText("FPS: " + s, 10, glutGet(GLUT_WINDOW_HEIGHT) - 70, 0.8f, glm::vec3(1.0, 0.0f, 0.0f));
-
-    // swap buffer with the new generated one
-    glutSwapBuffers();
-}
-
-// display all trees
-void sow_trees_init()
-{
-
-    tree_programs[0].set_translate(glm::vec3(15.0f, 0.0f, 0.0f));
-    tree_programs[1].set_translate(glm::vec3(20.0f, 0.0f, 10.0f));
-    tree_programs[2].set_translate(glm::vec3(-10.0f, 0.0f, -10.0f));
-
-    for (int i = 0; i < TREE_N; i++)
-    {
-        tree_programs[i].set_scale(glm::vec3(0.25f * (i + 1), 0.25f * (i + 1), 0.25f * (i + 1)));
-    }
-}
-void sow_trees()
-{
-    for (int i = 0; i < TREE_N; i++)
-    {
-        tree_programs[i].display(Matrix_proj, Matrix_mv);
-    }
-}
-
-// display all monkeys
-void monkey_circle_init()
-{
-    monkey_programs[0].set_rotation(glm::vec3(0.0, 1.0, 0.0), 0 * M_PI / 2);
-    monkey_programs[0].set_translate(glm::vec3(0.0f, 0.0f, -10.0f));
-
-    monkey_programs[1].set_rotation(glm::vec3(0.0, 1.0, 0.0), 2 * M_PI / 2);
-    monkey_programs[1].set_translation_animation(0.01);
-    monkey_programs[1].set_translate(glm::vec3(0.0f, 0.0f, 10.0f));
-
-    monkey_programs[2].set_rotation(glm::vec3(0.0, 1.0, 0.0), 1 * M_PI / 2);
-    monkey_programs[2].set_translate(glm::vec3(-10.0f, 0.0, 0.0f));
-
-    monkey_programs[3].set_rotation(glm::vec3(0.0, 1.0, 0.0), -1 * M_PI / 2);
-    monkey_programs[3].set_translate(glm::vec3(10.0f, 0.0, 0.0f));
-
-    for (int i = 0; i < MONKEY_N; i++)
-    {
-        monkey_programs[i].set_scale(glm::vec3(2.0f, 2.0f, 2.0f));
-    }
-}
-void monkey_circle()
-{
-    for (int i = 0; i < MONKEY_N; i++)
-    {
-        monkey_programs[i].display(Matrix_proj, Matrix_mv);
-    }
 }
 // change window size
 void Reshape(int width, int height)
@@ -176,67 +134,43 @@ void Initialize()
 
     // initialize all objects
     ground_program.init("objects/warehouse.obj", "shaders/vertex_ground.glsl", "shaders/fragment.glsl", "textures/ground.png", global_light, Material::Brass, false);
+    ground_program.set_scale(glm::vec3(2.0f, 2.0f, 2.0f));
+    AllPrograms.push_back(&ground_program);
+
     sky_program1.init("objects/sky.obj", "shaders/vertex.glsl", "shaders/fragment_sky.glsl", "textures/sky.png", global_light, Material::Tin, false);
-    virus_program.init("objects/virus.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/virus.png", global_light, Material::Tin);
+    sky_program1.set_scale(glm::vec3(40.0, 40.0, 40.0));
+    AllPrograms.push_back(&sky_program1);
 
     hook_program.init("objects/hook.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/hook.png", global_light, Material::Tin);
     hook_program.set_scale(glm::vec3(0.5f, 0.5f, 0.5f));
-
+    AllPrograms.push_back(&hook_program);
     // use hook as a grappler object
     grappler.init(hook_program, 0.2);
     // set starting position
     grappler.set_position(glm::vec3(0.0f, Y_OFFSET, 0.0f));
 
-    for (int i = 0; i < TREE_N; i++)
+    vector<glm::vec3> box_locations = {
+        glm::vec3(20.0f, 2.0f, 20.0f),
+        glm::vec3(20.0f, 4.0f, 0.0f),
+        glm::vec3(-20.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 3.0f, 20.0f),
+        glm::vec3(0.0f, 0.0f, -20.0f)};
+    for (int i = 0; i < BOX_N; i++)
     {
-        tree_programs[i].init("objects/tree.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/tree.png", global_light, Material::Emerald);
-        AllPrograms.push_back(&tree_programs[i]);
+        box_programs[i].init("objects/box.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/wolf.png", global_light, Material::WhiteRubber);
+        box_programs[i].set_translate(box_locations[i]);
+        AllPrograms.push_back(&box_programs[i]);
     }
-
-    for (int i = 0; i < MONKEY_N; i++)
-    {
-        monkey_programs[i].init("objects/monkey.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/monkey.png", global_light, Material::BlackRubber);
-        AllPrograms.push_back(&monkey_programs[i]);
-    }
-
-    wolf_program.init("objects/box.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/wolf.png", global_light, Material::WhiteRubber);
-
-    // custom translation
-
-    // display sky objects
-    sky_program1.set_scale(glm::vec3(10.0, 10.0, 10.0));
-
-    // diplay virus
-    virus_program.set_rotation(glm::vec3(0.0, 1.0, 0.0), 0);
-    virus_program.set_rotation_animation(0.02);
-    virus_program.set_translate(glm::vec3(-6.0f, 0.5f, 6.0f));
-
-    wolf_program.set_translate(glm::vec3(3.0f, 0.0f, 0.0f));
-
-    // display other objects in loops
-    sow_trees_init();
-    monkey_circle_init();
-    // add all remaining objects/programs to global list
-    AllPrograms.push_back(&ground_program);
-    AllPrograms.push_back(&sky_program1);
-    AllPrograms.push_back(&virus_program);
-    AllPrograms.push_back(&wolf_program);
-    AllPrograms.push_back(&hook_program);
 }
 // clean all allocated data for objects
 void clean(void)
 {
-    wolf_program.clean();
     ground_program.clean();
     sky_program1.clean();
-    virus_program.clean();
     hook_program.clean();
 
-    for (int i = 0; i < TREE_N; i++)
-        tree_programs[i].clean();
-
-    for (int i = 0; i < MONKEY_N; i++)
-        monkey_programs[i].clean();
+    for (int i = 0; i < BOX_N; i++)
+        box_programs[i].clean();
 }
 
 // handle uart interrupt
@@ -257,6 +191,28 @@ void measureFps(void)
     fps = (CLOCKS_PER_SEC / ((float)(this_frame - last_frame)));
 
     last_frame = this_frame;
+}
+void gravitation(int x)
+{
+    bool applied = false;
+    for (int i = 0; i < BOX_N; i++)
+    {
+        glm::vec3 pos = box_programs[i].get_translate();
+        if (pos.y>0){
+            applied=true;
+            float new_y = pos.y-GRAVITATION_PULL;
+            if (new_y<0){
+                box_programs[i].set_translate(glm::vec3(pos.x,0.0f,pos.z));
+            }
+            else{
+                box_programs[i].set_translate(glm::vec3(pos.x,new_y,pos.z));
+            }
+        }
+    }
+    if (applied){
+        glutPostRedisplay();
+    }
+    glutTimerFunc(GRAVITATION_TIME, gravitation, 0);
 }
 
 // timer for rendering view in const fps
@@ -310,7 +266,7 @@ int main(int argc, char *argv[])
     glutKeyboardFunc(Keyboard);
     glutSpecialFunc(SpecialKeys);
     glutTimerFunc(17, timer, 0);
-
+    glutTimerFunc(GRAVITATION_TIME, gravitation, 0);
     glutMainLoop();
 
     clean();
