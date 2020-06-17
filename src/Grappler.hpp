@@ -148,6 +148,7 @@ public:
         if (this->grabbed)
         {
             Boxes[grabbed_id]->change_grab(false);
+            this->grabbed=false;
             return;
         }
         int min_index = 0;

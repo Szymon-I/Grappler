@@ -55,7 +55,7 @@ private:
     CAMERA_MODES mode = FREE_CAMERA;
 
     // offsets to move camera from grappler object in THIRD_PERSON mode
-    glm::vec3 THIRD_PERSON_OFFSETS = glm::vec3(0.0f, -2.0f, 2.0f);
+    glm::vec3 THIRD_PERSON_OFFSETS = glm::vec3(0.0f, -3.0f, 2.0f);
 
 public:
     // initialize Camera with or without offests
