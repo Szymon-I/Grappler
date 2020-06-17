@@ -5,8 +5,13 @@
 
 #define ESC_KEY 27
 #define GRAB_KEY 'g'
+#define MOVE_UP '+'
+#define MOVE_DOWN '-'
+#define VERTICAL_MOEVEMENT (DATA_NORMALIZER / 20)
 extern Camera camera;
 extern vector<Box *> Boxes;
+extern bool serial_attached;
+extern float grappler_y;
 
 int _mouse_buttonState = GLUT_UP;
 int _mouse_buttonX, _mouse_buttonY;
@@ -14,18 +19,27 @@ int _mouse_buttonX, _mouse_buttonY;
 // handler for special keys on keyboard
 void SpecialKeys(int key, int x, int y)
 {
+	string y_val = "0.0";
+	if (!serial_attached)
+	{
+		y_val = std::to_string(grappler_y);
+	}
 	switch (key)
 	{
 	case GLUT_KEY_LEFT:
+		grappler.move_grappler(std::to_string(-DATA_NORMALIZER) + "/0.0/" + y_val, AllPrograms);
 		break;
 
 	case GLUT_KEY_RIGHT:
+		grappler.move_grappler(std::to_string(DATA_NORMALIZER) + "/0.0/" + y_val, AllPrograms);
 		break;
 
 	case GLUT_KEY_UP:
+		grappler.move_grappler("0.0/" + std::to_string(-DATA_NORMALIZER) + "/" + y_val, AllPrograms);
 		break;
 
 	case GLUT_KEY_DOWN:
+		grappler.move_grappler("0.0/" + std::to_string(DATA_NORMALIZER) + "/" + y_val, AllPrograms);
 		break;
 	}
 }
@@ -41,6 +55,20 @@ void Keyboard(unsigned char key, int x, int y)
 	case ESC_KEY:
 		exit(0);
 		break;
+	}
+	if (!serial_attached)
+	{
+		switch (key)
+		{
+		case MOVE_UP:
+			grappler_y += VERTICAL_MOEVEMENT;
+			grappler.move_grappler("0.0/0.0/" + std::to_string(grappler_y), AllPrograms);
+			break;
+		case MOVE_DOWN:
+			grappler_y -= VERTICAL_MOEVEMENT;
+			grappler.move_grappler("0.0/0.0/" + std::to_string(grappler_y), AllPrograms);
+			break;
+		}
 	}
 
 	// camera events

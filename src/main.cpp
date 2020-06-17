@@ -29,6 +29,7 @@
 #define GRAVITATION_TIME 17
 // Global variables
 bool serial_attached = false;
+float grappler_y = 3.0;
 // Global camera
 Camera camera;
 
