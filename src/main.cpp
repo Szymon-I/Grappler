@@ -18,13 +18,13 @@
 #include "Menu.hpp"
 #include "Material.hpp"
 #include "Text.hpp"
+#include "Box.hpp"
 
 #define MONKEY_N 4
 #define TREE_N 3
 #define FLOWER_N 100
 #define M_PI 3.14159265358979323846
 #define BOX_N 5
-#define GRAVITATION_PULL 0.02
 // delay in ms for applying gravitation
 #define GRAVITATION_TIME 17
 // Global variables
@@ -46,6 +46,7 @@ ProgramHandler tree_programs[TREE_N];
 ProgramHandler virus_program;
 ProgramHandler hook_program;
 
+vector<Box *> Boxes;
 // all objects in list format
 vector<ProgramHandler *> AllPrograms;
 
@@ -160,6 +161,7 @@ void Initialize()
         box_programs[i].init("objects/box.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/wolf.png", global_light, Material::WhiteRubber);
         box_programs[i].set_translate(box_locations[i]);
         AllPrograms.push_back(&box_programs[i]);
+        Boxes.push_back(new Box(&box_programs[i]));
     }
 }
 // clean all allocated data for objects
@@ -168,9 +170,10 @@ void clean(void)
     ground_program.clean();
     sky_program1.clean();
     hook_program.clean();
-
-    for (int i = 0; i < BOX_N; i++)
-        box_programs[i].clean();
+    for (Box *box : Boxes)
+    {
+        delete box;
+    }
 }
 
 // handle uart interrupt
@@ -195,21 +198,12 @@ void measureFps(void)
 void gravitation(int x)
 {
     bool applied = false;
-    for (int i = 0; i < BOX_N; i++)
+    for (Box *box : Boxes)
     {
-        glm::vec3 pos = box_programs[i].get_translate();
-        if (pos.y>0){
-            applied=true;
-            float new_y = pos.y-GRAVITATION_PULL;
-            if (new_y<0){
-                box_programs[i].set_translate(glm::vec3(pos.x,0.0f,pos.z));
-            }
-            else{
-                box_programs[i].set_translate(glm::vec3(pos.x,new_y,pos.z));
-            }
-        }
+        applied |= box->update_gravitation();
     }
-    if (applied){
+    if (applied)
+    {
         glutPostRedisplay();
     }
     glutTimerFunc(GRAVITATION_TIME, gravitation, 0);
