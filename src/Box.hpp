@@ -64,8 +64,8 @@ public:
         return this->box_program->get_translate();
     }
 
-    void change_grab(){
-        this->grabbed = !this->grabbed;
+    void change_grab(bool status){
+        this->grabbed = status;
     }
 };
 glm::vec3 Box::grappler_offset = glm::vec3(0.0, -4.0, 0.0);

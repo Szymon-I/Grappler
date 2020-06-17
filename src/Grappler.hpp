@@ -20,7 +20,7 @@
 class Grappler
 {
 private:
-static float grab_range;
+    static float grab_range;
     // program for grappler object and actual position of it
     ProgramHandler program;
     glm::vec3 position = {0.0f, 0.0f, 0.0f};
@@ -29,7 +29,8 @@ static float grab_range;
     float y_sensitivity = 0.0f;
     bool monitor_position = false;
     float prev_y;
-
+    bool grabbed = false;
+    int grabbed_id = 0;
     // parse data from string to float and normalize
     float parse_data_float(std::string data)
     {
@@ -144,22 +145,30 @@ public:
     }
     void grab_object(vector<Box *> Boxes)
     {
+        if (this->grabbed)
+        {
+            Boxes[grabbed_id]->change_grab(false);
+            return;
+        }
         int min_index = 0;
         float min_value = glm::length(Boxes[0]->get_translate() - this->get_position());
         // get index of closest box
         for (int i = 0; i < Boxes.size(); i++)
         {
             float len = glm::length(Boxes[i]->get_translate() - this->get_position());
-            if (min_value > len){
+            if (min_value > len)
+            {
                 min_index = i;
                 min_value = len;
             }
         }
         // check if closest box is close enough to grab
-        if (grab_range>=min_value){
-            Boxes[min_index]->change_grab();
+        if (grab_range >= min_value)
+        {
+            this->grabbed = true;
+            this->grabbed_id = min_index;
+            Boxes[min_index]->change_grab(true);
         }
-
     }
 };
 
