@@ -4,8 +4,9 @@
 #include "main.hpp"
 
 #define ESC_KEY 27
-
+#define GRAB_KEY 'g'
 extern Camera camera;
+extern vector<Box *> Boxes;
 
 int _mouse_buttonState = GLUT_UP;
 int _mouse_buttonX, _mouse_buttonY;
@@ -34,8 +35,12 @@ void Keyboard(unsigned char key, int x, int y)
 	// keyboards events - not for camera
 	switch (key)
 	{
+	case GRAB_KEY:
+		grappler.grab_object(Boxes);
+		break;
 	case ESC_KEY:
 		exit(0);
+		break;
 	}
 
 	// camera events

@@ -10,11 +10,13 @@
 #include <stdlib.h>
 #include <iostream>
 #include "ProgramHandler.hpp"
-#define GRAVITATION_PULL 0.02
+#define GRAVITATION_PULL 0.1
 class Box
 {
 private:
+    static glm::vec3 grappler_offset;
     ProgramHandler *box_program;
+    bool grabbed = false;
 
 public:
     Box(/* args */);
@@ -22,11 +24,24 @@ public:
     {
         this->box_program = program;
     };
-    ~Box(){
+    ~Box()
+    {
         box_program->clean();
     };
+    void display(glm::vec3 grappler_pos, glm::mat4x4 Matrix_proj, glm::mat4x4 Matrix_mv)
+    {
+        if (grabbed)
+        {
+            this->box_program->set_translate(grappler_pos + grappler_offset);
+        }
+        this->box_program->display(Matrix_proj, Matrix_mv);
+    }
     bool update_gravitation()
     {
+        if (this->grabbed)
+        {
+            return false;
+        }
         bool updated = false;
         glm::vec3 pos = box_program->get_translate();
         if (pos.y > 0)
@@ -44,4 +59,13 @@ public:
         }
         return updated;
     }
+    glm::vec3 get_translate()
+    {
+        return this->box_program->get_translate();
+    }
+
+    void change_grab(){
+        this->grabbed = !this->grabbed;
+    }
 };
+glm::vec3 Box::grappler_offset = glm::vec3(0.0, -4.0, 0.0);

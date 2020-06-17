@@ -4,3 +4,4 @@
 extern Grappler grappler;
 extern Camera camera;
 extern vector<ProgramHandler*> AllPrograms;
+extern vector<Box *> Boxes;

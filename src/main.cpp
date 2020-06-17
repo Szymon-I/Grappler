@@ -98,9 +98,9 @@ void DisplayScene()
 }
 void display_boxes()
 {
-    for (int i = 0; i < BOX_N; i++)
+    for (Box *box : Boxes)
     {
-        box_programs[i].display(Matrix_proj, Matrix_mv);
+        box->display(grappler.get_position(), Matrix_proj, Matrix_mv);
     }
 }
 
@@ -160,7 +160,8 @@ void Initialize()
     {
         box_programs[i].init("objects/box.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/box.png", global_light, Material::WhiteRubber);
         box_programs[i].set_translate(box_locations[i]);
-        AllPrograms.push_back(&box_programs[i]);
+        // remove boxes from all programs to prevent collision
+        //AllPrograms.push_back(&box_programs[i]);
         Boxes.push_back(new Box(&box_programs[i]));
     }
 }
