@@ -158,7 +158,7 @@ void Initialize()
         glm::vec3(0.0f, 0.0f, -20.0f)};
     for (int i = 0; i < BOX_N; i++)
     {
-        box_programs[i].init("objects/box.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/wolf.png", global_light, Material::WhiteRubber);
+        box_programs[i].init("objects/box.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/box.png", global_light, Material::WhiteRubber);
         box_programs[i].set_translate(box_locations[i]);
         AllPrograms.push_back(&box_programs[i]);
         Boxes.push_back(new Box(&box_programs[i]));
