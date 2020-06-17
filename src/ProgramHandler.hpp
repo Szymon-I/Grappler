@@ -30,6 +30,8 @@ private:
 	GLuint vBuffer_uv;
 	GLuint vArray;
 	GLuint TextureID;
+	GLuint TextureID2;
+	bool second_texture_applied = false;
 
 	// vectors for storing obj data
 	vector<glm::vec3> OBJ_vertices;
@@ -61,13 +63,13 @@ private:
 	GLuint DepthMap_Program;
 	GLuint DepthMap_FrameBuffer;
 	GLuint DepthMap_Texture;
-	unsigned int DepthMap_Width = 2024*2, DepthMap_Height = 2024*2;
+	unsigned int DepthMap_Width = 2024 * 2, DepthMap_Height = 2024 * 2;
 	glm::vec3 Light_Direction = glm::normalize(glm::vec3(0.2, -0.8f, 1.1f));
 	glm::vec3 Light_Position = glm::vec3(0.0f, 10.0f, -5.0f);
 	glm::mat4 lightProj = glm::ortho(-30.0f, 30.0f, -30.0f, 30.0f, 1.0f, 30.5f);
 	glm::mat4 lightView = glm::lookAt(Light_Position,
-                                  Light_Position+Light_Direction,
-                                  glm::vec3( 0.0f, 1.0f,  0.0f));
+									  Light_Position + Light_Direction,
+									  glm::vec3(0.0f, 1.0f, 0.0f));
 
 	glm::vec3 radius_vector;
 	bool collidable;
@@ -80,15 +82,25 @@ private:
 	}
 
 	// load texture from png file into object
-	void load_texture(string texture)
+	void load_texture(string texture, bool second_tex = false)
 	{
 		int tex_width;
 		int tex_height;
 		unsigned char *tex_data;
 
-		glEnable(GL_TEXTURE_2D);
-		glGenTextures(1, &TextureID);
-		glBindTexture(GL_TEXTURE_2D, TextureID);
+		if (second_tex)
+		{
+			glEnable(GL_TEXTURE_2D);
+			glGenTextures(1, &TextureID2);
+			glBindTexture(GL_TEXTURE_2D, TextureID2);
+			this->second_texture_applied = true;
+		}
+		else
+		{
+			glEnable(GL_TEXTURE_2D);
+			glGenTextures(1, &TextureID);
+			glBindTexture(GL_TEXTURE_2D, TextureID);
+		}
 
 		tex_data = SOIL_load_image(texture.c_str(), &tex_width, &tex_height, 0, SOIL_LOAD_RGBA);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex_width, tex_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex_data);
@@ -146,7 +158,7 @@ private:
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 		//float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-		float borderColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+		float borderColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
 		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
 		// 2. Frame buffer object
@@ -162,9 +174,9 @@ private:
 		// 4. OpenGL program for shadow map
 		// Tworzenie potoku OpenGL
 		DepthMap_Program = glCreateProgram();
-		glAttachShader( DepthMap_Program, LoadShader(GL_VERTEX_SHADER, "shaders/depthmapvertex.glsl"));
-		glAttachShader( DepthMap_Program, LoadShader(GL_FRAGMENT_SHADER, "shaders/depthmapfragment.glsl"));
-		LinkAndValidateProgram( DepthMap_Program );
+		glAttachShader(DepthMap_Program, LoadShader(GL_VERTEX_SHADER, "shaders/depthmapvertex.glsl"));
+		glAttachShader(DepthMap_Program, LoadShader(GL_FRAGMENT_SHADER, "shaders/depthmapfragment.glsl"));
+		LinkAndValidateProgram(DepthMap_Program);
 	}
 
 	// pass unform data to shader
@@ -183,12 +195,12 @@ private:
 		glUniform3fv(glGetUniformLocation(program, "myMaterial.Specular"), 1, &(global_material[2])[0]);
 		glUniform1f(glGetUniformLocation(program, "myMaterial.Shininess"), global_material[3][0]);
 
-		glUniformMatrix4fv( glGetUniformLocation( program, "lightProj" ), 1, GL_FALSE, glm::value_ptr(lightProj) );
-		glUniformMatrix4fv( glGetUniformLocation( program, "lightView" ), 1, GL_FALSE, glm::value_ptr(lightView) );
+		glUniformMatrix4fv(glGetUniformLocation(program, "lightProj"), 1, GL_FALSE, glm::value_ptr(lightProj));
+		glUniformMatrix4fv(glGetUniformLocation(program, "lightView"), 1, GL_FALSE, glm::value_ptr(lightView));
 
 		glm::vec3 Camera_Position = camera.GetCameraPos();
 		glUniform3fv(glGetUniformLocation(program, "Camera_Position"), 1, &Camera_Position[0]);
-		glUniform3fv( glGetUniformLocation( program, "Light_Direction" ), 1, glm::value_ptr(Light_Direction) );
+		glUniform3fv(glGetUniformLocation(program, "Light_Direction"), 1, glm::value_ptr(Light_Direction));
 	}
 
 	// reset all mods for object
@@ -220,15 +232,14 @@ private:
 		glClear(GL_DEPTH_BUFFER_BIT);
 
 		// AKTYWUJEMY program
-		glUseProgram( DepthMap_Program );
+		glUseProgram(DepthMap_Program);
 
-			glUniformMatrix4fv( glGetUniformLocation( DepthMap_Program, "lightProj" ), 1, GL_FALSE, glm::value_ptr(lightProj) );
-			glUniformMatrix4fv( glGetUniformLocation( DepthMap_Program, "lightView" ), 1, GL_FALSE, glm::value_ptr(lightView) );
+		glUniformMatrix4fv(glGetUniformLocation(DepthMap_Program, "lightProj"), 1, GL_FALSE, glm::value_ptr(lightProj));
+		glUniformMatrix4fv(glGetUniformLocation(DepthMap_Program, "lightView"), 1, GL_FALSE, glm::value_ptr(lightView));
 
-			glBindVertexArray( vArray );
-			glDrawArrays( GL_TRIANGLES, 0, OBJ_vertices.size() );
-			glBindVertexArray( 0 );
-
+		glBindVertexArray(vArray);
+		glDrawArrays(GL_TRIANGLES, 0, OBJ_vertices.size());
+		glBindVertexArray(0);
 
 		// WYLACZAMY program
 		glUseProgram(0);
@@ -236,7 +247,7 @@ private:
 		glViewport(0, 0, glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
 	}
 	// display final matrix
-	void display_util(glm::mat4x4 &Matrix_proj_mv)
+	void display_util(glm::mat4x4 &Matrix_proj_mv, bool second_texture = false)
 	{
 		animation_util();
 		global_light.move_light(1);
@@ -247,18 +258,26 @@ private:
 
 		uniform_matrix_send(Matrix_proj_mv);
 
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, TextureID);
-		glUniform1i(glGetUniformLocation(program, "tex0"), 0);
-
+		if (second_texture)
+		{
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, TextureID2);
+			glUniform1i(glGetUniformLocation(program, "tex0"), 0);
+		}
+		else
+		{
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, TextureID);
+			glUniform1i(glGetUniformLocation(program, "tex0"), 0);
+		}
 		// Shadow map texture slot 1
 		glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, DepthMap_Texture);
-		glUniform1i(glGetUniformLocation( program, "shadowMap" ), 1);
+		glBindTexture(GL_TEXTURE_2D, DepthMap_Texture);
+		glUniform1i(glGetUniformLocation(program, "shadowMap"), 1);
 
 		glBindVertexArray(vArray);
 		glDrawArrays(GL_TRIANGLES, 0, OBJ_vertices.size());
-		glBindVertexArray( 0 );
+		glBindVertexArray(0);
 	}
 
 	// apply all modifications (scale/rotate/translate)
@@ -367,10 +386,17 @@ public:
 		return this->custom_translate;
 	}
 	// display function with mods
-	void display(glm::mat4x4 Matrix_proj, glm::mat4x4 Matrix_mv)
+	void display(glm::mat4x4 Matrix_proj, glm::mat4x4 Matrix_mv, bool second_texture = false)
 	{
 		glm::mat4x4 Matrix_proj_mv = apply_mods(Matrix_proj, Matrix_mv);
-		display_util(Matrix_proj_mv);
+		if (second_texture_applied && second_texture)
+		{
+			display_util(Matrix_proj_mv, true);
+		}
+		else
+		{
+			display_util(Matrix_proj_mv, false);
+		}
 	}
 	// clean all allocated data for program
 	void clean(void)
@@ -392,5 +418,9 @@ public:
 	bool get_collidable()
 	{
 		return this->collidable;
+	}
+	void load_second_tex(string name)
+	{
+		this->load_texture(name, true);
 	}
 };

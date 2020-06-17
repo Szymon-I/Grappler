@@ -30,11 +30,11 @@ public:
     };
     void display(glm::vec3 grappler_pos, glm::mat4x4 Matrix_proj, glm::mat4x4 Matrix_mv)
     {
-        if (grabbed)
+        if (this->grabbed)
         {
             this->box_program->set_translate(grappler_pos + grappler_offset);
         }
-        this->box_program->display(Matrix_proj, Matrix_mv);
+        this->box_program->display(Matrix_proj, Matrix_mv, this->grabbed);
     }
     bool update_gravitation()
     {
