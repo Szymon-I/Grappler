@@ -92,7 +92,7 @@ void DisplayScene()
     ground_program.display(Matrix_proj, Matrix_mv);
 
     display_boxes();
-
+    show_fps();
     // swap buffer with the new generated one
     glutSwapBuffers();
 }
