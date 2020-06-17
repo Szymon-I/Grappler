@@ -137,7 +137,7 @@ void Initialize()
     global_light.init(ambient, diffuse, position);
 
     // initialize all objects
-    ground_program.init("objects/warehouse.obj", "shaders/vertex_ground.glsl", "shaders/fragment.glsl", "textures/ground.png", global_light, Material::Brass, false);
+    ground_program.init("objects/warehouse.obj", "shaders/vertex_ground.glsl", "shaders/fragment.glsl", "textures/metal2.png", global_light, Material::Brass, false);
     ground_program.set_scale(glm::vec3(2.0f, 2.0f, 2.0f));
     AllPrograms.push_back(&ground_program);
 
