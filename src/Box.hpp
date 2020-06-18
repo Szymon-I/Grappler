@@ -68,4 +68,4 @@ public:
         this->grabbed = status;
     }
 };
-glm::vec3 Box::grappler_offset = glm::vec3(0.0, -4.0, 0.0);
+glm::vec3 Box::grappler_offset = glm::vec3(0.0, -4.5, 0.0);
