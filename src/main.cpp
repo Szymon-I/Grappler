@@ -21,10 +21,12 @@
 #include "Box.hpp"
 
 #define MONKEY_N 4
-#define TREE_N 3
 #define FLOWER_N 100
 #define M_PI 3.14159265358979323846
 #define BOX_N 5
+#define CEMENT_N 3
+#define CABINET_N 3
+#define TREE_N 6
 // delay in ms for applying gravitation
 #define GRAVITATION_TIME 17
 // Global variables
@@ -40,13 +42,14 @@ glm::mat4x4 Matrix_proj_mv; // projection * modelview matrix
 
 // all objects
 ProgramHandler box_programs[BOX_N];
-ProgramHandler ground_program;
+ProgramHandler warehouse_program;
 ProgramHandler roof_program;
 ProgramHandler sky_program1;
-ProgramHandler monkey_programs[MONKEY_N];
-ProgramHandler tree_programs[TREE_N];
-ProgramHandler virus_program;
 ProgramHandler hook_program;
+ProgramHandler ground_program;
+ProgramHandler cements[CEMENT_N];
+ProgramHandler cabinets[CABINET_N];
+ProgramHandler trees[TREE_N];
 
 vector<Box *> Boxes;
 // all objects in list format
@@ -72,7 +75,7 @@ float fps = 0.0;
 void show_fps();
 void mod_mv();
 void display_boxes();
-
+void display_scene();
 // main function for displaying all content
 void DisplayScene()
 {
@@ -87,15 +90,12 @@ void DisplayScene()
     // apply all camera modifications to global Matrix_mv made by camera
     Matrix_mv = camera.apply_camera(Matrix_mv, grappler.get_position());
 
-    //movement is handled inside getSerialHandler
+    // display objects
+    display_scene();
     grappler.display_grappler(Matrix_proj, Matrix_mv, camera);
-
-    sky_program1.display(Matrix_proj, Matrix_mv);
-    ground_program.display(Matrix_proj, Matrix_mv);
-    roof_program.display(Matrix_proj, Matrix_mv);
-
     display_boxes();
     show_fps();
+
     // swap buffer with the new generated one
     glutSwapBuffers();
 }
@@ -105,6 +105,32 @@ void display_boxes()
     {
         box->display(grappler.get_position(), Matrix_proj, Matrix_mv);
     }
+}
+void display_scene()
+{
+    for (int i = 0; i < CEMENT_N; i++)
+    {
+        cements[i].display(Matrix_proj, Matrix_mv);
+    }
+    for (int i = 0; i < CABINET_N; i++)
+    {
+        cabinets[i].display(Matrix_proj, Matrix_mv);
+    }
+    for (int i = 0; i < TREE_N; i++)
+    {
+        trees[i].display(Matrix_proj, Matrix_mv);
+    }
+
+    warehouse_program.display(Matrix_proj, Matrix_mv);
+    roof_program.display(Matrix_proj, Matrix_mv);
+    sky_program1.display(Matrix_proj, Matrix_mv);
+    ground_program.display(Matrix_proj, Matrix_mv);
+
+    // iterating allprograms will overrwrite boxes with collision (texture bug)
+    // for (ProgramHandler *p : AllPrograms)
+    // {
+    //     p->display(Matrix_proj, Matrix_mv);
+    // }
 }
 
 void show_fps()
@@ -124,6 +150,64 @@ void Reshape(int width, int height)
     textFPSCAP.InitText((char *)"libs/FFF_Tusj.ttf", 36);
     textFPS.InitText((char *)"libs/arial.ttf", 36);
 }
+void init_decorations()
+{
+    glm::vec3 cement_locations[CEMENT_N] = {
+        glm::vec3(15.0f, 0.0f, -6.0f),
+        glm::vec3(30.0f, 0.0f, 8.0f),
+        glm::vec3(-9.0f, 0.0f, 13.0f),
+    };
+    for (int i = 0; i < CEMENT_N; i++)
+    {
+        cements[i].init("objects/cement.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/cement.png", global_light, Material::BlackRubber, false);
+        cements[i].set_translate(cement_locations[i]);
+        cements[i].set_scale(glm::vec3(0.05, 0.05, 0.05));
+        AllPrograms.push_back(&cements[i]);
+    }
+
+    glm::vec3 cabinet_locations[CABINET_N] = {
+        glm::vec3(40.0f, 0.0f, -10.0f),
+        glm::vec3(-40.0f, 0.0f, -10.0f),
+        glm::vec3(-10.0f, 0.0f, -10.0f)};
+    for (int i = 0; i < CABINET_N; i++)
+    {
+        cabinets[i].init("objects/cabinet.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/metal.png", global_light, Material::BlackRubber, false);
+        cabinets[i].set_translate(cabinet_locations[i]);
+        cabinets[i].set_scale(glm::vec3(0.05, 0.05, 0.05));
+        AllPrograms.push_back(&cabinets[i]);
+    }
+    glm::vec3 tree_locations[TREE_N] = {
+        glm::vec3(-40.0f, 0.0f, -40.0f),
+        glm::vec3(-60.0f, 0.0f, 40.0f),
+        glm::vec3(0.0f, 0.0f, -40.0f),
+        glm::vec3(0.0f, 0.0f, 50.0f),
+        glm::vec3(40.0f, 0.0f, 60.0f),
+        glm::vec3(60.0f, 0.0f, -50.0f)};
+    for (int i = 0; i < TREE_N; i++)
+    {
+        trees[i].init("objects/tree.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/tree.png", global_light, Material::BlackRubber, false);
+        trees[i].set_translate(tree_locations[i]);
+        AllPrograms.push_back(&trees[i]);
+    }
+}
+void init_boxes()
+{
+    glm::vec3 box_locations[BOX_N] = {
+        glm::vec3(20.0f, 2.0f, 20.0f),
+        glm::vec3(20.0f, 4.0f, 0.0f),
+        glm::vec3(-20.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 3.0f, 20.0f),
+        glm::vec3(0.0f, 0.0f, -20.0f)};
+    for (int i = 0; i < BOX_N; i++)
+    {
+        box_programs[i].init("objects/box.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/box.png", global_light, Material::WhiteRubber);
+        box_programs[i].set_translate(box_locations[i]);
+        box_programs[i].load_second_tex("textures/box2.png");
+        // remove boxes from all programs to prevent collision
+        AllPrograms.push_back(&box_programs[i]);
+        Boxes.push_back(new Box(&box_programs[i]));
+    }
+}
 // initializations of all objects
 void Initialize()
 {
@@ -137,13 +221,18 @@ void Initialize()
     global_light.init(ambient, diffuse, position);
 
     // initialize all objects
-    ground_program.init("objects/warehouse.obj", "shaders/vertex_ground.glsl", "shaders/fragment.glsl", "textures/metal2.png", global_light, Material::Brass, false);
-    ground_program.set_scale(glm::vec3(2.0f, 2.0f, 2.0f));
-    AllPrograms.push_back(&ground_program);
+    warehouse_program.init("objects/warehouse.obj", "shaders/vertex_ground.glsl", "shaders/fragment.glsl", "textures/metal2.png", global_light, Material::Brass, false);
+    warehouse_program.set_scale(glm::vec3(2.0f, 2.0f, 2.0f));
+    AllPrograms.push_back(&warehouse_program);
 
     roof_program.init("objects/roof.obj", "shaders/vertex_ground.glsl", "shaders/fragment.glsl", "textures/ground.png", global_light, Material::Brass, false);
     roof_program.set_scale(glm::vec3(2.0f, 2.0f, 2.0f));
     AllPrograms.push_back(&roof_program);
+
+    ground_program.init("objects/ground.obj", "shaders/vertex_ground.glsl", "shaders/fragment.glsl", "textures/tree.png", global_light, Material::Brass, false);
+    ground_program.set_translate(glm::vec3(0.0f, -0.05f, 0.0f));
+    ground_program.set_scale(glm::vec3(2.0f, 2.0f, 2.0f));
+    AllPrograms.push_back(&ground_program);
 
     sky_program1.init("objects/sky.obj", "shaders/vertex.glsl", "shaders/fragment_sky.glsl", "textures/sky.png", global_light, Material::Tin, false);
     sky_program1.set_scale(glm::vec3(40.0, 40.0, 40.0));
@@ -151,32 +240,19 @@ void Initialize()
 
     hook_program.init("objects/hook.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/hook.png", global_light, Material::Tin);
     hook_program.set_scale(glm::vec3(0.5f, 0.5f, 0.5f));
-    AllPrograms.push_back(&hook_program);
+    //AllPrograms.push_back(&hook_program);
     // use hook as a grappler object
     grappler.init(hook_program, 0.2);
     // set starting position
     grappler.set_position(glm::vec3(0.0f, Y_OFFSET, 0.0f));
 
-    vector<glm::vec3> box_locations = {
-        glm::vec3(20.0f, 2.0f, 20.0f),
-        glm::vec3(20.0f, 4.0f, 0.0f),
-        glm::vec3(-20.0f, 0.0f, 0.0f),
-        glm::vec3(0.0f, 3.0f, 20.0f),
-        glm::vec3(0.0f, 0.0f, -20.0f)};
-    for (int i = 0; i < BOX_N; i++)
-    {
-        box_programs[i].init("objects/box.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/box.png", global_light, Material::WhiteRubber);
-        box_programs[i].set_translate(box_locations[i]);
-        box_programs[i].load_second_tex("textures/box2.png");
-        // remove boxes from all programs to prevent collision
-        //AllPrograms.push_back(&box_programs[i]);
-        Boxes.push_back(new Box(&box_programs[i]));
-    }
+    init_boxes();
+    init_decorations();
 }
 // clean all allocated data for objects
 void clean(void)
 {
-    ground_program.clean();
+    warehouse_program.clean();
     roof_program.clean();
     sky_program1.clean();
     hook_program.clean();
