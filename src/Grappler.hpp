@@ -173,4 +173,4 @@ public:
     }
 };
 
-float Grappler::grab_range = 6.0;
+float Grappler::grab_range = 8.0;
