@@ -148,6 +148,7 @@ public:
         if (this->grabbed)
         {
             Boxes[grabbed_id]->change_grab(false);
+            Boxes[grabbed_id]->update_location();
             this->grabbed=false;
             return;
         }

@@ -197,7 +197,7 @@ void init_boxes()
         glm::vec3(20.0f, 4.0f, 0.0f),
         glm::vec3(-20.0f, 0.0f, 0.0f),
         glm::vec3(0.0f, 3.0f, 20.0f),
-        glm::vec3(0.0f, 0.0f, -20.0f)};
+        glm::vec3(0.0f, 0.0f, 10.0f)};
     for (int i = 0; i < BOX_N; i++)
     {
         box_programs[i].init("objects/box.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/box.png", global_light, Material::WhiteRubber);
