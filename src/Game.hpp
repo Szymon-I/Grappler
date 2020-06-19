@@ -40,10 +40,13 @@ private:
         std::string s(str);
         score.RenderText("Score: " + s, 10, glutGet(GLUT_WINDOW_HEIGHT) - 100, 0.8f, glm::vec3(1.0, 0.0f, 0.0f));
         // display how much left
-
+        snprintf(str, sizeof(str), "%d", this->placement_left);
+        std::string s2(str);
+        score.RenderText("Left: " + s2, 10, glutGet(GLUT_WINDOW_HEIGHT) - 130, 0.8f, glm::vec3(1.0, 0.0f, 0.0f));
     }
-    void display_finished(){
-        //display finished text
+    void display_finished()
+    {
+        finish_text.RenderText("Game finished", 10, glutGet(GLUT_WINDOW_HEIGHT) - 100, 0.8f, glm::vec3(1.0, 0.0f, 0.0f));
     }
 
 public:
@@ -57,6 +60,12 @@ public:
     ~Game()
     {
         delete this->game_box;
+    }
+    void reshape_text()
+    {
+        score.InitText((char *)"libs/arial.ttf", 36);
+        left.InitText((char *)"libs/arial.ttf", 36);
+        finish_text.InitText((char *)"libs/arial.ttf", 36);
     }
     void step()
     {
@@ -91,7 +100,8 @@ public:
             game_box->set_translate(glm::vec3(active_field.x, 0.0, active_field.y));
             game_box->display(Matrix_proj, Matrix_mv);
         }
-        else{
+        else
+        {
             display_finished();
         }
     }

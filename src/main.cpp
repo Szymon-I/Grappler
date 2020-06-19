@@ -153,6 +153,7 @@ void Reshape(int width, int height)
     Matrix_proj = glm::perspectiveFov(glm::radians(60.0f), (float)width, (float)height, 0.1f, 1000.0f);
     textFPSCAP.InitText((char *)"libs/FFF_Tusj.ttf", 36);
     textFPS.InitText((char *)"libs/arial.ttf", 36);
+    game->reshape_text();
 }
 void init_decorations()
 {
