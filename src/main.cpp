@@ -204,7 +204,6 @@ void init_boxes()
         box_programs[i].init("objects/box.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/box.png", global_light, Material::WhiteRubber);
         box_programs[i].set_translate(box_locations[i]);
         box_programs[i].load_second_tex("textures/box2.png");
-        // remove boxes from all programs to prevent collision
         AllPrograms.push_back(&box_programs[i]);
         Boxes.push_back(new Box(&box_programs[i]));
     }
@@ -272,7 +271,7 @@ void getSerialHandler()
         grappler.move_grappler(serial.pass_message(), AllPrograms);
     }
 }
-
+// measure time elapsed between rendered views
 void measureFps(void)
 {
     static clock_t last_frame = 0.0;
@@ -282,7 +281,8 @@ void measureFps(void)
 
     last_frame = this_frame;
 }
-void gravitation(int x)
+// make gravitation step for all boxes
+void gravitation(int)
 {
     bool applied = false;
     for (Box *box : Boxes)

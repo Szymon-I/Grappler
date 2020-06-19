@@ -27,6 +27,7 @@ private:
 
 public:
     Box();
+    // init object with program
     Box(ProgramHandler *program)
     {
         id = id_counter++;
@@ -39,6 +40,7 @@ public:
     {
         box_program->clean();
     };
+    // display box according to grabbed status
     void display(glm::vec3 grappler_pos, glm::mat4x4 Matrix_proj, glm::mat4x4 Matrix_mv)
     {
         if (this->grabbed)
@@ -47,6 +49,7 @@ public:
         }
         this->box_program->display(Matrix_proj, Matrix_mv, this->grabbed);
     }
+    // take gravitation step on timer event
     bool update_gravitation()
     {
         glm::vec3 pos = box_program->get_translate();
@@ -54,7 +57,6 @@ public:
         {
             return false;
         }
-        int box_underneath = 0;
         float max_level = -box_size;
         // check if anybox is underneath
         for (pair<int, glm::vec3> p : box_locations)
@@ -63,16 +65,15 @@ public:
             {
                 continue;
             }
-
             // get length in x,z plane
             float len = glm::length(glm::vec2(p.second.x, p.second.z) - glm::vec2(pos.x, pos.z));
             if (len < (2 * sqrt(2) * (box_size / 2)) && !falling_status[p.first])
             {
-                box_underneath++;
+                // update max level of stacked boxes in x/z coords
                 max_level = max(max_level, p.second.y);
             }
         }
-
+        // calculate new position
         float new_y = pos.y - GRAVITATION_PULL;
         // if new position is on ground
         if (new_y <= 0)
@@ -101,29 +102,38 @@ public:
         // position is updated
         return true;
     }
+    // get position of box
     glm::vec3 get_translate()
     {
         return this->box_program->get_translate();
     }
-
+    // change grabbed status
     void change_grab(bool status)
     {
         this->grabbed = status;
     }
+    // update location of box in map
     void update_location()
     {
         box_locations[this->id] = this->box_program->get_translate();
     }
+    // get grabbed status
     bool is_grabbed()
     {
         return this->grabbed;
     }
+    // set falling status
     void set_falling(bool status){
         this->falling=status;
     }
 };
+// offset of box grabbed by grappler
 glm::vec3 Box::grappler_offset = glm::vec3(0.0, -4.5, 0.0);
+// unique box size (without scaling)
 float Box::box_size = 2.0;
+// maps of box locations and status of freefall
+// unique object id ->hash-> data
 map<int, glm::vec3> Box::box_locations;
 map<int, bool> Box::falling_status;
+// counter for giving unique id on runtime
 int Box::id_counter = 0;

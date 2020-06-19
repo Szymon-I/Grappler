@@ -5,6 +5,7 @@
 
 #define ESC_KEY 27
 #define GRAB_KEY 'g'
+#define SPACEBAR 32
 #define MOVE_UP '+'
 #define MOVE_DOWN '-'
 #define VERTICAL_MOEVEMENT (DATA_NORMALIZER / 20)
@@ -49,7 +50,7 @@ void Keyboard(unsigned char key, int x, int y)
 	// keyboards events - not for camera
 	switch (key)
 	{
-	case GRAB_KEY:
+	case SPACEBAR:
 		grappler.grab_object(Boxes);
 		break;
 	case ESC_KEY:
