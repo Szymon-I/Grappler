@@ -15,7 +15,7 @@
 // paremetrs to filter noise from uC
 #define Y_THRESHOLD 0.02
 #define DATA_NORMALIZER 1000.0
-#define Y_OFFSET 3.0
+#define Y_OFFSET 10.0
 #define MOVEMENT_THRESHOLD 0.05
 class Grappler
 {
@@ -26,7 +26,7 @@ private:
     glm::vec3 position = {0.0f, 0.0f, 0.0f};
     glm::vec3 next_position = {0.0f, 0.0f, 0.0f};
     float sensitivity;
-    float y_sensitivity = 0.0f;
+    float y_sensitivity;
     bool monitor_position = false;
     float prev_y;
     bool grabbed = false;
@@ -86,7 +86,7 @@ private:
 
 public:
     // initialize grappler program with object program and settings
-    void init(ProgramHandler program, float sensitivity = 1, float y_sensitivity = 5)
+    void init(ProgramHandler program, float sensitivity = 1, float y_sensitivity = 7)
     {
         this->program = program;
         this->position = program.get_translate();
@@ -149,6 +149,7 @@ public:
         {
             Boxes[grabbed_id]->change_grab(false);
             Boxes[grabbed_id]->update_location();
+            Boxes[grabbed_id]->set_falling(true);
             this->grabbed=false;
             return;
         }

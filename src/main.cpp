@@ -19,6 +19,7 @@
 #include "Material.hpp"
 #include "Text.hpp"
 #include "Box.hpp"
+#include "Game.hpp"
 
 #define MONKEY_N 4
 #define FLOWER_N 100
@@ -193,10 +194,10 @@ void init_decorations()
 void init_boxes()
 {
     glm::vec3 box_locations[BOX_N] = {
-        glm::vec3(20.0f, 2.0f, 20.0f),
-        glm::vec3(20.0f, 4.0f, 0.0f),
+        glm::vec3(20.0f, 0.0f, 20.0f),
+        glm::vec3(20.0f, 0.0f, 0.0f),
         glm::vec3(-20.0f, 0.0f, 0.0f),
-        glm::vec3(0.0f, 3.0f, 20.0f),
+        glm::vec3(0.0f, 0.0f, 20.0f),
         glm::vec3(0.0f, 0.0f, 10.0f)};
     for (int i = 0; i < BOX_N; i++)
     {

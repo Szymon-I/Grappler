@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <GL/glew.h>
 #include <GL/freeglut.h>
-#include <map> 
+#include <map>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -17,18 +17,23 @@ private:
     static glm::vec3 grappler_offset;
     static float box_size;
     static map<int, glm::vec3> box_locations;
+    static map<int, bool> falling_status;
     static int id_counter;
     ProgramHandler *box_program;
     bool grabbed = false;
     int id;
+    bool falling = false;
+    int level = 0;
 
 public:
-    Box(/* args */);
+    Box();
     Box(ProgramHandler *program)
     {
         id = id_counter++;
         this->box_program = program;
-        box_locations.insert(pair<int, glm::vec3> (id,program->get_translate()));
+        glm::vec3 pos = program->get_translate();
+        box_locations.insert(pair<int, glm::vec3>(id, pos));
+        falling_status.insert(pair<int, bool>(id, false));
     };
     ~Box()
     {
@@ -44,17 +49,13 @@ public:
     }
     bool update_gravitation()
     {
-        if (this->grabbed)
-        {
-            return false;
-        }
-
         glm::vec3 pos = box_program->get_translate();
-        if (pos.y <= 0)
+        if (this->grabbed || pos.y <= 0 || !this->falling)
         {
             return false;
         }
-        float box_underneath = false;
+        int box_underneath = 0;
+        float max_level = -box_size;
         // check if anybox is underneath
         for (pair<int, glm::vec3> p : box_locations)
         {
@@ -62,24 +63,42 @@ public:
             {
                 continue;
             }
+
             // get length in x,z plane
             float len = glm::length(glm::vec2(p.second.x, p.second.z) - glm::vec2(pos.x, pos.z));
-            if (len < (2 * sqrt(2) * box_size))
+            if (len < (2 * sqrt(2) * (box_size / 2)) && !falling_status[p.first])
             {
-                box_underneath = true;
+                box_underneath++;
+                max_level = max(max_level, p.second.y);
             }
         }
 
         float new_y = pos.y - GRAVITATION_PULL;
-        if (new_y < 0 || ((new_y <= box_size) && box_underneath))
+        // if new position is on ground
+        if (new_y <= 0)
         {
-            box_program->set_translate(glm::vec3(pos.x, box_underneath ? box_size : 0.0, pos.z));
+            glm::vec3 new_pos = glm::vec3(pos.x, 0.0, pos.z);
+            box_program->set_translate(new_pos);
+            falling_status[this->id] = this->falling = false;
+            box_locations[this->id] = new_pos;
         }
+        // if new position is stacked on boxes
+        else if (new_y <= (max_level + box_size))
+        {
+            glm::vec3 new_pos = glm::vec3(pos.x, (max_level + box_size), pos.z);
+            box_program->set_translate(new_pos);
+            falling_status[this->id] = this->falling = false;
+            box_locations[this->id] = new_pos;
+        }
+        // if still falling
         else
         {
-            box_program->set_translate(glm::vec3(pos.x, new_y, pos.z));
+            glm::vec3 new_pos = glm::vec3(pos.x, new_y, pos.z);
+            box_program->set_translate(new_pos);
+            falling_status[this->id] = this->falling = true;
+            box_locations[this->id] = new_pos;
         }
-
+        // position is updated
         return true;
     }
     glm::vec3 get_translate()
@@ -91,11 +110,20 @@ public:
     {
         this->grabbed = status;
     }
-    void update_location(){
+    void update_location()
+    {
         box_locations[this->id] = this->box_program->get_translate();
+    }
+    bool is_grabbed()
+    {
+        return this->grabbed;
+    }
+    void set_falling(bool status){
+        this->falling=status;
     }
 };
 glm::vec3 Box::grappler_offset = glm::vec3(0.0, -4.5, 0.0);
 float Box::box_size = 2.0;
 map<int, glm::vec3> Box::box_locations;
+map<int, bool> Box::falling_status;
 int Box::id_counter = 0;
