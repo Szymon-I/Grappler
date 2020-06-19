@@ -49,6 +49,16 @@ public:
         }
         this->box_program->display(Matrix_proj, Matrix_mv, this->grabbed);
     }
+    bool is_inside_field(glm::vec3 field_pos)
+    {
+        glm::vec3 pos = box_program->get_translate();
+        float len = glm::length(glm::vec2(field_pos.x, field_pos.z) - glm::vec2(pos.x, pos.z));
+        if (len < (2 * sqrt(2) * (box_size / 2)))
+        {
+            return true;
+        }
+        return false;
+    }
     // take gravitation step on timer event
     bool update_gravitation()
     {
@@ -123,8 +133,13 @@ public:
         return this->grabbed;
     }
     // set falling status
-    void set_falling(bool status){
-        this->falling=status;
+    void set_falling(bool status)
+    {
+        this->falling = status;
+    }
+    bool is_falling()
+    {
+        return this->falling;
     }
 };
 // offset of box grabbed by grappler

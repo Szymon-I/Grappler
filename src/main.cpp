@@ -69,6 +69,8 @@ Light global_light;
 Text textFPS;
 Text textFPSCAP;
 
+Game *game;
+
 // FPS
 float fps = 0.0;
 
@@ -96,6 +98,7 @@ void DisplayScene()
     grappler.display_grappler(Matrix_proj, Matrix_mv, camera);
     display_boxes();
     show_fps();
+    game->display(Matrix_proj, Matrix_mv);
 
     // swap buffer with the new generated one
     glutSwapBuffers();
@@ -248,6 +251,10 @@ void Initialize()
 
     init_boxes();
     init_decorations();
+
+    ProgramHandler *game_box = new ProgramHandler();
+    game_box->init("objects/box.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/tree.png", global_light, Material::WhiteRubber);
+    game = new Game(EASY, game_box);
 }
 // clean all allocated data for objects
 void clean(void)
@@ -260,6 +267,7 @@ void clean(void)
     {
         delete box;
     }
+    delete game;
 }
 
 // handle uart interrupt
@@ -288,6 +296,10 @@ void gravitation(int)
     for (Box *box : Boxes)
     {
         applied |= box->update_gravitation();
+        if (!box->is_falling() && box->is_inside_field(game->get_active_field()) && !box->is_grabbed())
+        {
+            game->step();
+        }
     }
     if (applied)
     {
