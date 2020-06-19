@@ -145,7 +145,7 @@ void main()
 	LightParameters myLight;
 
 	// Parametry swiatla
-	myLight.Ambient = vec3(0.2, 0.2, 0.2);
+	myLight.Ambient = vec3(0.4, 0.4, 0.4);
 	myLight.Diffuse = vec3(0.8, 0.8, 0.8);
 	myLight.Specular = vec3(0.5, 0.5, 0.5);
 

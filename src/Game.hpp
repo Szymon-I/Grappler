@@ -112,12 +112,12 @@ public:
 };
 const glm::vec2 Game::placements[PLACEMENT_N] = {
     glm::vec2(0.0, 0.0),
-    glm::vec2(2.0, 0.0),
-    glm::vec2(4.0, 0.0),
-    glm::vec2(6.0, 0.0),
-    glm::vec2(8.0, 0.0),
-    glm::vec2(10.0, 0.0),
-    glm::vec2(12.0, 0.0),
-    glm::vec2(14.0, 0.0),
-    glm::vec2(16.0, 0.0),
-    glm::vec2(18.0, 0.0)};
+    glm::vec2(2.0, -3.0),
+    glm::vec2(4.0, -4.0),
+    glm::vec2(6.0, 6.0),
+    glm::vec2(18.0, 5.0),
+    glm::vec2(10.0, -16.0),
+    glm::vec2(12.0, 10.0),
+    glm::vec2(13.0, -2.0),
+    glm::vec2(16.0, -16.0),
+    glm::vec2(-18.0, 5.0)};

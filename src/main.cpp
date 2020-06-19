@@ -254,7 +254,7 @@ void Initialize()
     init_decorations();
 
     ProgramHandler *game_box = new ProgramHandler();
-    game_box->init("objects/box.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/tree.png", global_light, Material::WhiteRubber);
+    game_box->init("objects/platform.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/tree.png", global_light, Material::WhiteRubber);
     game = new Game(EASY, game_box);
 }
 // clean all allocated data for objects
