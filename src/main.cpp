@@ -27,7 +27,7 @@
 #define BOX_N 5
 #define CEMENT_N 3
 #define CABINET_N 3
-#define TREE_N 6
+#define TREE_N 4
 // delay in ms for applying gravitation
 #define GRAVITATION_TIME 17
 // Global variables
@@ -183,11 +183,10 @@ void init_decorations()
     }
     glm::vec3 tree_locations[TREE_N] = {
         glm::vec3(-40.0f, 0.0f, -40.0f),
-        glm::vec3(-60.0f, 0.0f, 40.0f),
         glm::vec3(0.0f, 0.0f, -40.0f),
         glm::vec3(0.0f, 0.0f, 50.0f),
-        glm::vec3(40.0f, 0.0f, 60.0f),
-        glm::vec3(60.0f, 0.0f, -50.0f)};
+        glm::vec3(40.0f, 0.0f, 60.0f)
+        };
     for (int i = 0; i < TREE_N; i++)
     {
         trees[i].init("objects/tree.obj", "shaders/vertex.glsl", "shaders/fragment.glsl", "textures/tree.png", global_light, Material::BlackRubber, false);
