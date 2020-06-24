@@ -21,9 +21,6 @@
 #include "Box.hpp"
 #include "Game.hpp"
 
-#define MONKEY_N 4
-#define FLOWER_N 100
-#define M_PI 3.14159265358979323846
 #define BOX_N 5
 #define CEMENT_N 3
 #define CABINET_N 3
@@ -52,7 +49,6 @@ ProgramHandler cements[CEMENT_N];
 ProgramHandler cabinets[CABINET_N];
 ProgramHandler trees[TREE_N];
 
-vector<Box *> Boxes;
 // all objects in list format
 vector<ProgramHandler *> AllPrograms;
 
@@ -69,7 +65,9 @@ Light global_light;
 Text textFPS;
 Text textFPSCAP;
 
+// game and boxes for interaction
 Game *game;
+vector<Box *> Boxes;
 
 // FPS
 float fps = 0.0;
@@ -103,6 +101,7 @@ void DisplayScene()
     // swap buffer with the new generated one
     glutSwapBuffers();
 }
+// display boxes for interaction
 void display_boxes()
 {
     for (Box *box : Boxes)
@@ -110,6 +109,7 @@ void display_boxes()
         box->display(grappler.get_position(), Matrix_proj, Matrix_mv);
     }
 }
+// display all decoration objects
 void display_scene()
 {
     for (int i = 0; i < CEMENT_N; i++)
@@ -129,14 +129,8 @@ void display_scene()
     roof_program.display(Matrix_proj, Matrix_mv);
     sky_program1.display(Matrix_proj, Matrix_mv);
     ground_program.display(Matrix_proj, Matrix_mv);
-
-    // iterating allprograms will overrwrite boxes with collision (texture bug)
-    // for (ProgramHandler *p : AllPrograms)
-    // {
-    //     p->display(Matrix_proj, Matrix_mv);
-    // }
 }
-
+// show actual fps
 void show_fps()
 {
     textFPSCAP.RenderText("FPS CAP: 59.9", 10, glutGet(GLUT_WINDOW_HEIGHT) - 30, 0.8f, glm::vec3(0.0, 1.0f, 0.0f));
@@ -155,6 +149,7 @@ void Reshape(int width, int height)
     textFPS.InitText((char *)"libs/arial.ttf", 36);
     game->reshape_text();
 }
+// init decoration objects
 void init_decorations()
 {
     glm::vec3 cement_locations[CEMENT_N] = {
@@ -194,6 +189,7 @@ void init_decorations()
         AllPrograms.push_back(&trees[i]);
     }
 }
+// init boxes for game
 void init_boxes()
 {
     glm::vec3 box_locations[BOX_N] = {
